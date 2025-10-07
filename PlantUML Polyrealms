@@ -1,0 +1,171 @@
+@startuml
+
+package "Game Layer" {
+  class Game {
+    +players : List<Player>
+    +market : Market
+    +currentTurn : Turn
+    +start()
+    +nextTurn()
+    +checkWinner() : Player
+  }
+
+  class Turn {
+    +player : Player
+    +phase : Phase
+    +start()
+    +main()
+    +cleanup()
+  }
+
+  enum Phase {
+    Start
+    Main
+    Cleanup
+  }
+}
+
+package "Table Layer" {
+  class Player {
+    +name : String
+    +authority : int
+    +gold : int
+    +combat : int
+    +deck : Deck
+    +hand : Hand
+    +discard : DiscardPile
+    +inPlay : List<Card>
+    +champions : List<Champion>
+    +draw(n:int)
+    +play(card:Card)
+    +buy(card:Card, market:Market)
+    +attack(target:Player, amount:int)
+    +cleanup()
+  }
+
+  class Deck {
+    +cards : Stack<Card>
+    +shuffle()
+    +draw(n:int) : List<Card>
+  }
+
+  class Hand {
+    +cards : List<Card>
+    +add(card:Card)
+    +remove(card:Card)
+  }
+
+  class DiscardPile {
+    +cards : List<Card>
+    +add(card:Card)
+  }
+
+  class Market {
+    +tradeRow : List<Card>
+    +fireGemStack : int
+    +tradeDeck : Deck
+    +buy(player:Player, card:Card)?
+    +refillRow()
+  }
+}
+
+package "Cards Layer" {
+  abstract class Card {
+    +name : String
+    +cost : int
+    +faction : Faction
+    +type : CardType
+    +keywords : Set<Keyword>
+    +abilities : List<Ability>
+  }
+
+  class ActionCard 
+  class Champion extends Card {
+    +defense : int
+    +isGuard : boolean
+    +isExhausted : boolean
+  }
+
+  class Item {
+}
+
+  class Ability {
+    +trigger : Trigger
+    +effects : List<Effect>
+  }
+
+  class Effect {
+    +gainGold : int
+    +gainCombat : int
+    +gainAuthority : int
+    +drawCards : int
+    +stunTarget : boolean
+    +sacrificeSelf : boolean
+    +prepareChampion : boolean
+    +acquireToTop : boolean
+    +target : TargetType
+  }
+
+  enum Faction {
+    Imperial
+    Guild
+    Necros
+    Wild
+    Neutral
+  }
+
+  enum CardType {
+    Action
+    Champion
+    Item
+  }
+
+  enum Trigger {
+    OnPlay
+    Ally
+    Expend
+    Ongoing
+  }
+
+  enum Keyword {
+    Guard
+    Ally
+    Expend
+    Sacrifice
+    Prepare
+  }
+
+  enum TargetType {
+    Self
+    Opponent
+    Champion
+    Any
+  }
+}
+
+
+Game "1" o-- "2..4" Player
+Game "1" *-- "1" Market
+Game "1" *-- "1" Turn
+
+Player "1" *-- "1" Deck
+Player "1" *-- "1" Hand
+Player "1" *-- "1" DiscardPile
+Player "1" o-- "*" Champion
+Player "1" o-- "*" Card : inPlay
+
+Card "1" o-- "*" Ability
+Ability "1" o-- "*" Effect
+
+Champion -up-|> Card
+ActionCard -up-|> Card
+Item -up-|> Card
+
+Deck "1" o-- "0..*" Card
+Hand "1" o-- "0..*" Card
+DiscardPile "1" o-- "0..*" Card
+Market "1" o-- "5" Card : tradeRow
+Market "1" *-- "1" Deck : tradeDeck
+
+@enduml
+
