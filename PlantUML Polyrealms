@@ -2,17 +2,17 @@
 
 package "Game Layer" {
   class Game {
-    +players
-    +market
-    +currentTurn
+    +players : List<Player>
+    +market : Market
+    +currentTurn : Turn
     +start()
     +nextTurn()
-    +checkWinner()
+    +checkWinner() : Player
   }
 
   class Turn {
-    +player
-    +phase
+    +player : Player
+    +phase : Phase
     +start()
     +main()
     +cleanup()
@@ -27,44 +27,44 @@ package "Game Layer" {
 
 package "Table Layer" {
   class Player {
-    +name
-    +authority
-    +gold
-    +combat
-    +deck
-    +hand
-    +discard
-    +inPlay
-    +champions
-    +draw()
-    +play()
-    +buy()
-    +attack()
+    +name : String
+    +authority : int
+    +gold : int
+    +combat : int
+    +deck : Deck
+    +hand : Hand
+    +discard : DiscardPile
+    +inPlay : List<Card>
+    +champions : List<Champion>
+    +draw(n:int)
+    +play(card:Card)
+    +buy(card:Card, market:Market)
+    +attack(target:Player, amount:int)
     +cleanup()
   }
 
   class Deck {
-    +cards
+    +cards : Stack<Card>
     +shuffle()
-    +draw()
+    +draw(n:int) : List<Card>
   }
 
   class Hand {
-    +cards
-    +add()
-    +remove()
+    +cards : List<Card>
+    +add(card:Card)
+    +remove(card:Card)
   }
 
   class DiscardPile {
-    +cards
-    +add()
+    +cards : List<Card>
+    +add(card:Card)
   }
 
   class Market {
-    +tradeRow
-    +fireGemStack
-    +tradeDeck
-    +buy()
+    +tradeRow : List<Card>
+    +fireGemStack : int
+    +tradeDeck : Deck
+    +buy(player:Player, card:Card)?
     +refillRow()
   }
 }
