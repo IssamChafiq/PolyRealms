@@ -33,19 +33,19 @@ int main() {
     thief.takeDamage(2);    
 
     std::cout << "[Heal 3] -> Thief (should heal to 4, not exceed max)\n";
-    thief.heal(3);            
+    thief.heal();            
 
     std::cout << "[Attack 3] -> Thief (non-guard, shield 4)\n";
     thief.takeDamage(3);      
 
     std::cout << "[Heal 2] -> Thief (should heal to 3)\n";
-    thief.heal(2);
+    thief.heal();
 
     std::cout << "[Attack 5] -> Thief (should be defeated)\n";
     thief.takeDamage(5);
 
     std::cout << "[Heal 2] -> Thief (should fail — stunned)\n";
-    thief.heal(2);
+    thief.heal();
 
     std::cout << "\n=== End ===\n";
     return 0;

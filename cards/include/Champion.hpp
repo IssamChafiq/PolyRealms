@@ -27,7 +27,7 @@ public:
     void takeDamage(int attackValue);
 
     // Healing (cannot exceed initial shield)
-    void heal(int amount);
+    void heal();
 
     // Targeting rule helper
     bool mustBeAttackedFirst() const { return isGuard_; }

@@ -11,11 +11,11 @@ Deck::Deck(std::list<Card> cards): cards_(cards) {}
 
 Deck::~Deck() = default;
 
-std::list<Card> getDeck() const {
-    return cards;
+std::list<Card> Deck::getDeck() const {
+    return cards_;
 }
 
-void setDeck(std::list<Card> deck){
+void Deck::setDeck(std::list<Card> deck){
     std::copy(deck.begin(), deck.end(), cards_.begin());
 }
 
@@ -35,9 +35,9 @@ void Deck::shuffle() {
 
 std::list<Card> Deck::draw(int n) {
     std::list<Card> draws = {};
-    for (int i=0,i<n,i++){
+    for (int i=0;i<n;i++){
         draws.push_back(cards_.front());
         cards_.pop_front();
     }
-    return cards;
+    return cards_;
 }

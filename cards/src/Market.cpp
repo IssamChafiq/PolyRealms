@@ -7,7 +7,7 @@
 #include <random>
 #include <chrono>
 
-Market::Market(std::list<Card> cards): cards_(cards) {}
+Market::Market(std::list<Card> cards): tradeRow_(cards) {}
 
 Market::~Market() = default;
 

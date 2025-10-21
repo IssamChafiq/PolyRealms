@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include "Card.hpp"
 
 class Deck {
     std::list<Card> cards_;

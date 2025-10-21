@@ -2,6 +2,8 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include "Card.hpp"
+#include "Deck.hpp"
 
 class Market {
     std::list<Card> tradeRow_;
