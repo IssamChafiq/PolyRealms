@@ -3,7 +3,8 @@
 #include "Enums.hpp"
 #include "CardController.hpp"
 
-struct Abilities {
+class Abilities {
+    public:
     static void execute(CardController& ctrl,
                         AbilityName name,
                         const std::string& selfId,

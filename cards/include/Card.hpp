@@ -4,6 +4,8 @@
 #include "Enums.hpp"
 #include "CardController.hpp"
 #include "Abilities.hpp"
+#include <utility>
+
 
 class Card {
 public:
@@ -28,6 +30,8 @@ public:
     const std::string& name() const { return name_; }
     int cost() const { return cost_; }
     Faction faction() const { return faction_; }
+    CardType type() const { return type_; }
+
 
     bool isExpendable() const { return expendable_; }
     bool isSacrificeable() const { return sacrificeable_; }
@@ -47,8 +51,15 @@ public:
 
     virtual bool isChampion() const { return false; }
 
+    // Affichage cartes 
+    static std::string factionToString(Faction f);
+    static std::string typeToString(CardType t) ;
+    static void printCardInfo(const Card& card);
+
+
+
 protected:
-    bool hasAllySameFaction() const; // faut créer la classe joeur pour avoir la liste de cartes et vérifier l'existence de ally
+    bool hasAllySameFaction() ; // faut créer la classe joeur pour avoir la liste de cartes et vérifier l'existence de ally
     void removeSelfFromPlayerZones(); // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte
 
 protected:

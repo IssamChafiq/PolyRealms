@@ -1,4 +1,4 @@
-#include "include/Abilities.hpp"
+#include "Abilities.hpp"
 #include <iostream>
 
 void Abilities::execute(CardController& ctrl,
@@ -67,3 +67,4 @@ void Abilities::acquireToTop(CardController& ctrl,
                              bool enable) {
     ctrl.setAcquireToTopThisTurn(selfId, enable);
 }
+

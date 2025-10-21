@@ -7,22 +7,34 @@ public:
              std::string name,
              int cost,
              Faction faction,
-             int defense,
+             int shield,
              bool isGuard,
              bool expendable = true)
         : Card(std::move(id), std::move(name), cost, faction, CardType::Champion, expendable, false),
-          defense_(defense),
-          isGuard_(isGuard) {}
+          shield_(shield),
+          maxShield_(shield),   // save initial shield cap
+          isGuard_(isGuard),
+          stunned_(false) {}
 
     bool isChampion() const override { return true; }
 
     bool isGuard() const { return isGuard_; }
     bool isStunned() const { return stunned_; }
+    int  getShield() const { return shield_; }
+    int  getMaxShield() const { return maxShield_; }
 
-    void applyDamage(int amount);
+    // Combat
+    void takeDamage(int attackValue);
+
+    // Healing (cannot exceed initial shield)
+    void heal(int amount);
+
+    // Targeting rule helper
+    bool mustBeAttackedFirst() const { return isGuard_; }
 
 private:
-    int defense_;
-    bool isGuard_;
-    bool stunned_{false};
+    int  shield_;      // current shield (can go down, can be healed up to maxShield_)
+    int  maxShield_;   // initial shield cap
+    bool isGuard_;     // must be attacked first if true
+    bool stunned_;     // defeated (removed) state
 };
