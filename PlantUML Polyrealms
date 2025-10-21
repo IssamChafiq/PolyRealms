@@ -64,8 +64,7 @@ package "Table Layer" {
     +tradeRow : List<Card>
     +fireGemStack : int
     +tradeDeck : Deck
-    +buy(player:Player, card:Card)?
-    +refillRow()
+    +sell(card:Card)
   }
 }
 
