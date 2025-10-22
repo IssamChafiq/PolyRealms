@@ -1,7 +1,13 @@
 #include <iostream>
+#include <string>
+#include <list>
+#include <vector>
 #include "ActionCard.hpp"
 #include "Champion.hpp"
 #include "Card.hpp"
+#include "Deck.hpp"
+#include "Player.hpp"
+#include "Market.hpp"
 #include "Enums.hpp"
 
 int main() {
@@ -22,7 +28,7 @@ int main() {
     Card::printCardInfo(thief);
 
     // Combat tests to show guard vs non-guard behavior
-    std::cout << "\n=== Combat Simulation ===\n";
+    std::cout << "=== Combat Simulation ===\n";
     std::cout << "[Attack 3] -> Guardian (guard, shield 6)\n";
     guardian.takeDamage(3);   // should block (guard logic)
 
@@ -32,21 +38,96 @@ int main() {
     std::cout << "\n[Attack 2] -> Thief (non-guard, shield 4)\n";
     thief.takeDamage(2);    
 
-    std::cout << "[Heal 3] -> Thief (should heal to 4, not exceed max)\n";
+    std::cout << "[Heal] -> Thief (should heal to full, not exceed max)\n";
     thief.heal();            
 
     std::cout << "[Attack 3] -> Thief (non-guard, shield 4)\n";
     thief.takeDamage(3);      
 
-    std::cout << "[Heal 2] -> Thief (should heal to 3)\n";
+    std::cout << "[Heal] -> Thief (should heal to full)\n";
     thief.heal();
 
     std::cout << "[Attack 5] -> Thief (should be defeated)\n";
     thief.takeDamage(5);
 
-    std::cout << "[Heal 2] -> Thief (should fail — stunned)\n";
+    std::cout << "[Heal 2] -> Thief (should fail - stunned)\n";
     thief.heal();
 
     std::cout << "\n=== End ===\n";
+
+    // Table layer (market/player/deck) tests :
+    std::cout << "=== Table Simulation ===\n";
+    std::list<Card> deckCards = {guardian, fireGem, thief, thief, thief, fireGem, guardian, guardian};
+    std::list<Card> startingHand = {fireGem, thief, guardian, fireGem, thief};
+    //Deck marketDeck(deckCards);
+    //Pour une raison qui m'échappe, je peux construire un market en passant une liste de cartes mais pas un deck
+    //Je crois ça vient du fait que market crée automatiqument un deck avec deckCards ?
+    Market market(deckCards);
+    Player player("Alice", 50, Deck(startingHand));
+
+    std::cout << "Market sell row contents:\n";
+    for (const Card& card : market.getMarketRow()) {
+        Card::printCardInfo(card);
+    }
+    std::cout << "\nMarket deck contents:\n";
+    for (const Card& card : market.getMarketDeck().getDeck()) {
+        Card::printCardInfo(card);
+    }
+
+    std::cout << "\nPlayer initial hand:\n";
+    for (const Card& card : player.getHand()) {
+        Card::printCardInfo(card);
+    }
+    std::cout << "\nPlayer draws 3 cards from deck\n";
+    player.draw(3);
+    std::cout << "Player hand after drawing:\n";
+    for (const Card& card : player.getHand()) {
+        Card::printCardInfo(card);
+    }
+
+    std::cout << "Player plays Fire Gem from hand\n";
+    player.play(fireGem);
+
+    std::cout << "Player buys the first card in the market\n";
+    player.buy(market.getMarketRow().front(), market);
+
+    std::cout << "Player plays Thief from hand\n";
+    player.play(thief);
+
+    std::cout << "\nPlayer's in-play cards:\n";
+    for (const Card& card : player.getInPlay()) {
+        Card::printCardInfo(card);
+    }
+
+    // Here, the thief should be present, but typeid comparison in player.play doesnt work for class recognition
+    // We need to find a solution to properly handle the fact that a card can be of derived type Champion
+    std::cout << "\nPlayer's champions:\n";
+    for (const Champion& champ : player.getChampions()) {
+        Card::printCardInfo(champ);
+    }
+
+    std::cout << "\nPlayer performs cleanup phase\n";
+    player.cleanup();
+
+    std::cout << "\nPlayer's hand after cleanup:\n";
+    for (const Card& card : player.getHand()) {
+        Card::printCardInfo(card);
+    }
+
+    std::cout << "\nPlayer's discard pile after cleanup:\n";
+    for (const Card& card : player.getDiscardPile()) {
+        Card::printCardInfo(card);
+    }
+
+    std::cout << "\nPlayer's in-play cards after cleanup:\n";
+    for (const Card& card : player.getInPlay()) {
+        Card::printCardInfo(card);
+    }
+    
+    std::cout << "\nPlayer's champions after cleanup:\n";
+    for (const Champion& champ : player.getChampions()) {
+        Card::printCardInfo(champ);
+    }
+
     return 0;
 }

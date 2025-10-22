@@ -11,6 +11,6 @@ $(BIN): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJ)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) $(BIN)
 
 .PHONY: all clean

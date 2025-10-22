@@ -1,4 +1,4 @@
-#include "include/Deck.hpp"
+#include "Deck.hpp"
 #include <iostream>
 #include <string>
 #include <iostream>
@@ -6,6 +6,7 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <algorithm>
 
 Deck::Deck(std::list<Card> cards): cards_(cards) {}
 
@@ -39,5 +40,5 @@ std::list<Card> Deck::draw(int n) {
         draws.push_back(cards_.front());
         cards_.pop_front();
     }
-    return cards_;
+    return draws;
 }

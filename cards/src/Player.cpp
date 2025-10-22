@@ -1,4 +1,4 @@
-#include "include/Player.hpp"
+#include "Player.hpp"
 #include <iostream>
 
 Player::Player(std::string name,
@@ -11,35 +11,56 @@ Player::Player(std::string name,
 Player::~Player() = default;
 
 void Player::draw(int n){
-    int cardsLeft = deck_.getDeck.size();
+    int cardsLeft = deck_.getDeck().size();
     if(n >= cardsLeft){
-        hand_.append_range(deck_.draw(cardsLeft));
+        // Je tire toutes les cartes restantes dans le deck
+        std::list<Card> listLeft = deck_.draw(cardsLeft);
+        hand_.insert(hand_.end(), listLeft.cbegin(), listLeft.cend());
+        // Je remélange la défausse dans le deck et je continue à piocher
         deck_.setDeck(discardPile_);
         deck_.shuffle();
+        // Je vide la défausse
         discardPile_.clear();
-        hand_.append_range(deck_.draw(n-cardsLeft));
+        // Je pioche le reste des cartes
+        std::list<Card> listNew = deck_.draw(n-cardsLeft);
+        hand_.insert(hand_.end(), listNew.cbegin(), listNew.cend());
     } else {
-        hand_.append_range(deck_.draw(n));
+        // Je pioche normalement
+        std::list<Card> drawn = deck_.draw(n);
+        hand_.insert(hand_.end(), drawn.cbegin(), drawn.cend());
     }
 }
 
 void Player::play(Card card){
-    for (std::list<int>::iterator it = hand_.begin(); it != hand_.end();)
+    bool found = false;
+    for (std::list<Card>::iterator it = hand_.begin(); it != hand_.end();)
     {
-        if (card.id() = *it.id())
+        if (card.id() == (*it).id()){
             it = hand_.erase(it);
+            found = true;
             break;
-        else
+        }
+        else {
             ++it;
+        }
     }
-    inPlay_.push_back(card);
+    // Ne devrait pas arriver car idéalement on ne sera proposé que des cartes en main, mais par sécurité on vérifie quand même
+    if(!found){
+        std::cout << "Card not found in hand, cannot play.\n";
+        return;
+    }
+    if(typeid(card) == typeid(Champion)){
+        champions_.push_back(static_cast<Champion&>(card));
+    } else {
+        inPlay_.push_back(card);
+    }
 }
 
 void Player::buy(Card card, Market market){
     if(gold_ >= card.cost()){
         gold_ -= card.cost();
         discardPile_.push_back(card);
-        market.sell(card)
+        market.sell(card);
     } else {
         // Out : pas assez de golds
     }  
@@ -52,12 +73,14 @@ void Player::attack(Player player, int amount){
 }
 
 void Player::cleanup(){
-    for (champion : champions_){
+    for (Champion champion : champions_){
         champion.heal();
     }
-    discardPile_.append_range(hand_);
+    discardPile_.insert(discardPile_.end(), hand_.cbegin(), hand_.cend());
+    discardPile_.insert(discardPile_.end(), inPlay_.cbegin(), inPlay_.cend());
     hand_.clear();
     inPlay_.clear();
     gold_ = 0;
     combat_ = 0;
+    // Il faudra aussi réinitialiser les sorts et capacités utilisées pendant le tour
 }

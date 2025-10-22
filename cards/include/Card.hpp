@@ -56,8 +56,6 @@ public:
     static std::string typeToString(CardType t) ;
     static void printCardInfo(const Card& card);
 
-
-
 protected:
     bool hasAllySameFaction() ; // faut créer la classe joeur pour avoir la liste de cartes et vérifier l'existence de ally
     void removeSelfFromPlayerZones(); // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte
