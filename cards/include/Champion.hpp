@@ -9,13 +9,14 @@ public:
              Faction faction,
              int shield,
              bool isGuard,
-             bool expendable = true,
-             bool isChampion = true)
+             bool expendable = true)
         : Card(std::move(id), std::move(name), cost, faction, CardType::Champion, expendable, false),
           shield_(shield),
           maxShield_(shield),   // save initial shield cap
           isGuard_(isGuard),
           stunned_(false) {}
+
+    bool isChampion() const { return true; }
 
     bool isGuard() const { return isGuard_; }
     bool isStunned() const { return stunned_; }

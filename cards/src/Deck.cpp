@@ -8,37 +8,32 @@
 #include <chrono>
 #include <algorithm>
 
-Deck::Deck(std::list<Card> cards): cards_(cards) {}
+Deck::Deck(std::vector<Card*> cards): cards_(cards) {}
 
 Deck::~Deck() = default;
 
-std::list<Card> Deck::getDeck() const {
+std::vector<Card*> Deck::getDeck() const {
     return cards_;
 }
 
-void Deck::setDeck(std::list<Card> deck){
+void Deck::setDeck(std::vector<Card*> deck){
     std::copy(deck.begin(), deck.end(), cards_.begin());
 }
 
 void Deck::shuffle() {
-    std::vector<Card> vec(cards_.begin(), cards_.end());
-    
     // Create a random number generator
     auto seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 gen(seed);
     
     // Shuffle the vector
-    std::shuffle(vec.begin(), vec.end(), gen);
-    
-    // Copy the shuffled elements back to the list
-    std::copy(vec.begin(), vec.end(), cards_.begin());
+    std::shuffle(cards_.begin(), cards_.end(), gen);
 }
 
-std::list<Card> Deck::draw(int n) {
-    std::list<Card> draws = {};
+std::vector<Card*> Deck::draw(int n) {
+    std::vector<Card*> draws = {};
     for (int i=0;i<n;i++){
         draws.push_back(cards_.front());
-        cards_.pop_front();
+        cards_.erase(cards_.begin());
     }
     return draws;
 }

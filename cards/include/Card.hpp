@@ -22,8 +22,7 @@ public:
          Faction faction,
          CardType type,
          bool expendable = false,
-         bool sacrificeable = false,
-         bool isChampion_ = false);
+         bool sacrificeable = false);
 
     virtual ~Card();
 
@@ -50,7 +49,7 @@ public:
     std::vector<CardAbility>& abilities() { return abilities_; } // Pour création de cartes
     const std::vector<CardAbility>& abilities() const { return abilities_; } // Pour lire les abilities
 
-    virtual bool isChampion() const { return isChampion_; }
+    virtual bool isChampion() const { return false; }
 
     // Affichage cartes 
     static std::string factionToString(Faction f);
@@ -71,7 +70,6 @@ protected:
     bool expended_{false};
     bool sacrificeable_;
     bool sacrificed_{false};
-    bool isChampion_;
     std::string ownerId_;
     std::string opponentId_;
     std::vector<CardAbility> abilities_;

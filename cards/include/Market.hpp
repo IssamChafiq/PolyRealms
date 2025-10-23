@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include <list>
+#include <vector>
 #include "Card.hpp"
 #include "Deck.hpp"
 
 class Market {
-    std::list<Card> tradeRow_;
+    std::vector<Card*> tradeRow_;
     int fireGemStack_ = 16;
     Deck tradeDeck_;
 public:
@@ -14,7 +14,7 @@ public:
     ~Market();
     Deck getMarketDeck() const;
     void setMarketDeck(Deck deck);
-    std::list<Card> getMarketRow() const;
-    void setMarketRow(std::list<Card> row);
-    void sell(Card card);
+    std::vector<Card*> getMarketRow() const;
+    void setMarketRow(std::vector<Card*> row);
+    void sell(Card* card);
 };

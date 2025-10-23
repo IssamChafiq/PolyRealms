@@ -1,16 +1,16 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include <list>
+#include <vector>
 #include "Card.hpp"
 
 class Deck {
-    std::list<Card> cards_;
+    std::vector<Card*> cards_;
 public:
-    Deck(std::list<Card> cards);
+    Deck(std::vector<Card*> cards);
     ~Deck();
-    std::list<Card> getDeck() const;
-    void setDeck(std::list<Card>);
+    std::vector<Card*> getDeck() const;
+    void setDeck(std::vector<Card*>);
     void shuffle();
-    std::list<Card> draw(int n);
+    std::vector<Card*> draw(int n);
 };

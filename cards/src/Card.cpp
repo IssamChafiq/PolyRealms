@@ -18,8 +18,7 @@ Card::Card(std::string id,
       expendable_(expendable),
       expended_(false),        
       sacrificeable_(sacrificeable),
-      sacrificed_(false)       
-{}
+      sacrificed_(false) {}
 
 
 Card::~Card() = default;

@@ -57,8 +57,8 @@ int main() {
 
     // Table layer (market/player/deck) tests :
     std::cout << "=== Table Simulation ===\n";
-    std::list<Card> deckCards = {guardian, fireGem, thief, thief, thief, fireGem, guardian, guardian};
-    std::list<Card> startingHand = {fireGem, thief, guardian, fireGem, thief};
+    std::vector<Card*> deckCards = {&guardian, &fireGem, &thief, &thief, &thief, &fireGem, &guardian, &guardian};
+    std::vector<Card*> startingHand = {&fireGem, &thief, &guardian, &fireGem, &thief};
     //Deck marketDeck(deckCards);
     //Pour une raison qui m'échappe, je peux construire un market en passant une liste de cartes mais pas un deck
     //Je crois ça vient du fait que market crée automatiqument un deck avec deckCards ?
@@ -66,67 +66,67 @@ int main() {
     Player player("Alice", 50, Deck(startingHand));
 
     std::cout << "Market sell row contents:\n";
-    for (const Card& card : market.getMarketRow()) {
-        card.printCardInfo();
+    for (const Card* card : market.getMarketRow()) {
+        card->printCardInfo();
     }
     std::cout << "\nMarket deck contents:\n";
-    for (const Card& card : market.getMarketDeck().getDeck()) {
-        card.printCardInfo();
+    for (const Card* card : market.getMarketDeck().getDeck()) {
+        card->printCardInfo();
     }
 
     std::cout << "\nPlayer initial hand:\n";
-    for (const Card& card : player.getHand()) {
-        card.printCardInfo();
+    for (const Card* card : player.getHand()) {
+        card->printCardInfo();
     }
     std::cout << "\nPlayer draws 3 cards from deck\n";
     player.draw(3);
     std::cout << "Player hand after drawing:\n";
-    for (const Card& card : player.getHand()) {
-        card.printCardInfo();
+    for (const Card* card : player.getHand()) {
+        card->printCardInfo();
     }
 
-    std::cout << "Player plays Fire Gem from hand\n";
-    player.play(fireGem);
+    std::cout << "Player plays first card from hand\n";
+    player.play(player.getHand().front());
 
     std::cout << "Player buys the first card in the market\n";
     player.buy(market.getMarketRow().front(), market);
 
-    std::cout << "Player plays Thief from hand\n";
-    player.play(thief);
+    std::cout << "Player plays first card from hand\n";
+    player.play(player.getHand().front());
 
     std::cout << "\nPlayer's in-play cards:\n";
-    for (const Card& card : player.getInPlay()) {
-        card.printCardInfo();
+    for (const Card* card : player.getInPlay()) {
+        card->printCardInfo();
     }
 
     // Here, the thief should be present, but typeid comparison in player.play doesnt work for class recognition
     // We need to find a solution to properly handle the fact that a card can be of derived type Champion
     std::cout << "\nPlayer's champions:\n";
-    for (const Champion& champ : player.getChampions()) {
-        champ.printCardInfo();
+    for (const Champion* champ : player.getChampions()) {
+        champ->printCardInfo();
     }
 
     std::cout << "\nPlayer performs cleanup phase\n";
     player.cleanup();
 
     std::cout << "\nPlayer's hand after cleanup:\n";
-    for (const Card& card : player.getHand()) {
-        card.printCardInfo();
+    for (const Card* card : player.getHand()) {
+        card->printCardInfo();
     }
 
     std::cout << "\nPlayer's discard pile after cleanup:\n";
-    for (const Card& card : player.getDiscardPile()) {
-        card.printCardInfo();
+    for (const Card* card : player.getDiscardPile()) {
+        card->printCardInfo();
     }
 
     std::cout << "\nPlayer's in-play cards after cleanup:\n";
-    for (const Card& card : player.getInPlay()) {
-        card.printCardInfo();
+    for (const Card* card : player.getInPlay()) {
+        card->printCardInfo();
     }
     
     std::cout << "\nPlayer's champions after cleanup:\n";
-    for (const Champion& champ : player.getChampions()) {
-        champ.printCardInfo();
+    for (const Champion* champ : player.getChampions()) {
+        champ->printCardInfo();
     }
 
     return 0;
