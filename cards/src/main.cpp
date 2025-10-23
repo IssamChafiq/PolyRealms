@@ -23,9 +23,9 @@ int main() {
     Champion thief("thief", "Silent Thief", 3, Faction::Guild, 4, false);
 
     // Print details (uses Card::printCardInfo)
-    Card::printCardInfo(guardian);
-    Card::printCardInfo(fireGem);
-    Card::printCardInfo(thief);
+    guardian.printCardInfo();
+    fireGem.printCardInfo();
+    thief.printCardInfo();
 
     // Combat tests to show guard vs non-guard behavior
     std::cout << "=== Combat Simulation ===\n";
@@ -67,22 +67,22 @@ int main() {
 
     std::cout << "Market sell row contents:\n";
     for (const Card& card : market.getMarketRow()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
     std::cout << "\nMarket deck contents:\n";
     for (const Card& card : market.getMarketDeck().getDeck()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
 
     std::cout << "\nPlayer initial hand:\n";
     for (const Card& card : player.getHand()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
     std::cout << "\nPlayer draws 3 cards from deck\n";
     player.draw(3);
     std::cout << "Player hand after drawing:\n";
     for (const Card& card : player.getHand()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
 
     std::cout << "Player plays Fire Gem from hand\n";
@@ -96,14 +96,14 @@ int main() {
 
     std::cout << "\nPlayer's in-play cards:\n";
     for (const Card& card : player.getInPlay()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
 
     // Here, the thief should be present, but typeid comparison in player.play doesnt work for class recognition
     // We need to find a solution to properly handle the fact that a card can be of derived type Champion
     std::cout << "\nPlayer's champions:\n";
     for (const Champion& champ : player.getChampions()) {
-        Card::printCardInfo(champ);
+        champ.printCardInfo();
     }
 
     std::cout << "\nPlayer performs cleanup phase\n";
@@ -111,22 +111,22 @@ int main() {
 
     std::cout << "\nPlayer's hand after cleanup:\n";
     for (const Card& card : player.getHand()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
 
     std::cout << "\nPlayer's discard pile after cleanup:\n";
     for (const Card& card : player.getDiscardPile()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
 
     std::cout << "\nPlayer's in-play cards after cleanup:\n";
     for (const Card& card : player.getInPlay()) {
-        Card::printCardInfo(card);
+        card.printCardInfo();
     }
     
     std::cout << "\nPlayer's champions after cleanup:\n";
     for (const Champion& champ : player.getChampions()) {
-        Card::printCardInfo(champ);
+        champ.printCardInfo();
     }
 
     return 0;

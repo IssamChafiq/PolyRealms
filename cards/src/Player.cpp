@@ -49,7 +49,7 @@ void Player::play(Card card){
         std::cout << "Card not found in hand, cannot play.\n";
         return;
     }
-    if(typeid(card) == typeid(Champion)){
+    if(card.isChampion()){
         champions_.push_back(static_cast<Champion&>(card));
     } else {
         inPlay_.push_back(card);
@@ -62,7 +62,7 @@ void Player::buy(Card card, Market market){
         discardPile_.push_back(card);
         market.sell(card);
     } else {
-        // Out : pas assez de golds
+        // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
 }
 

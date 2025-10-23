@@ -22,7 +22,8 @@ public:
          Faction faction,
          CardType type,
          bool expendable = false,
-         bool sacrificeable = false);
+         bool sacrificeable = false,
+         bool isChampion_ = false);
 
     virtual ~Card();
 
@@ -49,12 +50,12 @@ public:
     std::vector<CardAbility>& abilities() { return abilities_; } // Pour création de cartes
     const std::vector<CardAbility>& abilities() const { return abilities_; } // Pour lire les abilities
 
-    virtual bool isChampion() const { return false; }
+    virtual bool isChampion() const { return isChampion_; }
 
     // Affichage cartes 
     static std::string factionToString(Faction f);
-    static std::string typeToString(CardType t) ;
-    static void printCardInfo(const Card& card);
+    static std::string typeToString(CardType t);
+    virtual void printCardInfo() const;
 
 protected:
     bool hasAllySameFaction() ; // faut créer la classe joeur pour avoir la liste de cartes et vérifier l'existence de ally
@@ -70,6 +71,7 @@ protected:
     bool expended_{false};
     bool sacrificeable_;
     bool sacrificed_{false};
+    bool isChampion_;
     std::string ownerId_;
     std::string opponentId_;
     std::vector<CardAbility> abilities_;

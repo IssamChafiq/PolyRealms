@@ -95,23 +95,15 @@ std::string Card::typeToString(CardType t) {
     }
 }
 
-void Card::printCardInfo(const Card& card) {
+void Card::printCardInfo() const{
     std::cout << "----------------------------------------\n";
-    std::cout << "Card Name: " << card.name() << "\n";
-    std::cout << "Card ID:   " << card.id() << "\n";
-    std::cout << "Cost:      " << card.cost() << "\n";
-    std::cout << "Faction:   " << factionToString(card.faction()) << "\n";
-    std::cout << "Type:      " << typeToString(card.type()) << "\n";
+    std::cout << "Card Name: " << name_ << "\n";
+    std::cout << "Card ID:   " << id_ << "\n";
+    std::cout << "Cost:      " << cost_ << "\n";
+    std::cout << "Faction:   " << factionToString(faction_) << "\n";
+    std::cout << "Type:      " << typeToString(type_) << "\n";
 
-    if (card.isChampion()) {
-        if (const Champion* champ = dynamic_cast<const Champion*>(&card)) {
-        std::cout << "Shield:    " << champ->getShield() << "\n";
-        std::cout << "Guard:     " << (champ->isGuard() ? "Yes" : "No") << "\n";
-        std::cout << "Stunned:   " << (champ->isStunned() ? "Yes" : "No") << "\n";
-    }
-    }
-
-    std::cout << "Expendable: " << (card.isExpendable() ? "Yes" : "No") << "\n";
-    std::cout << "Sacrificeable: " << (card.isSacrificeable() ? "Yes" : "No") << "\n";
+    std::cout << "Expendable: " << (expendable_ ? "Yes" : "No") << "\n";
+    std::cout << "Sacrificeable: " << (sacrificeable_ ? "Yes" : "No") << "\n";
     std::cout << "----------------------------------------\n\n";
 }

@@ -9,14 +9,13 @@ public:
              Faction faction,
              int shield,
              bool isGuard,
-             bool expendable = true)
+             bool expendable = true,
+             bool isChampion = true)
         : Card(std::move(id), std::move(name), cost, faction, CardType::Champion, expendable, false),
           shield_(shield),
           maxShield_(shield),   // save initial shield cap
           isGuard_(isGuard),
           stunned_(false) {}
-
-    bool isChampion() const override { return true; }
 
     bool isGuard() const { return isGuard_; }
     bool isStunned() const { return stunned_; }
@@ -31,6 +30,8 @@ public:
 
     // Targeting rule helper
     bool mustBeAttackedFirst() const { return isGuard_; }
+
+    void printCardInfo() const;
 
 private:
     int  shield_;      // current shield (can go down, can be healed up to maxShield_)

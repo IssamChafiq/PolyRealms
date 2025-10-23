@@ -50,3 +50,20 @@ void Champion::heal() {
     std::cout << name_ << " heals " << (maxShield_ - before)
               << " shield (now " << shield_ << "/" << maxShield_ << ").\n";
 }
+
+void Champion::printCardInfo() const{
+    std::cout << "----------------------------------------\n";
+    std::cout << "Card Name: " << name_ << "\n";
+    std::cout << "Card ID:   " << id_ << "\n";
+    std::cout << "Cost:      " << cost_ << "\n";
+    std::cout << "Faction:   " << factionToString(faction_) << "\n";
+    std::cout << "Type:      " << typeToString(type_) << "\n";
+
+    std::cout << "Shield:    " << shield_ << "\n";
+    std::cout << "Guard:     " << (isGuard_ ? "Yes" : "No") << "\n";
+    std::cout << "Stunned:   " << (stunned_ ? "Yes" : "No") << "\n";
+
+    std::cout << "Expendable: " << (expendable_ ? "Yes" : "No") << "\n";
+    std::cout << "Sacrificeable: " << (sacrificeable_ ? "Yes" : "No") << "\n";
+    std::cout << "----------------------------------------\n\n";
+}
