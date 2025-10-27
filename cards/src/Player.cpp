@@ -11,7 +11,7 @@ Player::Player(std::string name,
 Player::~Player() = default;
 
 void Player::draw(int n){
-    int cardsLeft = deck_.getDeck().size();
+    int cardsLeft = deck_.getDeckContents().size();
     if(n >= cardsLeft){
         // Je tire toutes les cartes restantes dans le deck
         std::vector<Card*> listLeft = deck_.draw(cardsLeft);
@@ -58,9 +58,13 @@ void Player::play(Card* card){
 
 void Player::buy(Card* card, Market market){
     if(gold_ >= card->cost()){
-        gold_ -= card->cost();
-        discardPile_.push_back(card);
-        market.sell(card);
+        if(!market.getMarketRow().empty()){
+            gold_ -= card->cost();
+            discardPile_.push_back(card);
+            market.sell(card);
+        } else {
+            std::cout << "Le marché est vide";
+        }
     } else {
         // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  

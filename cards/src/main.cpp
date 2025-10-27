@@ -70,7 +70,7 @@ int main() {
         card->printCardInfo();
     }
     std::cout << "\nMarket deck contents:\n";
-    for (const Card* card : market.getMarketDeck().getDeck()) {
+    for (const Card* card : market.getMarketDeck().getDeckContents()) {
         card->printCardInfo();
     }
 

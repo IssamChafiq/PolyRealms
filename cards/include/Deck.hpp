@@ -9,8 +9,9 @@ class Deck {
 public:
     Deck(std::vector<Card*> cards);
     ~Deck();
-    std::vector<Card*> getDeck() const;
+    std::vector<Card*> getDeckContents() const;
     void setDeck(std::vector<Card*>);
     void shuffle();
     std::vector<Card*> draw(int n);
+    static Deck createInitialDeck();
 };

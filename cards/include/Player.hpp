@@ -20,13 +20,22 @@ public:
         int authority,
         Deck deck);
     ~Player();
+
+    std::string getName() const {return name_;};
     int getAuthority() const {return authority_;};
+    int getGold() const {return gold_;};
+    int getCombat() const {return combat_;};
+
+    void setName(std::string name) {name_ = name;};
     void setAuthority(int authority) {authority_ = authority;};
-    
+    void setGold(int gold) {gold_ = gold;};
+    void setCombat(int combat) {combat_ = combat;};
+
     std::vector<Card*> getHand() const {return hand_;};
     std::vector<Card*> getDiscardPile() const {return discardPile_;};
     std::vector<Card*> getInPlay() const {return inPlay_;};
     std::vector<Champion*> getChampions() const {return champions_;};
+    Deck getDeck() const {return deck_;};
 
     void setHand(std::vector<Card*> hand) {hand_ = hand;};
     void setDiscardPile(std::vector<Card*> discardPile) {discardPile_ = discardPile;};

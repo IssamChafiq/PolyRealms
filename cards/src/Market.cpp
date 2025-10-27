@@ -1,10 +1,10 @@
 #include "Market.hpp"
 #include <iostream>
 #include <string>
-#include <iostream>
 #include <vector>
 
 Market::Market(Deck tradeDeck): tradeDeck_(tradeDeck) {
+    tradeDeck_.shuffle();
     tradeRow_ = tradeDeck_.draw(5);
 }
 
@@ -40,5 +40,9 @@ void Market::sell(Card* card){
         }
     }
     // On remplit la tradeRow en piochant une carte du tradeDeck
-    tradeRow_.push_back(tradeDeck_.draw(1)[0]);
+    if(tradeDeck_.draw(1).empty()){
+        std::cout << "Le deck du marché est vide, impossible de remplir la ligne";
+    } else {
+        tradeRow_.push_back(tradeDeck_.draw(1)[0]);
+    }
 }

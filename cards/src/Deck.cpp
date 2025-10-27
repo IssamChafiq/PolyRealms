@@ -12,7 +12,7 @@ Deck::Deck(std::vector<Card*> cards): cards_(cards) {}
 
 Deck::~Deck() = default;
 
-std::vector<Card*> Deck::getDeck() const {
+std::vector<Card*> Deck::getDeckContents() const {
     return cards_;
 }
 
@@ -31,9 +31,18 @@ void Deck::shuffle() {
 
 std::vector<Card*> Deck::draw(int n) {
     std::vector<Card*> draws = {};
-    for (int i=0;i<n;i++){
-        draws.push_back(cards_.front());
-        cards_.erase(cards_.begin());
+    if (cards_.size() >= n){
+            for (int i=0;i<n;i++){
+            draws.push_back(cards_.front());
+            cards_.erase(cards_.begin());
+        }
+    } else {
+        std::cout << "Le deck est vide, impossible de piocher plus";
     }
     return draws;
+}
+
+Deck Deck::createInitialDeck(){
+    std::vector<Card*> initialCards = {};
+    return Deck(initialCards);
 }
