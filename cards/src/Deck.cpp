@@ -31,7 +31,7 @@ void Deck::shuffle() {
 
 std::vector<Card*> Deck::draw(int n) {
     std::vector<Card*> draws = {};
-    if (cards_.size() >= n){
+    if ((int)cards_.size() >= n){
             for (int i=0;i<n;i++){
             draws.push_back(cards_.front());
             cards_.erase(cards_.begin());

@@ -52,6 +52,8 @@ void Abilities::stunTargetChampion(CardController& ctrl,
 }
 
 void Abilities::prepareFriendlyChampion(CardController& ctrl, const std::string& selfId) {
+    (void)ctrl;
+    (void)selfId;
     // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte
 }
 

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <limits>
 
 Game::Game(Market market): market_(market) {}
 
@@ -49,7 +50,7 @@ void Game::startFFA(){
     } else {
         playerList_[0]->draw(3);
         playerList_[1]->draw(4);
-        for(int i = 2; i < playerList_.size(); i++){
+        for(int i = 2; i < (int)playerList_.size(); i++){
             playerList_[i]->draw(5);
         }
     }
@@ -90,12 +91,12 @@ void Game::startFFA(){
                 switch(actionChoice){
                     case 1:
                         std::cout << "What do you want to look at ? :\n1. Market row - 2. Sacrifice pile";
-                        for (int i=3;i<playerList_.size()+3;i++){
-                            std::cout << " - " << i << ". " << playerList_[i-3] << "'s board";
+                        for (int i=0;i<(int)playerList_.size();i++){
+                            std::cout << " - " << i+3 << ". " << playerList_[i] << "'s board";
                         }
                         std::cout << "\n";
                         int choice;
-                        while(!(std::cin >> choice) || choice < 1 || choice > playerList_.size()+2){
+                        while(!(std::cin >> choice) || choice < 1 || choice > (int)playerList_.size()+2){
                             std::cout << "Invalid input. Please enter a valid choice: ";
                             std::cin.clear();
                             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
