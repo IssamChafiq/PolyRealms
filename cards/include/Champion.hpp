@@ -1,5 +1,7 @@
 #pragma once
 #include "Card.hpp"
+#include <algorithm>
+#include <iostream>
 
 class Champion : public Card {
 public:
@@ -10,9 +12,15 @@ public:
              int shield,
              bool isGuard,
              bool expendable = true)
-        : Card(std::move(id), std::move(name), cost, faction, CardType::Champion, expendable, false),
+        : Card(std::move(id),
+               std::move(name),
+               cost,
+               faction,
+               CardType::Champion,
+               expendable,
+               /*sacrificeable=*/false),
           shield_(shield),
-          maxShield_(shield),   // save initial shield cap
+          maxShield_(shield),
           isGuard_(isGuard),
           stunned_(false) {}
 
@@ -23,18 +31,61 @@ public:
     int  getShield() const { return shield_; }
     int  getMaxShield() const { return maxShield_; }
 
-    // Combat
-    void takeDamage(int attackValue);
+    // combat
+    void takeDamage(int attackValue) {
+        if (stunned_) {
+            std::cout << name_ << " is already stunned.\n";
+            return;
+        }
 
-    // Healing (cannot exceed initial shield)
-    void heal(int amount);
+        if (isGuard_) {
+            // attack doit etre plus fort que le shield
+            if (attackValue < shield_) {
+                std::cout << name_ << " blocks the attack with its guard shield ("
+                          << shield_ << " defense).\n";
+                return;
+            } else {
+                shield_ = 0;
+                stunned_ = true;
+                std::cout << name_ << " (Guard) has been defeated and removed from play.\n";
+                // faut créer la classe joeur pour enlever la carte du plateau
+                return;
+            }
+        }
 
-    // Targeting rule helper
-    bool mustBeAttackedFirst() const { return isGuard_; }
+        // diminuer la valeur du shield si non guard
+        shield_ -= attackValue;
+        if (shield_ > 0) {
+            std::cout << name_ << " takes " << attackValue
+                      << " damage, " << shield_ << " shield remaining.\n";
+        } else {
+            shield_ = 0;
+            stunned_ = true;
+            std::cout << name_ << " has been defeated and removed from play.\n";
+            // faut créer la classe joeur pour enlever la carte du plateau
+        }
+    }
+
+    void heal(int amount) {
+        if (stunned_) {
+            std::cout << name_ << " is stunned and cannot be healed.\n";
+            return;
+        }
+        if (amount <= 0) {
+            std::cout << name_ << " heal amount must be positive.\n";
+            return;
+        }
+
+        int before = shield_;
+        shield_ = std::min(maxShield_, shield_ + amount);
+
+        std::cout << name_ << " heals " << (shield_ - before)
+                  << " shield (now " << shield_ << "/" << maxShield_ << ").\n";
+    }
 
 private:
-    int  shield_;      // current shield (can go down, can be healed up to maxShield_)
-    int  maxShield_;   // initial shield cap
-    bool isGuard_;     // must be attacked first if true
-    bool stunned_;     // defeated (removed) state
+    int  shield_;
+    int  maxShield_;
+    bool isGuard_;
+    bool stunned_;
 };

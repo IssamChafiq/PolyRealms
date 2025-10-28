@@ -9,5 +9,11 @@ public:
                Faction faction,
                bool expendable = false,
                bool sacrificeable = false)
-        : Card(std::move(id), std::move(name), cost, faction, CardType::Action, expendable, sacrificeable) {}
+        : Card(std::move(id),
+               std::move(name),
+               cost,
+               faction,
+               CardType::Action,
+               expendable,
+               sacrificeable) {}
 };

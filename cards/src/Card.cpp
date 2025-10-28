@@ -1,8 +1,9 @@
 #include "Card.hpp"
-#include "Abilities.hpp"
 #include "Champion.hpp"
+#include "Abilities.hpp"
 #include <iostream>
 
+// ctor / dtor
 Card::Card(std::string id,
            std::string name,
            int cost,
@@ -16,102 +17,136 @@ Card::Card(std::string id,
       faction_(faction),
       type_(type),
       expendable_(expendable),
-      expended_(false),        
+      expended_(false),
       sacrificeable_(sacrificeable),
-      sacrificed_(false)       
-{}
-
+      sacrificed_(false) {}
 
 Card::~Card() = default;
 
+// getters
+const std::string& Card::id() const { return id_; }
+const std::string& Card::name() const { return name_; }
+int Card::cost() const { return cost_; }
+Faction Card::faction() const { return faction_; }
+CardType Card::type() const { return type_; }
+
+bool Card::isExpendable() const { return expendable_; }
+bool Card::isSacrificeable() const { return sacrificeable_; }
+bool Card::isExpended() const { return expended_; }
+bool Card::isSacrificed() const { return sacrificed_; }
+
+void Card::setOwnerId(std::string owner) { ownerId_ = std::move(owner); }
+void Card::setOpponentId(std::string opp) { opponentId_ = std::move(opp); }
+
+// gameplay hooks (stubs for now)
 void Card::onPlay(CardController& ctrl) {
-    for (auto& ab : abilities_) {
-        if (ab.trigger == Trigger::OnPlay && (!ab.requiresAlly || hasAllySameFaction())) {
-            Abilities::execute(ctrl, ab.ability, ownerId_, opponentId_, id_, ab.amount);
-        }
-    }
+    (void)ctrl;
 }
-
 void Card::onExpend(CardController& ctrl) {
-    if (!expendable_) { std::cout << name_ << " n'est pas expendable.\n"; return; }
-    if (expended_) { std::cout << name_ << " est déjà expendue.\n"; return; }
-
-    for (auto& ab : abilities_) {
-        if (ab.trigger == Trigger::Expend && (!ab.requiresAlly || hasAllySameFaction())) {
-            Abilities::execute(ctrl, ab.ability, ownerId_, opponentId_, id_, ab.amount);
-        }
-    }
-    expended_ = true;
+    (void)ctrl;
 }
-
 void Card::onSacrifice(CardController& ctrl) {
-    if (!sacrificeable_) { std::cout << name_ << " ne peut pas être sacrifiée.\n"; return; }
-    if (sacrificed_) { std::cout << name_ << " a déjà été sacrifiée.\n"; return; }
-
-    for (auto& ab : abilities_) {
-        if (ab.trigger == Trigger::Sacrifice) {
-            Abilities::execute(ctrl, ab.ability, ownerId_, opponentId_, id_, ab.amount);
-        }
-    }
-    removeSelfFromPlayerZones(); // faut créer la classe joeur ...
-    sacrificed_ = true;
+    (void)ctrl;
 }
-
 void Card::onNewTurn(CardController& ctrl) {
-    if (expendable_ && expended_) expended_ = false;
-    for (auto& ab : abilities_) {
-        if (ab.trigger == Trigger::NewTurn) {
-            Abilities::execute(ctrl, ab.ability, ownerId_, opponentId_, id_, ab.amount);
-        }
-    }
+    (void)ctrl;
 }
 
-bool Card::hasAllySameFaction()  {
-    // faut créer la classe joeur pour avoir la liste de cartes et vérifier l'existence de ally
-    return false;
-}
+std::vector<Card::CardAbility>& Card::abilities() { return abilities_; }
+const std::vector<Card::CardAbility>& Card::abilities() const { return abilities_; }
 
-void Card::removeSelfFromPlayerZones() {
-    // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte(this is depending on the method)
-}
-
+bool Card::isChampion() const { return false; }
 
 std::string Card::factionToString(Faction f) {
     switch (f) {
         case Faction::Imperial: return "Imperial";
-        case Faction::Guild: return "Guild";
-        case Faction::Necros: return "Necros";
-        case Faction::Wild: return "Wild";
-        case Faction::Neutral: return "Neutral";
-        default: return "Unknown";
+        case Faction::Guild:    return "Guild";
+        case Faction::Necros:   return "Necros";
+        case Faction::Wild:     return "Wild";
+        case Faction::Neutral:  return "Neutral";
+        case Faction::Unknown:  return "Unknown";
     }
+    return "Unknown";
 }
 
 std::string Card::typeToString(CardType t) {
     switch (t) {
-        case CardType::Action: return "Action";
+        case CardType::Action:   return "Action";
         case CardType::Champion: return "Champion";
-        default: return "Unknown";
     }
+    return "Unknown";
 }
 
+std::string Card::triggerToString(Trigger tr) {
+    switch (tr) {
+        case Trigger::OnPlay:    return "OnPlay";
+        case Trigger::Expend:    return "Expend";
+        case Trigger::Sacrifice: return "Sacrifice";
+        case Trigger::NewTurn:   return "NewTurn";
+    }
+    return "UnknownTrigger";
+}
+
+std::string Card::abilityNameToString(AbilityName a) {
+    switch (a) {
+        case AbilityName::GainGold:                 return "GainGold";
+        case AbilityName::GainCombat:               return "GainCombat";
+        case AbilityName::GainAuthority:            return "GainAuthority";
+        case AbilityName::DrawCards:                return "DrawCards";
+        case AbilityName::StunTargetChampion:       return "StunTargetChampion";
+        case AbilityName::PrepareFriendlyChampion:  return "PrepareFriendlyChampion";
+        case AbilityName::SacrificeSelf:            return "SacrificeSelf";
+        case AbilityName::AcquireToTop:             return "AcquireToTop";
+        case AbilityName::OpponentDiscardsOne:      return "OpponentDiscardsOne";
+    }
+    return "UnknownAbility";
+}
+
+bool Card::hasAllySameFaction() {
+    // faut créer la classe joueur pour avoir la liste de cartes et vérifier l'existence de ally
+    return false;
+}
+
+void Card::removeSelfFromPlayerZones() {
+    // faut créer la classe joueur pour avoir la liste de cartes / deck et enlever cette carte
+}
+
+// print with abilities
 void Card::printCardInfo(const Card& card) {
     std::cout << "----------------------------------------\n";
-    std::cout << "Card Name: " << card.name() << "\n";
-    std::cout << "Card ID:   " << card.id() << "\n";
+    std::cout << "ID:        " << card.id() << "\n";
+    std::cout << "Name:      " << card.name() << "\n";
+    std::cout << "Type:      " << Card::typeToString(card.type()) << "\n";
+    std::cout << "Faction:   " << Card::factionToString(card.faction()) << "\n";
     std::cout << "Cost:      " << card.cost() << "\n";
-    std::cout << "Faction:   " << factionToString(card.faction()) << "\n";
-    std::cout << "Type:      " << typeToString(card.type()) << "\n";
 
     if (card.isChampion()) {
-        if (const Champion* champ = dynamic_cast<const Champion*>(&card)) {
-        std::cout << "Shield:    " << champ->getShield() << "\n";
-        std::cout << "Guard:     " << (champ->isGuard() ? "Yes" : "No") << "\n";
-        std::cout << "Stunned:   " << (champ->isStunned() ? "Yes" : "No") << "\n";
-    }
+        const Champion* champ = dynamic_cast<const Champion*>(&card);
+        if (champ) {
+            std::cout << "Shield:    " << champ->getShield() << "\n";
+            std::cout << "Guard:     " << (champ->isGuard() ? "Yes" : "No") << "\n";
+            std::cout << "Stunned:   " << (champ->isStunned() ? "Yes" : "No") << "\n";
+        }
     }
 
-    std::cout << "Expendable: " << (card.isExpendable() ? "Yes" : "No") << "\n";
+    std::cout << "Expendable:    " << (card.isExpendable()    ? "Yes" : "No") << "\n";
     std::cout << "Sacrificeable: " << (card.isSacrificeable() ? "Yes" : "No") << "\n";
+
+    if (!card.abilities().empty()) {
+        std::cout << "Abilities:\n";
+        for (const auto& ab : card.abilities()) {
+            std::cout << "  - Trigger=" << triggerToString(ab.trigger)
+                      << ", Name=" << abilityNameToString(ab.ability)
+                      << ", Amount=" << ab.amount
+                      << ", RequiresAlly=" << (ab.requiresAlly ? "Yes" : "No");
+            if (ab.requiresAlly) {
+                std::cout << " (" << factionToString(ab.requiredAllyFaction) << " Ally)";
+            }
+            std::cout << "\n";
+        }
+    } else {
+        std::cout << "Abilities:   (none parsed)\n";
+    }
+
     std::cout << "----------------------------------------\n\n";
 }
