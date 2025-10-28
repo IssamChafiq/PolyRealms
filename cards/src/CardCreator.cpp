@@ -6,8 +6,6 @@
 #include <regex>
 #include <stdexcept>
 
-
-
 std::string CardCreator::trim(const std::string& s) {
     size_t a = 0;
     while (a < s.size() && std::isspace((unsigned char)s[a])) a++;
@@ -93,7 +91,6 @@ void CardCreator::parseDefenseField(const std::string& defenseCell,
         guardOut = true;
     }
 }
-
 
 
 // traitement csv
@@ -404,8 +401,8 @@ void CardCreator::parseTextIntoAbilities(const std::string& rulesText,
 }
 
 
-std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow& row) {
-    std::vector<std::unique_ptr<Card>> out;
+std::vector<Card*> CardCreator::buildCardsFromRow(const CardRow& row) {
+    std::vector<Card*> out;
 
     bool rowIsChampion   = isChampionType(row.type);
     bool rowIsActionLike = isActionType(row.type) || isItemType(row.type);
@@ -432,7 +429,7 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
             : baseId;
 
         if (rowIsChampion) {
-            auto c = std::make_unique<Champion>(
+            Champion* c = new Champion(
                 id,
                 row.name,
                 row.cost,
@@ -445,9 +442,9 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
             // parse abilities from text and attach to this card
             parseTextIntoAbilities(row.text, factionEnum, *c);
 
-            out.push_back(std::move(c));
+            out.push_back(c);
         } else {
-            auto a = std::make_unique<ActionCard>(
+            ActionCard* a = new ActionCard(
                 id,
                 row.name,
                 row.cost,
@@ -458,23 +455,22 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
 
             parseTextIntoAbilities(row.text, factionEnum, *a);
 
-            out.push_back(std::move(a));
+            out.push_back(a);
         }
     }
 
     return out;
 }
 
-std::vector<std::unique_ptr<Card>> CardCreator::loadFromCsv(const std::string& path) {
-    std::vector<std::unique_ptr<Card>> result;
+std::vector<Card*> CardCreator::loadFromCsv(const std::string& path) {
+    std::vector<Card*> result;
     auto rows = readCsv(path);
 
     for (const auto& r : rows) {
-        auto made = buildCardsFromRow(r);
-        for (auto& ptr : made) {
-            result.push_back(std::move(ptr));
+        std::vector<Card*> made = buildCardsFromRow(r);
+        for (Card* ptr : made) {
+            result.push_back(ptr);
         }
     }
-
     return result;
 }

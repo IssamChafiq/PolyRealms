@@ -134,12 +134,12 @@ int main() {
     std::cout << "Loading cards from CSV ... \n";
 
     // Load et create the cards, j'ai mis auto car flemme de trouver le vrai type ici
-    auto cards = CardCreator::loadFromCsv("BaseSet_1stKickstarter_Cards.csv");
+    std::vector<Card*> cards = CardCreator::loadFromCsv("BaseSet_1stKickstarter_Cards.csv");
 
     std::cout << "Created " << cards.size() << " card objects.\n\n";
 
     // Print every physical card created, with abilities (currently none)
-    for (const auto& c : cards) {
+    for (const Card* c : cards) {
         c->printCardInfo();
     }
 

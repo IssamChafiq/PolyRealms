@@ -21,11 +21,11 @@ struct CardRow {
 
 class CardCreator {
 public:
-    static std::vector<std::unique_ptr<Card>> loadFromCsv(const std::string& path);
+    static std::vector<Card*> loadFromCsv(const std::string& path);
     static int toIntSafe(const std::string& s, int fallback = 0);
 private:
     static std::vector<CardRow> readCsv(const std::string& path);
-    static std::vector<std::unique_ptr<Card>> buildCardsFromRow(const CardRow& row);
+    static std::vector<Card*> buildCardsFromRow(const CardRow& row);
 
     // NEW: parse text into abilities and attach to card
     static void parseTextIntoAbilities(const std::string& rulesText,
