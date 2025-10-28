@@ -32,12 +32,12 @@ void Deck::shuffle() {
 std::vector<Card*> Deck::draw(int n) {
     std::vector<Card*> draws = {};
     if ((int)cards_.size() >= n){
-            for (int i=0;i<n;i++){
+        for (int i=0;i<n;i++){
             draws.push_back(cards_.front());
             cards_.erase(cards_.begin());
         }
     } else {
-        std::cout << "Le deck est vide, impossible de piocher plus";
+        std::cout << "Impossible de piocher " << n << " cartes, le deck n'en possède que " << cards_.size();
     }
     return draws;
 }
@@ -45,4 +45,17 @@ std::vector<Card*> Deck::draw(int n) {
 Deck Deck::createInitialDeck(){
     std::vector<Card*> initialCards = {};
     return Deck(initialCards);
+}
+
+void Deck::removeCardFromDeck(Card* card){
+    for (std::vector<Card*>::iterator it = cards_.begin(); it != cards_.end();)
+    {
+        // *it sert à récupérer l'objet Card pointé par l'itérateur
+        if (card->id() == (*it)->id()){
+            it = cards_.erase(it);
+            break;
+        } else {
+            ++it;
+        }
+    }
 }

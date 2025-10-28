@@ -9,6 +9,7 @@ class Game {
     std::vector<Player*> playerList_;
     Market market_;
     std::vector<Card*> sacrificePile_ = {};
+    bool godmode_ = false;
 public:
     Game(Market market);
     ~Game();

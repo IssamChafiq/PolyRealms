@@ -58,14 +58,22 @@ void Player::play(Card* card){
 
 void Player::buy(Card* card, Market market){
     if(gold_ >= card->cost()){
-        if(!market.getMarketRow().empty()){
-            gold_ -= card->cost();
-            discardPile_.push_back(card);
-            market.sell(card);
-        } else {
-            std::cout << "Le marché est vide";
-        }
+        gold_ -= card->cost();
+        discardPile_.push_back(card);
+        market.sell(card);
     } else {
+        std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
+        // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
+    }  
+}
+
+void Player::godmodeBuy(Card* card, Market market){
+    if(gold_ >= card->cost()){
+        gold_ -= card->cost();
+        hand_.push_back(card);
+        market.godmodeSell(card);
+    } else {
+        std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
         // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
 }
