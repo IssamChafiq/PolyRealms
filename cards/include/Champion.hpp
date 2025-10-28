@@ -1,5 +1,7 @@
 #pragma once
 #include "Card.hpp"
+#include <algorithm>
+#include <iostream>
 
 class Champion : public Card {
 public:
@@ -10,9 +12,15 @@ public:
              int shield,
              bool isGuard,
              bool expendable = true)
-        : Card(std::move(id), std::move(name), cost, faction, CardType::Champion, expendable, false),
+        : Card(std::move(id),
+               std::move(name),
+               cost,
+               faction,
+               CardType::Champion,
+               expendable,
+               /*sacrificeable=*/false),
           shield_(shield),
-          maxShield_(shield),   // save initial shield cap
+          maxShield_(shield),
           isGuard_(isGuard),
           stunned_(false) {}
 

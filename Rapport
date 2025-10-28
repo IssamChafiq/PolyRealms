@@ -1,0 +1,5 @@
+Something to make player names unique, .
+interrompre la partie pour forcer l'ennemie à défausser.
+At the end of the players turn we give him his 5 new cards and then we let the second player play,
+Have to manage when their are 2 choices for abilities.
+Have a second list in card that indicates the ability
