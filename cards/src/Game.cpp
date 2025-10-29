@@ -5,6 +5,9 @@
 #include <sstream>
 #include <limits>
 
+// Déclaration de la sacrificePile_ statique afin de pouvoir y accéder dans Game::sacrifice
+std::vector<Card*> sacrificePile_ = {};
+
 Game::Game(Market market): market_(market) {}
 
 Game::~Game() = default;
@@ -94,9 +97,9 @@ void Game::startFFA(){
                             std::cout << "Invalid input. Please try again.";
                         } 
                     } else {
-                        std::cout << "What would you like to do ?\n1. Set a player's health to 1 - 2. Deactivate godmode\n";
+                        std::cout << "What would you like to do ?\n1. Set a player's health to 1 - 2. Deactivate godmode - 3. Return\n";
                         int godmodeChoice;
-                        while(!(std::cin >> godmodeChoice) || godmodeChoice < 1 || godmodeChoice > 2){
+                        while(!(std::cin >> godmodeChoice) || godmodeChoice < 1 || godmodeChoice > 3){
                             std::cout << "Invalid input. Please enter a valid choice: ";
                             std::cin.clear();
                             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -118,6 +121,8 @@ void Game::startFFA(){
                         } else if(godmodeChoice == 2){
                             std::cout << "Godmode deactivated !";
                             godmode_ = false;
+                        } else if(godmodeChoice == 3){
+                            continue;
                         }
                     }
                     continue;
@@ -283,4 +288,8 @@ void Game::lookAt(Player* player){
             }
             break;
     }
+}
+
+void Game::sacrifice(Card* card){
+    sacrificePile_.push_back(card);
 }
