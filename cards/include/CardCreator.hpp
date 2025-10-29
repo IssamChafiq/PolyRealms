@@ -1,45 +1,30 @@
 #pragma once
-#include <memory>
 #include <string>
 #include <vector>
+#include <memory>
 #include "Card.hpp"
-#include "ActionCard.hpp"
 #include "Champion.hpp"
+#include "ActionCard.hpp"
 #include "Enums.hpp"
 
 struct CardRow {
-    std::string set;        
-    int quantity;           
-    std::string name;       
-    std::string text;       
-    std::string type;       
-    std::string faction;    
-    int cost;               
-    std::string defense;    
-    std::string role;       
+    std::string set;
+    int         quantity;
+    std::string name;
+    std::string text;
+    std::string type;
+    std::string faction;
+    int         cost;
+    std::string defense;
+    std::string role;
 };
 
 class CardCreator {
 public:
-    static std::vector<Card*> loadFromCsv(const std::string& path);
-    static int toIntSafe(const std::string& s, int fallback = 0);
-private:
-    static std::vector<CardRow> readCsv(const std::string& path);
-    static std::vector<Card*> buildCardsFromRow(const CardRow& row);
-
-    // NEW: parse text into abilities and attach to card
-    static void parseTextIntoAbilities(const std::string& rulesText,
-                                       Faction cardFaction,
-                                       Card& cardOut);
-
     // helpers
-    static std::vector<std::string> parseCsvLine(const std::string& line);
-
     static std::string trim(const std::string& s);
     static std::string lower(const std::string& s);
-
-    
-
+    static int         toIntSafe(const std::string& s, int fallback = 0);
     static std::string slugify(const std::string& name);
 
     static bool isChampionType(const std::string& typeCell);
@@ -51,4 +36,17 @@ private:
     static void parseDefenseField(const std::string& defenseCell,
                                   int& shieldOut,
                                   bool& guardOut);
+
+    // CSV
+    static std::vector<std::string> parseCsvLine(const std::string& line);
+    static std::vector<CardRow>     readCsv(const std::string& path);
+
+    // abilities
+    static void handleAbilities(const std::string& fullText,
+                                Faction printedFaction,
+                                Card& cardOut);
+
+    // build cards
+    static std::vector<Card*> buildCardsFromRow(const CardRow& row);
+    static std::vector<Card*> loadFromCsv(const std::string& path);
 };
