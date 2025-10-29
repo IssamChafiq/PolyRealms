@@ -49,5 +49,6 @@ public:
     void attack(Player player, int amount);
     void discard(int amount);
     void cardEffectSacrifice(int amount);
+    bool isFactionInPlay(Faction faction);
     void cleanup();
 };

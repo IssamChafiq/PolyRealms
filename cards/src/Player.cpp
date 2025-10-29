@@ -215,6 +215,21 @@ void Player::cardEffectSacrifice(int amount){
     }
 }
 
+bool Player::isFactionInPlay(Faction faction){
+    bool factionInPlay = false;
+    for (Card* card : inPlay_){
+        if(card->faction() == faction){
+            factionInPlay = true;
+        }
+    }
+    for (Champion* champion : champions_){
+        if(champion->faction() == faction){
+            factionInPlay = true;
+        }
+    }
+    return factionInPlay;
+}
+
 void Player::cleanup(){
     for (Champion* champion : champions_){
         champion->heal();
