@@ -6,7 +6,7 @@
 #include <limits>
 
 // Déclaration de la sacrificePile_ statique afin de pouvoir y accéder dans Game::sacrifice
-std::vector<Card*> sacrificePile_ = {};
+std::vector<Card*> Game::sacrificePile_ = {};
 
 Game::Game(Market market): market_(market) {}
 

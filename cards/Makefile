@@ -8,7 +8,7 @@ SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 # --- Output binary name ---
-BIN = test
+BIN = cards
 
 # --- Default rule (build everything) ---
 all: $(BIN)

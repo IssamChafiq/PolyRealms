@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include "Game.hpp"
 #include <iostream>
+#include <limits>
 
 Player::Player(std::string name,
         int authority,

@@ -18,13 +18,13 @@ int main() {
     std::cout << "=== DEBUG CARD CREATION START ===\n";
 
     // this will now spam diagnostics for every row
-    auto cards = CardCreator::loadFromCsv(csvFile);
-
-    std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
+    std::vector<Card*> cards = CardCreator::loadFromCsv(csvFile);
 
     for (const Card* c : cards) {
         c->printCardInfo();
     }
+
+    std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
 
     std::cout << "=== DEBUG CARD CREATION END ===\n";
     return 0;
