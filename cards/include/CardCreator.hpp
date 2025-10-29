@@ -47,6 +47,6 @@ public:
                                 Card& cardOut);
 
     // build cards
-    static std::vector<std::unique_ptr<Card>> buildCardsFromRow(const CardRow& row);
-    static std::vector<std::unique_ptr<Card>> loadFromCsv(const std::string& path);
+    static std::vector<Card*> buildCardsFromRow(const CardRow& row);
+    static std::vector<Card*> loadFromCsv(const std::string& path);
 };

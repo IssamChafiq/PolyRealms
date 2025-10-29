@@ -503,14 +503,14 @@ void CardCreator::handleAbilities(const std::string& fullText,
 // -------------------------------------------------
 // buildCardsFromRow: create Champion or ActionCard copies, attach abilities
 // -------------------------------------------------
-std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow& row) {
+std::vector<Card*> CardCreator::buildCardsFromRow(const CardRow& row) {
     std::cout << "[buildCardsFromRow] '" << row.name << "'\n";
     std::cout << "   typeCell='" << row.type << "'"
               << " -> rowIsChampion=" << (isChampionType(row.type)?"true":"false")
               << " rowIsActionLike=" << ((isActionType(row.type)||isItemType(row.type))?"true":"false")
               << "\n";
 
-    std::vector<std::unique_ptr<Card>> out;
+    std::vector<Card*> out;
 
     bool rowIsChampion   = isChampionType(row.type);
     bool rowIsActionLike = isActionType(row.type) || isItemType(row.type);
@@ -545,7 +545,7 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
             : baseId;
 
         if (rowIsChampion) {
-            auto c = std::make_unique<Champion>(
+            Champion* c = new Champion(
                 id,
                 row.name,
                 row.cost,
@@ -564,9 +564,9 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
                       << " abilities=" << c->abilities().size()
                       << "\n";
 
-            out.push_back(std::move(c));
+            out.push_back(c);
         } else {
-            auto a = std::make_unique<ActionCard>(
+            ActionCard* a = new ActionCard(
                 id,
                 row.name,
                 row.cost,
@@ -582,7 +582,7 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
                       << " abilities=" << a->abilities().size()
                       << "\n";
 
-            out.push_back(std::move(a));
+            out.push_back(a);
         }
     }
 
@@ -593,10 +593,10 @@ std::vector<std::unique_ptr<Card>> CardCreator::buildCardsFromRow(const CardRow&
 // -------------------------------------------------
 // loadFromCsv: public entry
 // -------------------------------------------------
-std::vector<std::unique_ptr<Card>> CardCreator::loadFromCsv(const std::string& path) {
+std::vector<Card*> CardCreator::loadFromCsv(const std::string& path) {
     std::cout << "[loadFromCsv] reading '" << path << "'...\n";
 
-    std::vector<std::unique_ptr<Card>> result;
+    std::vector<Card*> result;
     auto rows = readCsv(path);
 
     std::cout << "[loadFromCsv] parsed " << rows.size()

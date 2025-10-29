@@ -22,7 +22,7 @@ int main() {
 
     std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
 
-    for (const auto& c : cards) {
+    for (const Card* c : cards) {
         c->printCardInfo();
     }
 

@@ -14,4 +14,5 @@ public:
     void shuffle();
     std::vector<Card*> draw(int n);
     static Deck createInitialDeck();
+    void removeCardFromDeck(Card* card);
 };

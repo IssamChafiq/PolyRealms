@@ -16,5 +16,6 @@ public:
     void setMarketDeck(Deck deck);
     std::vector<Card*> getMarketRow() const;
     void setMarketRow(std::vector<Card*> row);
+    void godmodeSell(Card* card);
     void sell(Card* card);
 };
