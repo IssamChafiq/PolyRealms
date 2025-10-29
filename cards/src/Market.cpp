@@ -33,16 +33,47 @@ void Market::sell(Card* card){
         // *it sert à récupérer l'objet Card pointé par l'itérateur
         if (card->id() == (*it)->id()){
             it = tradeRow_.erase(it);
+
+            // On remplit la tradeRow en piochant une carte du tradeDeck
+            if(tradeDeck_.draw(1).empty()){
+                std::cout << "Le deck du marché est vide, impossible de remplir la ligne";
+            } else {
+                tradeRow_.push_back(tradeDeck_.draw(1)[0]);
+            }
+
             break;
         }
         else {
             ++it;
         }
     }
-    // On remplit la tradeRow en piochant une carte du tradeDeck
-    if(tradeDeck_.draw(1).empty()){
-        std::cout << "Le deck du marché est vide, impossible de remplir la ligne";
-    } else {
-        tradeRow_.push_back(tradeDeck_.draw(1)[0]);
+}
+
+void Market::godmodeSell(Card* card){
+    bool found = false;
+    // J'itère sur la tradeRow pour trouver la carte à vendre
+    for (std::vector<Card*>::iterator it = tradeRow_.begin(); it != tradeRow_.end();)
+    {
+        // *it sert à récupérer l'objet Card pointé par l'itérateur
+        if (card->id() == (*it)->id()){
+            it = tradeRow_.erase(it);
+            found = true;
+
+            // On remplit la tradeRow en piochant une carte du tradeDeck
+            if(tradeDeck_.draw(1).empty()){
+                std::cout << "Le deck du marché est vide, impossible de remplir la ligne";
+            } else {
+                tradeRow_.push_back(tradeDeck_.draw(1)[0]);
+            }
+
+            break;
+        }
+        else {
+            ++it;
+        }
+    }
+
+    if (!found){
+        tradeDeck_.removeCardFromDeck(card);
     }
 }
