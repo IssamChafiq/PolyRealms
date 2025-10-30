@@ -2,41 +2,24 @@
 #include <iostream>
 #include <algorithm>
 
-void Champion::takeDamage(int attackValue) {
+bool Champion::takeDamage(int attackValue) {
     if (stunned_) {
         std::cout << name_ << " is already stunned.\n";
         return;
     }
 
-    if (isGuard_) {
-        // Guards block all damage unless the attack breaks the shield
-        if (attackValue < shield_) {
-            std::cout << name_ << " blocks the attack with its guard shield ("
-                      << shield_ << " defense).\n";
-            return;
-        } else {
-            shield_ = 0;
-            stunned_ = true;
-            std::cout << name_ << " (Guard) has been defeated and removed from play.\n";
-            // faut créer la classe joeur pour avoir la liste de cartes / deck
-            // et enlever cette carte des champions ou de la zone en jeu du joueur
-            return;
-        }
-    }
-
-    // Non-guard champion: damage reduces shield gradually
-    shield_ -= attackValue;
-    if (shield_ > 0) {
-        std::cout << name_ << " takes " << attackValue << " damage, "
-                  << shield_ << " shield remaining.\n";
+    if (attackValue < maxShield_) {
+        std::cout << name_ << " blocks the attack ("
+                << maxShield_ << " defense).\n";
+        return false;
     } else {
         shield_ = 0;
         stunned_ = true;
         std::cout << name_ << " has been defeated and removed from play.\n";
-        // faut créer la classe joeur pour avoir la liste de cartes / deck
-        // et enlever cette carte des champions ou de la zone en jeu du joueur
+        return true;
     }
 }
+
 
 void Champion::heal() {
     if (stunned_) {

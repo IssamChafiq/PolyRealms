@@ -33,7 +33,7 @@ public:
 
     void stun() { stunned_ = true;}
     // Combat
-    void takeDamage(int attackValue);
+    bool takeDamage(int attackValue);
 
     // Healing (cannot exceed initial shield)
     void heal();

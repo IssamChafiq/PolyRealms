@@ -35,23 +35,26 @@ public:
     std::vector<Card*> getDiscardPile() const {return discardPile_;};
     std::vector<Card*> getInPlay() const {return inPlay_;};
     std::vector<Champion*> getChampions() const {return champions_;};
+    std::vector<Champion*> getGuards() const;
     Deck getDeck() const {return deck_;};
 
     void setHand(std::vector<Card*> hand) {hand_ = hand;};
     void setDiscardPile(std::vector<Card*> discardPile) {discardPile_ = discardPile;};
     void setInPlay(std::vector<Card*> inPlay) {inPlay_ = inPlay;};
     void setChampions(std::vector<Champion*> champions) {champions_ = champions;};
+    void removeChampion(Champion* champion);
 
     void draw(int n);
     void play(Card* card);
     void buy(Card* card, Market market);
     void godmodeBuy(Card* card, Market market);
-    void attack(Player player, int amount);
 
     void discard(int amount);
     void cardEffectSacrifice(int amount);
     bool isFactionInPlay(Faction faction);
+    bool isGuarded();
     void stunChampion();
+    void attack(Player* player);
 
     void cleanup();
 };

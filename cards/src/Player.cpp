@@ -12,6 +12,29 @@ Player::Player(std::string name,
 
 Player::~Player() = default;
 
+std::vector<Champion*> Player::getGuards() const {
+    std::vector<Champion*> guards = {};
+    for (Champion* champion : champions_){
+        if (champion->isGuard()){
+            guards.push_back(champion);
+        }
+    }
+    return guards;
+}
+
+void Player::removeChampion(Champion* champion){
+    for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
+    {
+        // *it sert à récupérer l'objet Card pointé par l'itérateur
+        if (champion->id() == (*it)->id()){
+            it = champions_.erase(it);
+            break;
+        } else {
+            ++it;
+        }
+    }
+}
+
 void Player::draw(int n){
     int cardsLeft = deck_.getDeckContents().size();
     if(n >= cardsLeft){
@@ -78,12 +101,6 @@ void Player::godmodeBuy(Card* card, Market market){
         std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
         // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
-}
-
-void Player::attack(Player player, int amount){
-    // Refaire cela pour pouvoir faire des dégats à un joueur et à un ennemi.
-    player.setAuthority(player.getAuthority()-amount);
-    // Si hp <= 0, game over (géré différement par player et champion, méthode redéfinie par targetable)
 }
 
 void Player::discard(int amount){
@@ -217,18 +234,26 @@ void Player::cardEffectSacrifice(int amount){
 }
 
 bool Player::isFactionInPlay(Faction faction){
-    bool factionInPlay = false;
     for (Card* card : inPlay_){
         if(card->faction() == faction){
-            factionInPlay = true;
+            return true;
         }
     }
     for (Champion* champion : champions_){
         if(champion->faction() == faction){
-            factionInPlay = true;
+            return true;
         }
     }
-    return factionInPlay;
+    return false;
+}
+
+bool Player::isGuarded(){
+    for (Champion* champion : champions_){
+        if (champion->isGuard()){
+            return true;
+        }
+    }
+    return false;
 }
 
 void Player::stunChampion(){
@@ -256,6 +281,68 @@ void Player::stunChampion(){
             break;
         } else {
                 ++it;
+        }
+    }
+}
+
+void Player::attack(Player* player){
+    if(player->isGuarded()){
+        std::vector<Champion*> guards = player->getGuards();
+        std::cout << player->getName() << " is guarded, you can only attack his guards !";
+        std::cout << "Which guard do you want to attack ? : ";
+        for (int i=0;i<(int)guards.size();i++){
+            std::cout << " - " << i+1 << ". " << guards[i]->name();
+        }
+        std::cout << "\n";
+        int guardChoice;
+        while(!(std::cin >> guardChoice) || guardChoice < 1 || guardChoice > (int)guards.size()){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        if(guards[guardChoice-1]->takeDamage(combat_)){
+            combat_ = combat_ - guards[guardChoice-1]->getMaxShield();
+            player->removeChampion(guards[guardChoice-1]);
+        } else {
+            std::cout << "Pas assez de combat pour tuer ce garde\n";
+        }
+    } else {
+        std::cout << "What do you want to attack ? :\n1. " << player->getName() << " - 2. Their champions";
+        int choice;
+        while(!(std::cin >> choice) || choice < 1 || choice > 2){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if (choice == 1){
+            int temp = combat_-player->getAuthority();
+            player->setAuthority(player->getAuthority()-combat_);
+            // Pour ne pas perdre du combat lors d'un overkill
+            if (temp > 0){
+                combat_ = temp;
+            } else {
+                combat_ = 0;
+            }
+        } else if (choice == 2){
+            for (int i=0;i<(int)champions_.size();i++){
+            std::cout << " - " << i+1 << ". " << champions_[i]->name();
+            }
+            std::cout << "\n";
+
+            int championChoice;
+            while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)champions_.size()){
+                std::cout << "Invalid input. Please enter a valid choice: ";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+
+            if(champions_[championChoice-1]->takeDamage(combat_)){
+                combat_ = combat_ - champions_[championChoice-1]->getMaxShield();
+                player->removeChampion(champions_[championChoice-1]);
+            } else {
+                std::cout << "Pas assez de combat pour tuer ce champion\n";
+            }
         }
     }
 }

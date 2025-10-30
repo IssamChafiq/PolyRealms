@@ -229,6 +229,26 @@ void Game::startFFA(){
                             player->play(player->getHand()[playChoice-1]);
                         break;
                     case 4:
+                        /* 
+                            ATTACK A PLAYER CASE
+                        */
+                        std::cout << "Who do you want to attack ? : ";
+                        for (int i=0;i<(int)playerList_.size();i++){
+                            std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
+                        }
+                        std::cout << "\n";
+                        int attackChoice;
+                        while(!(std::cin >> attackChoice) || attackChoice < 1 || attackChoice > (int)playerList_.size()){
+                            std::cout << "Invalid input. Please enter a valid choice: ";
+                            std::cin.clear();
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        }
+                        if (player == playerList_[attackChoice-1]){
+                            std::cout << "You cannot attack yourself\n";
+                        } else {
+                            std::cout << "Attacking " << playerList_[attackChoice-1]->getName() << "\n";
+                            player->attack(playerList_[attackChoice-1]);
+                        }
                         break;
                     case 5:
                         break; 
@@ -289,6 +309,7 @@ void Game::lookAt(Player* player){
             break;
     }
 }
+
 
 void Game::sacrifice(Card* card){
     sacrificePile_.push_back(card);
