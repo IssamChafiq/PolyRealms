@@ -17,7 +17,7 @@ void Abilities::execute(Player& player,
         case AbilityName::PrepareFriendlyChampion: prepareFriendlyChampion(player); break;
         case AbilityName::SacrificeCards:           sacrificeCards(player, amount); break;
         case AbilityName::AcquireToTop:            acquireToTop(player); break;
-        case AbilityName::OpponentDiscardsOne:     opponentDiscardsOne(player, opponent); break;
+        case AbilityName::OpponentDiscard:     opponentDiscard(opponent); break;
     }
 }
 
@@ -53,14 +53,8 @@ void Abilities::prepareFriendlyChampion(Player& player) {
     }
 }
 
-void Abilities::sacrificeCards(Player& player, int n) {
-    std::vector<Card*> hand = player.getHand();
-    std::vector<Card*> discard = player.getDiscardPile();
-    for(int i=0; i<n; i+=1)
-    {
-        // Faut donner le choix parmis ces cartes pour savoir laquelle sacrifier
-    }
-
+void Abilities::sacrificeCards(Player player, int n) {
+    player.cardEffectSacrifice(n);
 }
 
 void Abilities::acquireToTop(Player& player) {
@@ -69,6 +63,6 @@ void Abilities::acquireToTop(Player& player) {
     // For example : acquire chapion from discard to top, acquire action from discard to top ...
 }
 
-void Abilities::opponentDiscardsOne(Player& /*player*/, Player& opponent) {
+void Abilities::opponentDiscard(Player& opponent) {
     opponent.discard(1);
 }

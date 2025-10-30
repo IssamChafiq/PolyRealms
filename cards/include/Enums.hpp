@@ -33,7 +33,8 @@ enum class AbilityName : uint8_t {
     PrepareFriendlyChampion,
     SacrificeCards,
     AcquireToTop,
-    OpponentDiscardsOne
+    OpponentDiscard,
+    
 };
 
 // helper for parsing factions from strings like "Imperial Ally"
