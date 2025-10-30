@@ -5,27 +5,27 @@
 
 class Abilities {
 public:
-    static void execute(Player& player, AbilityName name, Player& opponent, int amount = 0);
-    static void gainGold(Player& player, int amount);
-    static void gainCombat(Player& player, int amount);
-    static void gainAuthority(Player& player, int amount);
-    static void drawCards(Player& player, int n);
-    static void stunTargetChampion(Player& opponent);
-    static void prepareFriendlyChampion(Player& player);
-    static void sacrificeCards(Player& player, int num);
-    static void opponentDiscard(Player& opponent);
-    static void addCombatPerChamp(Player& player,int amount);
-    static void addCombatPerGuard(Player& player,int amount);
-    static void addHealthPerChamp(Player& player,int amount);
-    static void putNextAcquiredCardInHand(Player& player);
-    static void putNextAcquiredActionCardOnDeck(Player& player);
-    static void putCardFromDiscardOnDeck(Player& player);
-    static void putNextAcquiredCardOnDeck(Player& player);
-    static void sacrificeForCombat(Player& player,int amount);
-    static void mayDrawAndDiscard(Player& player,int amount);
-    static void drawAndDiscard(Player& player,int amount);
-    static void putChampFromDiscardOnDeck(Player& player);
-    static void addCombatPerAlly(Player& player, int amount);
+    static void execute(Player* player, AbilityName name, Player* opponent, int amount = 0);
+    static void gainGold(Player* player, int amount);
+    static void gainCombat(Player* player, int amount);
+    static void gainAuthority(Player* player, int amount);
+    static void drawCards(Player* player, int n);
+    static void stunTargetChampion(Player* opponent);
+    static void prepareFriendlyChampion(Player* player);
+    static void sacrificeCards(Player* player, int num);
+    static void opponentDiscard(Player* opponent);
+    static void addCombatPerChamp(Player* player,int amount);
+    static void addCombatPerGuard(Player* player,int amount);
+    static void addHealthPerChamp(Player* player,int amount);
+    static void putNextAcquiredCardInHand(Player* player);
+    static void putNextAcquiredActionCardOnDeck(Player* player);
+    static void putCardFromDiscardOnDeck(Player* player);
+    static void putNextAcquiredCardOnDeck(Player* player);
+    static void sacrificeForCombat(Player* player,int amount);
+    static void mayDrawAndDiscard(Player* player,int amount);
+    static void drawAndDiscard(Player* player,int amount);
+    static void putChampFromDiscardOnDeck(Player* player);
+    static void addCombatPerAlly(Player* player, int amount);
 };
 
 

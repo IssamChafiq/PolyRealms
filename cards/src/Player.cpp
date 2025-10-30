@@ -1,5 +1,6 @@
 #include "Player.hpp"
 #include "Game.hpp"
+#include "Abilities.hpp"
 #include <iostream>
 #include <limits>
 
@@ -74,6 +75,7 @@ void Player::play(Card* card){
         std::cout << "Card not found in hand, cannot play.\n";
         return;
     }
+
     if(card->isChampion()){
         champions_.push_back((Champion*)card);
     } else {
@@ -153,7 +155,7 @@ void Player::discard(int amount){
     }
 }
 
-void Player::cardEffectSacrifice(int amount){
+bool Player::cardEffectSacrifice(int amount){
     std::cout << "You can sacrifice " << amount << " cards :\n";
     for (int i=0;i<amount;i++){
         std::cout << "What do you want to do ? 1. Sacrifice from hand - 2. Sacrifice from discard pile - 3. Do nothing\n";
@@ -166,7 +168,7 @@ void Player::cardEffectSacrifice(int amount){
         }
 
         if (choice == 3){
-            return;
+            return false;
         }
 
         switch(choice){
@@ -200,8 +202,10 @@ void Player::cardEffectSacrifice(int amount){
                             ++it;
                         }
                     }
+                    return true;
                 } else {
                     std::cout << "No cards left in hand : cannot sacrifice";
+                    return false;
                 }
                 break;
             case 2:
@@ -234,11 +238,13 @@ void Player::cardEffectSacrifice(int amount){
                             ++it;
                         }
                     }
+                    return true;
                 } else {
                     std::cout << "No cards left in hand : cannot sacrifice";
+                    return false;
                 }
                 break;
-            default: break;
+            default: return false;
         }
     }
 }

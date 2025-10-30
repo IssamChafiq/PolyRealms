@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "Abilities.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -227,6 +228,43 @@ void Game::startFFA(){
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
+
+                            // Utilisation des capacités onPlay et Ally de la carte
+                            for(auto ab : player->getHand()[playChoice-1]->abilities()){
+                                if(Card::triggerToString(ab.trigger) == "OnPlay"){
+                                    smartAbilityExecute(player,ab);
+                                } else if (Card::triggerToString(ab.trigger) == "Ally"){
+                                    if(player->isFactionInPlay(ab.requiredAllyFaction)){
+                                        smartAbilityExecute(player,ab);
+                                    }
+                                }
+                            }
+
+                            // On réactive toutes les capacités aliées qui n'auraient pas déjà été activées
+                            for(Card* card : player->getInPlay()){
+                                if(card->faction() == player->getHand()[playChoice-1]->faction()){
+                                    for(auto ab : card->abilities()){
+                                        if (Card::triggerToString(ab.trigger) == "Ally"){
+                                            if(!ab.used){
+                                                smartAbilityExecute(player,ab);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            for(Champion* champion : player->getChampions()){
+                                if(champion->faction() == player->getHand()[playChoice-1]->faction()){
+                                    for(auto ab : champion->abilities()){
+                                        if (Card::triggerToString(ab.trigger) == "Ally"){
+                                            if(!ab.used){
+                                                smartAbilityExecute(player,ab);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // On enlève la carte de la main et on la place au bon endroit sur le plateau de jeu
                             player->play(player->getHand()[playChoice-1]);
                         break;
                     case 4:
@@ -314,4 +352,30 @@ void Game::lookAt(Player* player){
 
 void Game::sacrifice(Card* card){
     sacrificePile_.push_back(card);
+}
+
+void Game::smartAbilityExecute(Player* player, Card::CardAbility ab){
+    // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
+    if(Card::abilityNameToString(ab.ability) == "OpponentDiscard" || Card::abilityNameToString(ab.ability) == "StunTargetChampion"){
+        std::cout << "Which player do you want to use " << Card::abilityNameToString(ab.ability) << " on ?\n";
+        for (int i=0;i<(int)playerList_.size();i++){
+            std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
+        }
+        std::cout << "\n";
+        int spellChoice;
+        while(!(std::cin >> spellChoice) || spellChoice < 1 || spellChoice > (int)playerList_.size()){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if (playerList_[spellChoice-1] == player){
+            std::cout << "You cannot target yourself with this ability.\n";
+        } else {
+            Abilities::execute(player,ab.ability,playerList_[spellChoice-1],ab.amount);
+            ab.used = true;
+        }
+    } else {
+        Abilities::execute(player,ab.ability,player,ab.amount);
+        ab.used = true;
+    }
 }

@@ -56,7 +56,7 @@ public:
     void godmodeBuy(Card* card, Market market);
 
     void discard(int amount);
-    void cardEffectSacrifice(int amount);
+    bool cardEffectSacrifice(int amount);
     void prepareFriendlyChampion();
     void getChampionFromDiscardToDeck();
     void getCardFromDiscardToDeck();

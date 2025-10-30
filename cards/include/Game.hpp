@@ -6,7 +6,7 @@
 #include "Market.hpp"
 
 class Game {
-    std::vector<Player*> playerList_;
+    static std::vector<Player*> playerList_;
     Market market_;
     std::vector<Card*> startingDeck_;
     static std::vector<Card*> sacrificePile_;
@@ -18,4 +18,5 @@ public:
     void startFFA();
     static void lookAt(Player* player);
     static void sacrifice(Card* card);
+    static void smartAbilityExecute(Player* player, Card::CardAbility ab);
 };
