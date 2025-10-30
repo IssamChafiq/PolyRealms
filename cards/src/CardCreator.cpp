@@ -383,3 +383,13 @@ std::vector<Card*> CardCreator::loadFromCsv(const std::string& path) {
     }
     return result;
 }
+
+Card* CardCreator::findCard(std::string id, std::vector<Card*> cards){
+    for (Card* card : cards){
+        if(card->id() == id){
+            return card;
+        }
+    }
+    std::cout << "Card not found : id = " << id;
+    return nullptr;
+}

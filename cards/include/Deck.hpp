@@ -13,6 +13,5 @@ public:
     void setDeck(std::vector<Card*>);
     void shuffle();
     std::vector<Card*> draw(int n);
-    static Deck createInitialDeck();
     void removeCardFromDeck(Card* card);
 };

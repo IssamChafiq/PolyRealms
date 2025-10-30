@@ -42,11 +42,6 @@ std::vector<Card*> Deck::draw(int n) {
     return draws;
 }
 
-Deck Deck::createInitialDeck(){
-    std::vector<Card*> initialCards = {};
-    return Deck(initialCards);
-}
-
 void Deck::removeCardFromDeck(Card* card){
     for (std::vector<Card*>::iterator it = cards_.begin(); it != cards_.end();)
     {

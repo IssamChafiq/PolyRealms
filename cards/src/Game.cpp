@@ -8,7 +8,7 @@
 // Déclaration de la sacrificePile_ statique afin de pouvoir y accéder dans Game::sacrifice
 std::vector<Card*> Game::sacrificePile_ = {};
 
-Game::Game(Market market): market_(market) {}
+Game::Game(Market market, std::vector<Card*> startingDeck): market_(market), startingDeck_(startingDeck) {}
 
 Game::~Game() = default;
 
@@ -33,14 +33,15 @@ void Game::initialize(){
             std::cout << "Name cannot be empty. Enter name for player " << (i + 1) << ": ";
             std::getline(std::cin, playerName);
         }
-        Deck initialDeck = Deck::createInitialDeck();
-        Player* newPlayer = new Player(playerName, 50, initialDeck);
+        Deck deck = Deck(startingDeck_);
+        deck.shuffle();
+        Player* newPlayer = new Player(playerName, 50, deck);
         playerList_.push_back(newPlayer);
     }
 
-    std::cout << "Which gamemode would you like to play ?\n1. Free For All (2+ players)\n";
+    std::cout << "Which gamemode would you like to play ?\n1. Free For All (2+ players).\n";
     int modeChoice;
-    while(!(std::cin >> modeChoice)){
+    while(!(std::cin >> modeChoice) || modeChoice < 1 || modeChoice > 1){
         std::cout << "Invalid input. Please enter a valid choice: ";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -53,8 +54,6 @@ void Game::initialize(){
         } else {
             startFFA();
         }
-    } else {
-        std::cout << "Invalid choice. Exiting.\n";
     }
 }
 
@@ -77,8 +76,9 @@ void Game::startFFA(){
             bool turnOver = false;
             std::cout << "It's " << player->getName() << "'s turn.\n";
             while(!turnOver){
-                std::cout << "Choose an action:\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Use a spell - 5. Attack - 6. End Turn\n";
-                std::cout << "Or type 'godmode' to activate godmode or access its features\n";
+                std::cout << "Choose an action:\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Use a spell - 5. Attack - 6. End Turn.\n";
+                std::cout << "Type 'godmode' to activate godmode or access its features.\n";
+                std::cout << "Type 'exit' or 'quit' to exit the game.\n";
                 
                 std::string input;
                 std::cin >> input;
@@ -232,7 +232,7 @@ void Game::startFFA(){
                         /* 
                             ATTACK A PLAYER CASE
                         */
-                        std::cout << "Who do you want to attack ? : ";
+                        std::cout << "Who do you want to attack ? : \n";
                         for (int i=0;i<(int)playerList_.size();i++){
                             std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
                         }
@@ -267,8 +267,8 @@ void Game::startFFA(){
 
 // Sert à regarder le plateau d'un joueur en particulier
 void Game::lookAt(Player* player){
-    std::cout << player->getName() << ":\nHealth : " << player->getAuthority() << "\nGold : " << player->getGold() << "\nCombat : " << player->getCombat();
-    std::cout << "Which part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck";
+    std::cout << player->getName() << ":\nHealth : " << player->getAuthority() << "\nGold : " << player->getGold() << "\nCombat : " << player->getCombat() << ".\n";
+    std::cout << "Which part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck.\n";
     int choice;
     while(!(std::cin >> choice) || choice < 1 || choice > 5){
         std::cout << "Invalid input. Please enter a valid choice: ";

@@ -10,6 +10,7 @@
 #include "Market.hpp"
 #include "Enums.hpp"
 #include "CardCreator.hpp"
+#include "Game.hpp"
 
 
 int main() {
@@ -27,5 +28,34 @@ int main() {
     std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
 
     std::cout << "=== DEBUG CARD CREATION END ===\n";
+
+    std::vector<Card*> starterDeck = {
+        CardCreator::findCard("gold-1",cards),
+        CardCreator::findCard("gold-2",cards),
+        CardCreator::findCard("gold-3",cards),
+        CardCreator::findCard("gold-4",cards),
+        CardCreator::findCard("gold-5",cards),
+        CardCreator::findCard("gold-6",cards),
+        CardCreator::findCard("gold-7",cards),
+        CardCreator::findCard("ruby-1",cards),
+        CardCreator::findCard("dagger-1",cards),
+        CardCreator::findCard("shortsword-1",cards)
+    };
+
+    // Je récupère toutes les cartes du deck du marché (elles sont toutes avant la première firegem) pour éviter de les chercher une par une et de faire des recherches à l'infini en boucle
+    std::vector<Card*> marketCards = {};
+    int i=0;
+    Card* card = cards[0];
+    while(card->id() != "fire-gem-1"){
+        marketCards.push_back(card);
+        i++;
+        card = cards[i];
+    }
+
+    Market market = Market(Deck(marketCards));
+
+    Game game = Game(market, starterDeck);
+    game.initialize();
+
     return 0;
 }

@@ -49,4 +49,5 @@ public:
     // build cards
     static std::vector<Card*> buildCardsFromRow(const CardRow& row);
     static std::vector<Card*> loadFromCsv(const std::string& path);
+    static Card* findCard(std::string id, std::vector<Card*> cards);
 };
