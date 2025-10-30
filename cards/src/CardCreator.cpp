@@ -350,7 +350,7 @@ void CardCreator::handleAbilities(const std::string& fullText,
 
         // Opponent discards
         if (textBlockLower.find("target opponent discards a card") != std::string::npos) {
-            push(AbilityName::OpponentDiscardsOne, 1);
+            push(AbilityName::OpponentDiscard, 1);
         }
 
         // Stun target champion

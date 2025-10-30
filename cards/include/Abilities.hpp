@@ -16,3 +16,8 @@ public:
     static void acquireToTop(Player& player);
     static void opponentDiscard(Player& opponent);
 };
+
+// Santé ou atatack en fonction du nombre de champions
+// Fix csv, remove kickstarter 1
+// manage the acquire to top
+// Manage the choice add them in enum
