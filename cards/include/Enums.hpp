@@ -31,7 +31,7 @@ enum class AbilityName : uint8_t {
     DrawCards,
     StunTargetChampion,
     PrepareFriendlyChampion,
-    SacrificeSelf,
+    SacrificeCards,
     AcquireToTop,
     OpponentDiscardsOne
 };

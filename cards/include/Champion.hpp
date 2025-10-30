@@ -31,6 +31,7 @@ public:
     int  getShield() const { return shield_; }
     int  getMaxShield() const { return maxShield_; }
 
+    void stun() { stunned_ = true;}
     // Combat
     void takeDamage(int attackValue);
 

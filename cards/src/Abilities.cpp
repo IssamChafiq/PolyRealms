@@ -1,72 +1,74 @@
 #include "Abilities.hpp"
-#include <iostream>
+#include "Player.hpp"
+#include "Game.hpp"
+#include "Champion.hpp"
+#include "Card.hpp"
 
-void Abilities::execute(CardController& ctrl,
+void Abilities::execute(Player& player,
                         AbilityName name,
-                        const std::string& selfId,
-                        const std::string& opponentId,
-                        const std::string& sourceCardId,
+                        Player& opponent,
                         int amount) {
     switch (name) {
-        case AbilityName::GainGold:               gainGold(ctrl, selfId, amount); break;
-        case AbilityName::GainCombat:             gainCombat(ctrl, selfId, amount); break;
-        case AbilityName::GainAuthority:          gainAuthority(ctrl, selfId, amount); break;
-        case AbilityName::DrawCards:              drawCards(ctrl, selfId, amount); break;
-        case AbilityName::StunTargetChampion:     stunTargetChampion(ctrl, selfId, opponentId); break;
-        case AbilityName::PrepareFriendlyChampion:prepareFriendlyChampion(ctrl, selfId); break;
-        case AbilityName::SacrificeSelf:          sacrificeSelf(ctrl, selfId, sourceCardId); break;
-        case AbilityName::AcquireToTop:           acquireToTop(ctrl, selfId, true); break;
-        case AbilityName::OpponentDiscardsOne:    opponentDiscardsOne(ctrl, selfId, opponentId); break;
+        case AbilityName::GainGold:                gainGold(player, amount); break;
+        case AbilityName::GainCombat:              gainCombat(player, amount); break;
+        case AbilityName::GainAuthority:           gainAuthority(player, amount); break;
+        case AbilityName::DrawCards:               drawCards(player, amount ); break;
+        case AbilityName::StunTargetChampion:      stunTargetChampion(opponent); break;
+        case AbilityName::PrepareFriendlyChampion: prepareFriendlyChampion(player); break;
+        case AbilityName::SacrificeCards:           sacrificeCards(player, amount); break;
+        case AbilityName::AcquireToTop:            acquireToTop(player); break;
+        case AbilityName::OpponentDiscardsOne:     opponentDiscardsOne(player, opponent); break;
     }
 }
 
-void Abilities::opponentDiscardsOne(CardController& ,
-                                    const std::string& /*selfId*/,
-                                    const std::string& /*opponentId*/) {
-    // faut créer la classe joeur pour avoir la liste de cartes / deck et  enlever la carte
+void Abilities::gainGold(Player& player, int amount) {
+    player.setGold(player.getGold() + amount);
 }
 
-
-void Abilities::gainGold(CardController& ctrl, const std::string& selfId, int amount) {
-    ctrl.addGold(selfId, amount);
+void Abilities::gainCombat(Player& player, int amount) {
+    player.setCombat(player.getCombat() + amount);
 }
 
-void Abilities::gainCombat(CardController& ctrl, const std::string& selfId, int amount) {
-    ctrl.addCombat(selfId, amount);
+void Abilities::gainAuthority(Player& player, int amount) {
+    player.setAuthority(player.getAuthority() + amount);
 }
 
-void Abilities::gainAuthority(CardController& ctrl, const std::string& selfId, int amount) {
-    ctrl.addAuthority(selfId, amount);
+void Abilities::drawCards(Player& player, int n) {
+    player.draw(n);
 }
 
-void Abilities::drawCards(CardController& ctrl, const std::string& selfId, int n) {
-    ctrl.drawCards(selfId, n);
+void Abilities::stunTargetChampion(Player& opponent) {
+    auto champs = opponent.getChampions();
+    if (!champs.empty()) {
+        // Il faut permettre au joueur de choisir le champion ennemi à stun
+        //championOfChoice->stun();
+    }
 }
 
-void Abilities::stunTargetChampion(CardController& ctrl,
-                                   const std::string& selfId,
-                                   const std::string& opponentId) {
-    // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte
-    std::string target = ctrl.chooseEnemyChampion(selfId, opponentId, true);
-    if (!target.empty()) ctrl.stunChampion(selfId, opponentId, target);
+void Abilities::prepareFriendlyChampion(Player& player) {
+    auto champs = player.getChampions();
+    if (!champs.empty() ) {
+        // Same thing here faut donner le choix du champion à stun
+        // championOfChoice->prepare();
+    }
 }
 
-void Abilities::prepareFriendlyChampion(CardController& ctrl, const std::string& selfId) {
-    (void)ctrl;
-    (void)selfId;
-    // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte
+void Abilities::sacrificeCards(Player& player, int n) {
+    std::vector<Card*> hand = player.getHand();
+    std::vector<Card*> discard = player.getDiscardPile();
+    for(int i=0; i<n; i+=1)
+    {
+        // Faut donner le choix parmis ces cartes pour savoir laquelle sacrifier
+    }
+
 }
 
-void Abilities::sacrificeSelf(CardController& ctrl,
-                              const std::string& selfId,
-                              const std::string& cardId) {
-    ctrl.sacrificeCard(selfId, cardId);
-    // faut créer la classe joeur pour avoir la liste de cartes / deck et vérifier l'existence de ally/heroes/ enlever la carte
+void Abilities::acquireToTop(Player& player) {
+    // Ici il y a des conditions sur le type carte à mettre so maybe i'll need to break it down
+    // into more abilities for each type of card
+    // For example : acquire chapion from discard to top, acquire action from discard to top ...
 }
 
-void Abilities::acquireToTop(CardController& ctrl,
-                             const std::string& selfId,
-                             bool enable) {
-    ctrl.setAcquireToTopThisTurn(selfId, enable);
+void Abilities::opponentDiscardsOne(Player& /*player*/, Player& opponent) {
+    opponent.discard(1);
 }
-

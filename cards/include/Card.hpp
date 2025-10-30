@@ -40,6 +40,9 @@ public:
     bool isExpended() const;
     bool isSacrificed() const;
 
+    // Pour preparer le champion
+    void prepare(){expended_ = false;}
+
     void setOwnerId(std::string owner);
     void setOpponentId(std::string opp);
 
