@@ -204,120 +204,69 @@ void CardCreator::handleAbilities(const std::string& fullText,
         a.amount              = amt;
         a.requiresAlly        = reqAlly;
         a.requiredAllyFaction = allyFac;
-        a.used                = false; // par défaut
+        a.used                = false;
         cardOut.abilities().push_back(a);
     };
 
-    // helpers de détection 
-    auto hasToken = [&](const std::string& s, const std::string& needle){
-        return s.find(needle) != std::string::npos;
-    };
-
-    auto addFor = [&](Trigger trig, bool reqAlly, Faction allyFac, const std::string& t){
-        // variantes {gain X gold} et gain {X gold}
-        if (hasToken(t, "{gain 1 gold}") || hasToken(t, "gain {1 gold}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 1);
-        if (hasToken(t, "{gain 2 gold}") || hasToken(t, "gain {2 gold}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 2);
-        if (hasToken(t, "{gain 3 gold}") || hasToken(t, "gain {3 gold}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 3);
-        if (hasToken(t, "{gain 4 gold}") || hasToken(t, "gain {4 gold}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 4);
-        if (hasToken(t, "{gain 5 gold}") || hasToken(t, "gain {5 gold}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 5);
-
-        if (hasToken(t, "{gain 1 combat}") || hasToken(t, "gain {1 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 1);
-        if (hasToken(t, "{gain 2 combat}") || hasToken(t, "gain {2 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 2);
-        if (hasToken(t, "{gain 3 combat}") || hasToken(t, "gain {3 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 3);
-        if (hasToken(t, "{gain 4 combat}") || hasToken(t, "gain {4 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 4);
-        if (hasToken(t, "{gain 5 combat}") || hasToken(t, "gain {5 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 5);
-        if (hasToken(t, "{gain 6 combat}") || hasToken(t, "gain {6 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 6);
-        if (hasToken(t, "{gain 7 combat}") || hasToken(t, "gain {7 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 7);
-        if (hasToken(t, "{gain 8 combat}") || hasToken(t, "gain {8 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 8);
-
-        if (hasToken(t, "+{1 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 1);
-        if (hasToken(t, "+{2 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 2);
-        if (hasToken(t, "+{3 combat}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 3);
-
-        if (hasToken(t, "{gain 1 health}") || hasToken(t, "gain {1 health}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 1);
-        if (hasToken(t, "{gain 2 health}") || hasToken(t, "gain {2 health}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 2);
-        if (hasToken(t, "{gain 3 health}") || hasToken(t, "gain {3 health}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 3);
-        if (hasToken(t, "{gain 4 health}") || hasToken(t, "gain {4 health}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 4);
-        if (hasToken(t, "{gain 5 health}") || hasToken(t, "gain {5 health}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 5);
-        if (hasToken(t, "{gain 6 health}") || hasToken(t, "gain {6 health}")) pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 6);
-
-        if (hasToken(t, "draw two cards")) pushAbility(trig, reqAlly, allyFac, AbilityName::DrawCards, 2);
-        if (hasToken(t, "draw a card"))   pushAbility(trig, reqAlly, allyFac, AbilityName::DrawCards, 1);
-
-        if (hasToken(t, "target opponent discards a card"))
-            pushAbility(trig, reqAlly, allyFac, AbilityName::OpponentDiscard, 1);
-        if (hasToken(t, "stun target champion"))
-            pushAbility(trig, reqAlly, allyFac, AbilityName::StunTargetChampion, 1);
-        if (hasToken(t, "prepare a champion"))
-            pushAbility(trig, reqAlly, allyFac, AbilityName::PrepareFriendlyChampion, 1);
-        if (hasToken(t, "on top of your deck"))
-            pushAbility(trig, reqAlly, allyFac, AbilityName::AcquireToTop, 1);
-    };
-
-    // Normalisation: CR -> \n, passage en minuscule
+    // normalisation
     std::string norm = fullText;
-    for (char& c : norm) if (c=='\r') c = '\n';
+    for (char& c : norm) if (c == '\r') c = '\n';
     std::string s = lower(norm);
 
-    // Remplacements robustes: <hr> et <i>or</i> avec espaces/retours
-    // -> on remplace par des tokens simples
+    // rendre <hr> et <i>or</i> robustes aux espaces/retours
     s = std::regex_replace(s, std::regex(R"(\s*<\s*hr\s*>\s*)"), "|||HR|||");
     s = std::regex_replace(s, std::regex(R"(\s*<\s*i\s*>\s*or\s*<\s*/\s*i\s*>\s*)"), "|||OR|||");
 
-    // Split HR
+    // split HR
     std::vector<std::string> hrBlocks;
     {
-        size_t start=0;
-        while (true){
+        size_t start = 0;
+        while (true) {
             size_t p = s.find("|||HR|||", start);
-            if (p==std::string::npos){
+            if (p == std::string::npos) {
                 std::string piece = trim(s.substr(start));
                 if (!piece.empty()) hrBlocks.push_back(piece);
                 break;
             } else {
-                std::string piece = trim(s.substr(start, p-start));
+                std::string piece = trim(s.substr(start, p - start));
                 if (!piece.empty()) hrBlocks.push_back(piece);
                 start = p + 8;
             }
         }
     }
 
+    auto detectAllyFaction = [&](const std::string& blk)->Faction{
+        if (blk.find("{imperial ally}") != std::string::npos) return Faction::Imperial;
+        if (blk.find("{guild ally}")    != std::string::npos) return Faction::Guild;
+        if (blk.find("{necros ally}")   != std::string::npos) return Faction::Necros;
+        if (blk.find("{wild ally}")     != std::string::npos) return Faction::Wild;
+        return Faction::Unknown;
+    };
+
     for (const std::string& block : hrBlocks) {
-        // Détection déclencheur de base sur le bloc complet
-        bool hasExpend   = block.find("{expend}")   != std::string::npos;
-        bool hasSacrifice= block.find("{sacrifice}")!= std::string::npos;
-        bool hasImpAlly  = block.find("{imperial ally}") != std::string::npos;
-        bool hasGuiAlly  = block.find("{guild ally}")    != std::string::npos;
-        bool hasNecAlly  = block.find("{necros ally}")   != std::string::npos;
-        bool hasWildAlly = block.find("{wild ally}")     != std::string::npos;
+        bool hasExpend     = block.find("{expend}")    != std::string::npos;
+        bool hasSacrificeT = block.find("{sacrifice}") != std::string::npos;
+        Faction allyFac    = detectAllyFaction(block);
+        bool isAllyBlock   = (allyFac != Faction::Unknown);
 
         Trigger baseTrig = Trigger::OnPlay;
         bool reqAlly = false;
-        Faction allyFac = Faction::Unknown;
-
         if (hasExpend) baseTrig = Trigger::Expend;
-        else if (hasSacrifice) baseTrig = Trigger::Sacrifice;
-        else if (hasImpAlly || hasGuiAlly || hasNecAlly || hasWildAlly) {
-            baseTrig = Trigger::Ally; 
-            reqAlly = true;
-            if (hasImpAlly) allyFac = Faction::Imperial;
-            else if (hasGuiAlly) allyFac = Faction::Guild;
-            else if (hasNecAlly) allyFac = Faction::Necros;
-            else if (hasWildAlly) allyFac = Faction::Wild;
-        } else baseTrig = Trigger::OnPlay;
+        else if (hasSacrificeT) baseTrig = Trigger::Sacrifice;
+        else if (isAllyBlock) { baseTrig = Trigger::Ally; reqAlly = true; }
 
-        // Split OR (gère les \n autour)
+        // split OR
         std::vector<std::string> orSubs;
         {
-            size_t start=0;
-            while (true){
+            size_t start = 0;
+            while (true) {
                 size_t p = block.find("|||OR|||", start);
-                if (p==std::string::npos){
+                if (p == std::string::npos) {
                     std::string piece = trim(block.substr(start));
                     if (!piece.empty()) orSubs.push_back(piece);
                     break;
                 } else {
-                    std::string piece = trim(block.substr(start, p-start));
+                    std::string piece = trim(block.substr(start, p - start));
                     if (!piece.empty()) orSubs.push_back(piece);
                     start = p + 8;
                 }
@@ -327,21 +276,172 @@ void CardCreator::handleAbilities(const std::string& fullText,
 
         auto withChoice = [&](Trigger t)->Trigger{
             if (!isChoice) return t;
-            switch (t){
+            switch (t) {
                 case Trigger::OnPlay:    return Trigger::OnPlayChoice;
                 case Trigger::Expend:    return Trigger::ExpendChoice;
                 case Trigger::Sacrifice: return Trigger::SacrificeChoice;
-                default:                 return t; // Ally reste Ally
+                default:                 return t; 
             }
         };
-        Trigger finalTrig = withChoice(baseTrig);
 
-        for (const std::string& subRaw : orSubs){
+        for (const std::string& subRaw : orSubs) {
             std::string t = lower(trim(subRaw));
-            addFor(finalTrig, reqAlly, allyFac, t);
+            Trigger trig = withChoice(baseTrig);
+
+            bool suppressDrawOne   = false;
+            bool suppressDrawTwo   = false;
+            bool suppressFlatCombat= false;
+            bool suppressFlatHealth= false;
+
+            auto contains = [&](const char* needle)->bool {
+                return t.find(needle) != std::string::npos;
+            };
+
+            // per champion / per guard
+            if (t.find("for each champion you have in play") != std::string::npos) {
+                if (contains("{1 combat}") || contains("+{1 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 1), suppressFlatCombat = true;
+                if (contains("{2 combat}") || contains("+{2 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 2), suppressFlatCombat = true;
+                if (contains("{3 combat}") || contains("+{3 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 3), suppressFlatCombat = true;
+
+                if (contains("{1 health}") || contains("gain {1 health}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddHealthPerChamp, 1), suppressFlatHealth = true;
+                if (contains("{2 health}") || contains("gain {2 health}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddHealthPerChamp, 2), suppressFlatHealth = true;
+                if (contains("{3 health}") || contains("gain {3 health}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddHealthPerChamp, 3), suppressFlatHealth = true;
+            }
+            if (t.find("for each other guard you have in play") != std::string::npos) {
+                if (contains("{1 combat}") || contains("+{1 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerGuard, 1), suppressFlatCombat = true;
+                if (contains("{2 combat}") || contains("+{2 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerGuard, 2), suppressFlatCombat = true;
+            }
+            if (t.find("for each other champion you have in play") != std::string::npos) {
+                if (contains("{1 combat}") || contains("+{1 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 1), suppressFlatCombat = true;
+                if (contains("{2 combat}") || contains("+{2 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 2), suppressFlatCombat = true;
+            }
+
+            // per ally  
+            if (t.find("for each other {wild} card you have in play") != std::string::npos) {
+                if (contains("{1 combat}") || contains("+{1 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerAlly, 1), suppressFlatCombat = true;
+                if (contains("{2 combat}") || contains("+{2 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerAlly, 2), suppressFlatCombat = true;
+                if (contains("{3 combat}") || contains("+{3 combat}"))
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerAlly, 3), suppressFlatCombat = true;
+            }
+
+            // draw and discard 
+            if (t.find("you may draw up to two cards, then discard that many cards") != std::string::npos) {
+                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawAndDiscard, 2);
+                suppressDrawOne = true; suppressDrawTwo = true;
+            } else if (t.find("you may draw a card. if you do, discard a card") != std::string::npos
+                       || t.find("draw a card, then discard a card") != std::string::npos) {
+                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawAndDiscard, 1);
+                suppressDrawOne = true;
+            }
+
+            // sacrifice -> bonus combat si “if you do” 
+            bool hasMaySacrifice = (t.find("you may sacrifice a card in your hand or discard pile") != std::string::npos);
+            if (hasMaySacrifice) {
+                pushAbility(trig, reqAlly, allyFac, AbilityName::SacrificeCards, 1);
+            }
+            {
+                int bonus = 0;
+                if (t.find("if you do, gain an additional {3 combat}") != std::string::npos) bonus = 3;
+                else if (t.find("if you do, gain an additional {2 combat}") != std::string::npos) bonus = 2;
+                else if (t.find("if you do, gain an additional {1 combat}") != std::string::npos) bonus = 1;
+                if (hasMaySacrifice && bonus > 0) {
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::SacrificeForCombat, bonus);
+                }
+            }
+
+            // acquire/move effects 
+            if (t.find("put the next card you acquire this turn into your hand") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardInHand, 1);
+            if (t.find("put the next action you acquire this turn on top of your deck") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredActionCardInHand, 1);
+            if (t.find("put the next card you acquire this turn on top of your deck") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardOnDeck, 1);
+            if (t.find("you may put a card from your discard pile on top of your deck") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutCardFromDiscardOnDeck, 1);
+            if (t.find("take a champion from your discard pile and put it on top of your deck") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutChampFromDiscardOnDeck, 1);
+
+            // opponent / stun / prepare 
+            if (t.find("target opponent discards a card") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::OpponentDiscard, 1);
+            if (t.find("stun target champion") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::StunTargetChampion, 1);
+            if (t.find("prepare a champion") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PrepareFriendlyChampion, 1);
+
+            // gains plats (gold/combat/health/draw) avec suppressions locales 
+            // gold
+            if (t.find("{gain 1 gold}") != std::string::npos || t.find("gain {1 gold}") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 1);
+            if (t.find("{gain 2 gold}") != std::string::npos || t.find("gain {2 gold}") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 2);
+            if (t.find("{gain 3 gold}") != std::string::npos || t.find("gain {3 gold}") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 3);
+            if (t.find("{gain 4 gold}") != std::string::npos || t.find("gain {4 gold}") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 4);
+            if (t.find("{gain 5 gold}") != std::string::npos || t.find("gain {5 gold}") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::GainGold, 5);
+
+            // combat plat (skip si per-*)
+            if (!suppressFlatCombat) {
+                if (t.find("{gain 1 combat}") != std::string::npos || t.find("gain {1 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 1);
+                if (t.find("{gain 2 combat}") != std::string::npos || t.find("gain {2 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 2);
+                if (t.find("{gain 3 combat}") != std::string::npos || t.find("gain {3 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 3);
+                if (t.find("{gain 4 combat}") != std::string::npos || t.find("gain {4 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 4);
+                if (t.find("{gain 5 combat}") != std::string::npos || t.find("gain {5 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 5);
+                if (t.find("{gain 6 combat}") != std::string::npos || t.find("gain {6 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 6);
+                if (t.find("{gain 7 combat}") != std::string::npos || t.find("gain {7 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 7);
+                if (t.find("{gain 8 combat}") != std::string::npos || t.find("gain {8 combat}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainCombat, 8);
+            }
+
+
+            if (!suppressFlatHealth) {
+                if (t.find("{gain 1 health}") != std::string::npos || t.find("gain {1 health}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 1);
+                if (t.find("{gain 2 health}") != std::string::npos || t.find("gain {2 health}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 2);
+                if (t.find("{gain 3 health}") != std::string::npos || t.find("gain {3 health}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 3);
+                if (t.find("{gain 4 health}") != std::string::npos || t.find("gain {4 health}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 4);
+                if (t.find("{gain 5 health}") != std::string::npos || t.find("gain {5 health}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 5);
+                if (t.find("{gain 6 health}") != std::string::npos || t.find("gain {6 health}") != std::string::npos)
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::GainAuthority, 6);
+            }
+
+
+            if (!suppressDrawTwo && t.find("draw two cards") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawCards, 2);
+            if (!suppressDrawOne && t.find("draw a card") != std::string::npos)
+                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawCards, 1);
         }
     }
 }
+
+
+
+
 
 // Constructions carte
 std::vector<Card*> CardCreator::buildCardsFromRow(const CardRow& row) {
