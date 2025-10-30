@@ -95,7 +95,7 @@ std::string Card::abilityNameToString(AbilityName a) {
         case AbilityName::DrawCards:                return "DrawCards";
         case AbilityName::StunTargetChampion:       return "StunTargetChampion";
         case AbilityName::PrepareFriendlyChampion:  return "PrepareFriendlyChampion";
-        case AbilityName::SacrificeSelf:            return "SacrificeSelf";
+        case AbilityName::SacrificeCards:            return "SacrificeCards";
         case AbilityName::AcquireToTop:             return "AcquireToTop";
         case AbilityName::OpponentDiscardsOne:      return "OpponentDiscardsOne";
     }

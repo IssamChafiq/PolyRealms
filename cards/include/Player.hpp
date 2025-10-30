@@ -47,8 +47,11 @@ public:
     void buy(Card* card, Market market);
     void godmodeBuy(Card* card, Market market);
     void attack(Player player, int amount);
+
     void discard(int amount);
     void cardEffectSacrifice(int amount);
     bool isFactionInPlay(Faction faction);
+    void stunChampion();
+
     void cleanup();
 };

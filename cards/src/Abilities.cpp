@@ -12,10 +12,10 @@ void Abilities::execute(Player& player,
         case AbilityName::GainGold:                gainGold(player, amount); break;
         case AbilityName::GainCombat:              gainCombat(player, amount); break;
         case AbilityName::GainAuthority:           gainAuthority(player, amount); break;
-        case AbilityName::DrawCards:               drawCards(player, amount ); break;
+        case AbilityName::DrawCards:               drawCards(player, amount); break;
         case AbilityName::StunTargetChampion:      stunTargetChampion(opponent); break;
         case AbilityName::PrepareFriendlyChampion: prepareFriendlyChampion(player); break;
-        case AbilityName::SacrificeCards:           sacrificeCards(player, amount); break;
+        case AbilityName::SacrificeCards:          sacrificeCards(player, amount); break;
         case AbilityName::AcquireToTop:            acquireToTop(player); break;
         case AbilityName::OpponentDiscardsOne:     opponentDiscardsOne(player, opponent); break;
     }
@@ -38,11 +38,7 @@ void Abilities::drawCards(Player& player, int n) {
 }
 
 void Abilities::stunTargetChampion(Player& opponent) {
-    auto champs = opponent.getChampions();
-    if (!champs.empty()) {
-        // Il faut permettre au joueur de choisir le champion ennemi à stun
-        //championOfChoice->stun();
-    }
+    opponent.stunChampion();
 }
 
 void Abilities::prepareFriendlyChampion(Player& player) {
@@ -54,13 +50,7 @@ void Abilities::prepareFriendlyChampion(Player& player) {
 }
 
 void Abilities::sacrificeCards(Player& player, int n) {
-    std::vector<Card*> hand = player.getHand();
-    std::vector<Card*> discard = player.getDiscardPile();
-    for(int i=0; i<n; i+=1)
-    {
-        // Faut donner le choix parmis ces cartes pour savoir laquelle sacrifier
-    }
-
+    player.cardEffectSacrifice(n);
 }
 
 void Abilities::acquireToTop(Player& player) {
