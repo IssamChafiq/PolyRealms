@@ -92,18 +92,31 @@ std::string Card::triggerToString(Trigger tr) {
 
 std::string Card::abilityNameToString(AbilityName a) {
     switch (a) {
-        case AbilityName::GainGold:                 return "GainGold";
-        case AbilityName::GainCombat:               return "GainCombat";
-        case AbilityName::GainAuthority:            return "GainAuthority";
-        case AbilityName::DrawCards:                return "DrawCards";
-        case AbilityName::StunTargetChampion:       return "StunTargetChampion";
-        case AbilityName::PrepareFriendlyChampion:  return "PrepareFriendlyChampion";
-        case AbilityName::SacrificeCards:            return "SacrificeCards";
-        case AbilityName::AcquireToTop:             return "AcquireToTop";
-        case AbilityName::OpponentDiscard:      return "OpponentDiscard";
+        case AbilityName::GainGold:                      return "GainGold";
+        case AbilityName::GainCombat:                    return "GainCombat";
+        case AbilityName::GainAuthority:                 return "GainAuthority";
+        case AbilityName::DrawCards:                     return "DrawCards";
+        case AbilityName::StunTargetChampion:            return "StunTargetChampion";
+        case AbilityName::PrepareFriendlyChampion:       return "PrepareFriendlyChampion";
+        case AbilityName::SacrificeCards:                return "SacrificeCards";
+        case AbilityName::AcquireToTop:                  return "AcquireToTop";
+        case AbilityName::OpponentDiscard:               return "OpponentDiscard";
+        case AbilityName::AddCombatPerChamp:             return "AddCombatPerChamp";
+        case AbilityName::AddCombatPerGuard:             return "AddCombatPerGuard";
+        case AbilityName::AddHealthPerChamp:             return "AddHealthPerChamp";
+        case AbilityName::PutNextAcquiredCardInHand:     return "PutNextAcquiredCardInHand";
+        case AbilityName::PutNextAcquiredActionCardInHand:return "PutNextAcquiredActionCardInHand";
+        case AbilityName::PutCardFromDiscardOnDeck:      return "PutCardFromDiscardOnDeck";
+        case AbilityName::PutNextAcquiredCardOnDeck:     return "PutNextAcquiredCardOnDeck";
+        case AbilityName::SacrificeForCombat:            return "SacrificeForCombat";
+        case AbilityName::DrawAndDiscard:                return "DrawAndDiscard";
+        case AbilityName::PutChampFromDiscardOnDeck:     return "PutChampFromDiscardOnDeck";
+        case AbilityName::AddCombatPerAlly:              return "AddCombatPerAlly";
+    
     }
     return "UnknownAbility";
 }
+
 
 bool Card::hasAllySameFaction() {
     // faut créer la classe joueur pour avoir la liste de cartes et vérifier l'existence de ally

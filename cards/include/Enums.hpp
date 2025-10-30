@@ -37,6 +37,17 @@ enum class AbilityName : uint8_t {
     SacrificeCards,
     AcquireToTop,
     OpponentDiscard,
+    AddCombatPerChamp
+    ,AddCombatPerGuard
+    ,AddHealthPerChamp
+    ,PutNextAcquiredCardInHand
+    ,PutNextAcquiredActionCardInHand
+    ,PutCardFromDiscardOnDeck
+    ,PutNextAcquiredCardOnDeck
+    ,SacrificeForCombat
+    ,DrawAndDiscard
+    ,PutChampFromDiscardOnDeck
+    ,AddCombatPerAlly
 
 };
 

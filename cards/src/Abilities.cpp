@@ -18,6 +18,17 @@ void Abilities::execute(Player& player,
         case AbilityName::SacrificeCards:          sacrificeCards(player, amount); break;
         case AbilityName::AcquireToTop:            acquireToTop(player); break;
         case AbilityName::OpponentDiscard:     opponentDiscard(opponent); break;
+        case AbilityName::AddCombatPerChamp:                addCombatPerChamp(player,amount); break;
+        case AbilityName::AddCombatPerGuard:                addCombatPerGuard(player,amount)  ; break;
+        case AbilityName::AddHealthPerChamp:                addHealthPerChamp(player,amount) ; break;
+        case AbilityName::PutNextAcquiredCardInHand:        putNextAcquiredCardInHand(player); break;
+        case AbilityName::PutNextAcquiredActionCardInHand:  putNextAcquiredActionCardInHand(player) ; break;
+        case AbilityName::PutCardFromDiscardOnDeck:         putCardFromDiscardOnDeck(player) ; break;
+        case AbilityName::PutNextAcquiredCardOnDeck:        putNextAcquiredCardOnDeck(player) ; break;
+        case AbilityName::SacrificeForCombat:                 sacrificeForCombat(player,amount); break;
+        case AbilityName::DrawAndDiscard:                   drawAndDiscard(player,amount) ; break;
+        case AbilityName::PutChampFromDiscardOnDeck:        putChampFromDiscardOnDeck(player) ; break;
+        case AbilityName::AddCombatPerAlly:        addCombatPerAlly(player, amount) ; break;
     }
 }
 
@@ -57,4 +68,85 @@ void Abilities::acquireToTop(Player& player) {
 
 void Abilities::opponentDiscard(Player& opponent) {
     opponent.discard(1);
+}
+
+
+void Abilities::addCombatPerChamp(Player& player,int amount){
+    int n = 0;
+    for (Champion* c : player.getChampions()) {
+        n++;
+    }
+    player.setCombat(player.getCombat() + amount * n);
+}
+
+void Abilities::addCombatPerGuard(Player& player,int amount){
+    int n = 0;
+    for (Champion* c : player.getChampions()){
+        if (c->isGuard()) {
+            n++;
+        }
+    }
+    player.setCombat(player.getCombat() + amount * n);
+}
+
+void Abilities::addHealthPerChamp(Player& player,int amount){
+    int n = 0;
+    for (Champion* c : player.getChampions()) n++;
+    player.setAuthority(player.getAuthority() + amount * n);
+}
+
+void Abilities::putNextAcquiredCardInHand(Player& player){
+    
+    // marc needed here 
+}
+
+void Abilities::putNextAcquiredActionCardInHand(Player& player){
+    // marc needed here 
+}
+
+void Abilities::putCardFromDiscardOnDeck(Player& player){
+    // marc needed here 
+}
+
+void Abilities::putNextAcquiredCardOnDeck(Player& player){
+    // marc needed here 
+}
+
+void Abilities::sacrificeForCombat(Player& player,int amount){
+    player.cardEffectSacrifice(1);
+    player.setCombat(player.getCombat() + amount);
+}
+
+void Abilities::drawAndDiscard(Player& player,int amount){
+    player.draw(amount);
+    player.discard(amount);
+}
+
+void Abilities::putChampFromDiscardOnDeck(Player& player){
+    // marc needed here 
+}
+
+void Abilities::addCombatPerAlly(Player& player, int amount) {
+    // Ajoute du combat pour chaque autre carte alliée de la même faction (Wild dans la plupart des cas)
+    // Parcourt les cartes actuellement en jeu (actions + champions)
+    int alliesCount = 0;
+
+    // On compte toutes les cartes "Wild" en jeu (hors la carte déclencheuse)
+    for (Card* c : player.getInPlay()) {
+        if (c->faction() == Faction::Wild)
+            alliesCount++;
+    }
+    for (Champion* champ : player.getChampions()) {
+        if (champ->faction() == Faction::Wild)
+            alliesCount++;
+    }
+
+    int totalCombat = amount * alliesCount;
+    if (totalCombat > 0) {
+        player.setCombat(player.getCombat()+totalCombat);
+        std::cout << player.getName() << " gagne " << totalCombat
+                  << " combat (" << amount << " par carte Wild en jeu)." << std::endl;
+    } else {
+        std::cout << "Aucun allié Wild en jeu, aucun bonus de combat." << std::endl;
+    }
 }
