@@ -75,7 +75,7 @@ void Player::play(Card* card){
         return;
     }
     if(card->isChampion()){
-        champions_.push_back(static_cast<Champion*>(card));
+        champions_.push_back((Champion*)card);
     } else {
         inPlay_.push_back(card);
     }
@@ -84,7 +84,17 @@ void Player::play(Card* card){
 void Player::buy(Card* card, Market market){
     if(gold_ >= card->cost()){
         gold_ -= card->cost();
-        discardPile_.push_back(card);
+        if(nextActionBuyOnDeck && card->type() == CardType::Action){
+            deck_.addToTop(card);
+            nextActionBuyOnDeck = false;
+        } else if (nextBuyInHand){
+            hand_.push_back(card);
+            nextBuyInHand = false;
+        } else if (nextBuyTopOfDeck){
+            deck_.addToTop(card);
+        } else {
+            discardPile_.push_back(card);
+        }
         market.sell(card);
     } else {
         std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
@@ -275,6 +285,87 @@ void Player::prepareFriendlyChampion(){
     }
 }
 
+void Player::getChampionFromDiscardToDeck(){
+    std::vector<Champion*> championsDiscard = {};
+    for (Card* card : discardPile_){
+        if(card->isChampion()){
+            championsDiscard.push_back((Champion*)card);
+        }
+    }
+    if(championsDiscard.size() == 0){
+        std::cout << "There are no champions in the discard pile\n";
+    } else {
+        std::cout << "Which champion do you want to bring to the top of your deck ?\n";
+        for (int i=0;i<(int)championsDiscard.size();i++){
+            std::cout << " - " << i+1 << "\n";
+            championsDiscard[i]->printCardInfo();
+        }
+        int choice;
+        while(!(std::cin >> choice) || choice < 1 || choice > (int)championsDiscard.size()){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        deck_.addToTop(championsDiscard[choice-1]);
+        for (std::vector<Card*>::iterator it = discardPile_.begin(); it != discardPile_.end();)
+        {
+            // *it sert à récupérer l'objet Card pointé par l'itérateur
+            if (championsDiscard[choice-1]->id() == (*it)->id()){
+                it = discardPile_.erase(it);
+                break;
+            } else {
+                    ++it;
+            }
+        }
+        std::cout << "Champion added to the top of the deck :\n";
+        championsDiscard[choice-1]->printCardInfo();
+    }
+}
+
+void Player::getCardFromDiscardToDeck(){
+    std::cout << "Do you want to put a card from your discard pile on top of your deck ? (1. Yes /2. No)\n";
+    int drawChoice;
+    while(!(std::cin >> drawChoice) || drawChoice < 1 || drawChoice > 2){
+        std::cout << "Invalid input. Please enter a valid choice: ";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    if(drawChoice == 1){
+        if(discardPile_.size() == 0){
+            std::cout << "There are no champions in the discard pile\n";
+        } else {
+            std::cout << "Which card do you want to bring to the top of your deck ?\n";
+            for (int i=0;i<(int)discardPile_.size();i++){
+                std::cout << " - " << i+1 << "\n";
+                discardPile_[i]->printCardInfo();
+            }
+            int choice;
+            while(!(std::cin >> choice) || choice < 1 || choice > (int)discardPile_.size()){
+                std::cout << "Invalid input. Please enter a valid choice: ";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+
+            deck_.addToTop(discardPile_[choice-1]);
+            for (std::vector<Card*>::iterator it = discardPile_.begin(); it != discardPile_.end();)
+            {
+                // *it sert à récupérer l'objet Card pointé par l'itérateur
+                if (discardPile_[choice-1]->id() == (*it)->id()){
+                    it = discardPile_.erase(it);
+                    break;
+                } else {
+                        ++it;
+                }
+            }
+            std::cout << "Champion added to the top of the deck :\n";
+            discardPile_[choice-1]->printCardInfo();
+        }
+    } else if (drawChoice == 2){
+        std::cout << "No card taken from your discard pile.\n";
+    } 
+}
+
 bool Player::isFactionInPlay(Faction faction){
     for (Card* card : inPlay_){
         if(card->faction() == faction){
@@ -403,5 +494,8 @@ void Player::cleanup(){
     inPlay_.clear();
     gold_ = 0;
     combat_ = 0;
+    nextActionBuyOnDeck = false;
+    nextBuyInHand = false;
+    nextBuyTopOfDeck = false;
     // Il faudra aussi réinitialiser les sorts et capacités utilisées pendant le tour
 }

@@ -54,3 +54,7 @@ void Deck::removeCardFromDeck(Card* card){
         }
     }
 }
+
+void Deck::addToTop(Card* card){
+    cards_.insert(cards_.begin(),card);
+}

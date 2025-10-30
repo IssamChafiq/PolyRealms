@@ -99,16 +99,16 @@ std::string Card::abilityNameToString(AbilityName a) {
         case AbilityName::StunTargetChampion:            return "StunTargetChampion";
         case AbilityName::PrepareFriendlyChampion:       return "PrepareFriendlyChampion";
         case AbilityName::SacrificeCards:                return "SacrificeCards";
-        case AbilityName::AcquireToTop:                  return "AcquireToTop";
         case AbilityName::OpponentDiscard:               return "OpponentDiscard";
         case AbilityName::AddCombatPerChamp:             return "AddCombatPerChamp";
         case AbilityName::AddCombatPerGuard:             return "AddCombatPerGuard";
         case AbilityName::AddHealthPerChamp:             return "AddHealthPerChamp";
         case AbilityName::PutNextAcquiredCardInHand:     return "PutNextAcquiredCardInHand";
-        case AbilityName::PutNextAcquiredActionCardInHand:return "PutNextAcquiredActionCardInHand";
+        case AbilityName::PutNextAcquiredActionCardOnDeck:return "PutNextAcquiredActionCardOnDeck";
         case AbilityName::PutCardFromDiscardOnDeck:      return "PutCardFromDiscardOnDeck";
         case AbilityName::PutNextAcquiredCardOnDeck:     return "PutNextAcquiredCardOnDeck";
         case AbilityName::SacrificeForCombat:            return "SacrificeForCombat";
+        case AbilityName::MayDrawAndDiscard:             return "MayDrawAndDiscard";
         case AbilityName::DrawAndDiscard:                return "DrawAndDiscard";
         case AbilityName::PutChampFromDiscardOnDeck:     return "PutChampFromDiscardOnDeck";
         case AbilityName::AddCombatPerAlly:              return "AddCombatPerAlly";

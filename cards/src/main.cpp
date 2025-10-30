@@ -21,10 +21,6 @@ int main() {
     // this will now spam diagnostics for every row
     std::vector<Card*> cards = CardCreator::loadFromCsv(csvFile);
 
-    for (const Card* c : cards) {
-        c->printCardInfo();
-    }
-
     std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
 
     std::cout << "=== DEBUG CARD CREATION END ===\n";
@@ -55,6 +51,9 @@ int main() {
     Market market = Market(Deck(marketCards));
 
     Game game = Game(market, starterDeck);
+
+    std::cout << "\n=== GAME START ===\n";
+
     game.initialize();
 
     return 0;

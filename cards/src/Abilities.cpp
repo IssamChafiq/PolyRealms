@@ -16,17 +16,17 @@ void Abilities::execute(Player& player,
         case AbilityName::StunTargetChampion:      stunTargetChampion(opponent); break;
         case AbilityName::PrepareFriendlyChampion: prepareFriendlyChampion(player); break;
         case AbilityName::SacrificeCards:          sacrificeCards(player, amount); break;
-        case AbilityName::AcquireToTop:            acquireToTop(player); break;
         case AbilityName::OpponentDiscard:     opponentDiscard(opponent); break;
         case AbilityName::AddCombatPerChamp:                addCombatPerChamp(player,amount); break;
         case AbilityName::AddCombatPerGuard:                addCombatPerGuard(player,amount)  ; break;
         case AbilityName::AddHealthPerChamp:                addHealthPerChamp(player,amount) ; break;
         case AbilityName::PutNextAcquiredCardInHand:        putNextAcquiredCardInHand(player); break;
-        case AbilityName::PutNextAcquiredActionCardInHand:  putNextAcquiredActionCardInHand(player) ; break;
+        case AbilityName::PutNextAcquiredActionCardOnDeck:  putNextAcquiredActionCardOnDeck(player) ; break;
         case AbilityName::PutCardFromDiscardOnDeck:         putCardFromDiscardOnDeck(player) ; break;
         case AbilityName::PutNextAcquiredCardOnDeck:        putNextAcquiredCardOnDeck(player) ; break;
         case AbilityName::SacrificeForCombat:                 sacrificeForCombat(player,amount); break;
         case AbilityName::DrawAndDiscard:                   drawAndDiscard(player,amount) ; break;
+        case AbilityName::MayDrawAndDiscard:        mayDrawAndDiscard(player, amount) ; break;
         case AbilityName::PutChampFromDiscardOnDeck:        putChampFromDiscardOnDeck(player) ; break;
         case AbilityName::AddCombatPerAlly:        addCombatPerAlly(player, amount) ; break;
     }
@@ -60,12 +60,6 @@ void Abilities::sacrificeCards(Player& player, int n) {
     player.cardEffectSacrifice(n);
 }
 
-void Abilities::acquireToTop(Player& player) {
-    // Ici il y a des conditions sur le type carte à mettre so maybe i'll need to break it down
-    // into more abilities for each type of card
-    // For example : acquire chapion from discard to top, acquire action from discard to top ...
-}
-
 void Abilities::opponentDiscard(Player& opponent) {
     opponent.discard(1);
 }
@@ -96,25 +90,40 @@ void Abilities::addHealthPerChamp(Player& player,int amount){
 }
 
 void Abilities::putNextAcquiredCardInHand(Player& player){
-    
-    // marc needed here 
+    player.setNextBuyInHand(true);
 }
 
-void Abilities::putNextAcquiredActionCardInHand(Player& player){
-    // marc needed here 
+void Abilities::putNextAcquiredActionCardOnDeck(Player& player){
+    player.setNextActionBuyOnDeck(true); 
 }
 
 void Abilities::putCardFromDiscardOnDeck(Player& player){
-    // marc needed here 
+    player.getCardFromDiscardToDeck();
 }
 
 void Abilities::putNextAcquiredCardOnDeck(Player& player){
-    // marc needed here 
+    player.setNextBuyTopOfDeck(true);
 }
 
 void Abilities::sacrificeForCombat(Player& player,int amount){
     player.cardEffectSacrifice(1);
     player.setCombat(player.getCombat() + amount);
+}
+
+void Abilities::mayDrawAndDiscard(Player& player,int amount){
+    std::cout << "Do you want to draw " << amount << " card(s) ? (1. Yes /2. No)\n";
+    int drawChoice;
+    while(!(std::cin >> drawChoice) || drawChoice < 1 || drawChoice > 2){
+        std::cout << "Invalid input. Please enter a valid choice: ";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    if(drawChoice == 1){
+        player.draw(amount);
+        player.discard(amount);
+    } else if (drawChoice == 2){
+        std::cout << "No cards drawn.\n";
+    }
 }
 
 void Abilities::drawAndDiscard(Player& player,int amount){
@@ -123,7 +132,7 @@ void Abilities::drawAndDiscard(Player& player,int amount){
 }
 
 void Abilities::putChampFromDiscardOnDeck(Player& player){
-    // marc needed here 
+    player.getChampionFromDiscardToDeck();
 }
 
 void Abilities::addCombatPerAlly(Player& player, int amount) {
@@ -141,7 +150,7 @@ void Abilities::addCombatPerAlly(Player& player, int amount) {
             alliesCount++;
     }
 
-    int totalCombat = amount * alliesCount;
+    int totalCombat = amount * alliesCount + 2; // On rajoute 2 parce que la carte a un effet 2 dégats de base et que le parseur n'arrive pas à le détecter. (pour l'instant)
     if (totalCombat > 0) {
         player.setCombat(player.getCombat()+totalCombat);
         std::cout << player.getName() << " gagne " << totalCombat

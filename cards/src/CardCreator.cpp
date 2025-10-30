@@ -338,12 +338,13 @@ void CardCreator::handleAbilities(const std::string& fullText,
 
             // draw and discard 
             if (t.find("you may draw up to two cards, then discard that many cards") != std::string::npos) {
-                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawAndDiscard, 2);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::MayDrawAndDiscard, 2);
                 suppressDrawOne = true; suppressDrawTwo = true;
-            } else if (t.find("you may draw a card. if you do, discard a card") != std::string::npos
-                       || t.find("draw a card, then discard a card") != std::string::npos) {
-                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawAndDiscard, 1);
+            } else if (t.find("you may draw a card. if you do, discard a card") != std::string::npos) {
+                pushAbility(trig, reqAlly, allyFac, AbilityName::MayDrawAndDiscard, 1);
                 suppressDrawOne = true;
+            } else if (t.find("draw a card, then discard a card") != std::string::npos){
+                pushAbility(trig, reqAlly, allyFac, AbilityName::DrawAndDiscard, 1);
             }
 
             // sacrifice -> bonus combat si “if you do” 
@@ -365,7 +366,7 @@ void CardCreator::handleAbilities(const std::string& fullText,
             if (t.find("put the next card you acquire this turn into your hand") != std::string::npos)
                 pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardInHand, 1);
             if (t.find("put the next action you acquire this turn on top of your deck") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredActionCardInHand, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredActionCardOnDeck, 1);
             if (t.find("put the next card you acquire this turn on top of your deck") != std::string::npos)
                 pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardOnDeck, 1);
             if (t.find("you may put a card from your discard pile on top of your deck") != std::string::npos)

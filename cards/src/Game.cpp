@@ -74,7 +74,7 @@ void Game::startFFA(){
     while(!gameOver){
         for(Player* player : playerList_){
             bool turnOver = false;
-            std::cout << "It's " << player->getName() << "'s turn.\n";
+            std::cout << "\n\nIt's " << player->getName() << "'s turn.\n";
             while(!turnOver){
                 std::cout << "Choose an action:\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Use a spell - 5. Attack - 6. End Turn.\n";
                 std::cout << "Type 'godmode' to activate godmode or access its features.\n";
@@ -185,6 +185,7 @@ void Game::startFFA(){
                                 std::cout << " - " << i+(int)market_.getMarketRow().size()+1 << "\n";
                                 market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
                             }
+                            std::cout << "You have " << player->getGold() << " gold.\n";
                             int godmodeBuyChoice;
                             while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()){
                                 std::cout << "Invalid input. Please enter a valid choice: ";

@@ -35,17 +35,17 @@ enum class AbilityName : uint8_t {
     StunTargetChampion,
     PrepareFriendlyChampion,
     SacrificeCards,
-    AcquireToTop,
     OpponentDiscard,
     AddCombatPerChamp
     ,AddCombatPerGuard
     ,AddHealthPerChamp
     ,PutNextAcquiredCardInHand
-    ,PutNextAcquiredActionCardInHand
+    ,PutNextAcquiredActionCardOnDeck
     ,PutCardFromDiscardOnDeck
     ,PutNextAcquiredCardOnDeck
     ,SacrificeForCombat
     ,DrawAndDiscard
+    ,MayDrawAndDiscard
     ,PutChampFromDiscardOnDeck
     ,AddCombatPerAlly
 
