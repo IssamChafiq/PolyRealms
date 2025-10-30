@@ -16,6 +16,7 @@ public:
         int amount;                 
         bool requiresAlly;          
         Faction requiredAllyFaction;
+        bool used;
     };
 
     Card(std::string id,
