@@ -12,7 +12,7 @@ public:
     static void drawCards(Player& player, int n);
     static void stunTargetChampion(Player& opponent);
     static void prepareFriendlyChampion(Player& player);
-    static void sacrificeCards(Player player, int num);
+    static void sacrificeCards(Player& player, int num);
     static void acquireToTop(Player& player);
     static void opponentDiscard(Player& opponent);
 };

@@ -51,6 +51,7 @@ public:
 
     void discard(int amount);
     void cardEffectSacrifice(int amount);
+    void prepareFriendlyChampion();
     bool isFactionInPlay(Faction faction);
     bool isGuarded();
     void stunChampion();

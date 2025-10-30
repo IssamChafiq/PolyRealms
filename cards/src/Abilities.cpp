@@ -42,11 +42,7 @@ void Abilities::stunTargetChampion(Player& opponent) {
 }
 
 void Abilities::prepareFriendlyChampion(Player& player) {
-    auto champs = player.getChampions();
-    if (!champs.empty() ) {
-        // Same thing here faut donner le choix du champion à stun
-        // championOfChoice->prepare();
-    }
+    player.prepareFriendlyChampion();
 }
 
 void Abilities::sacrificeCards(Player& player, int n) {

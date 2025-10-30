@@ -5,7 +5,7 @@
 bool Champion::takeDamage(int attackValue) {
     if (stunned_) {
         std::cout << name_ << " is already stunned.\n";
-        return;
+        return false;
     }
 
     if (attackValue < maxShield_) {

@@ -233,6 +233,48 @@ void Player::cardEffectSacrifice(int amount){
     }
 }
 
+void Player::prepareFriendlyChampion(){
+    std::vector<Champion*> unprepared = {};
+    for (Champion* champion : champions_){
+        for (const auto& ab : champion->abilities()){
+            if(Card::triggerToString(ab.trigger) == "Expend" || Card::triggerToString(ab.trigger) == "ExpendChoice" ){
+                if(ab.used){
+                    unprepared.push_back(champion);
+                    break;
+                }
+            }
+        }
+    }
+    if (unprepared.empty()){
+        std::cout << "You do not have a champion you can prepare\n";
+    } else {
+        std::cout << "Which champion do you want to prepare ? :\n";
+        for (int i=0;i<(int)unprepared.size();i++){
+            std::cout << " - " << i+1 << "\n";
+            unprepared[i]->printCardInfo();
+        }
+
+        int prepareChoice;
+        while(!(std::cin >> prepareChoice) || prepareChoice < 1 || prepareChoice > (int)unprepared.size()){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        for (Champion* champion : champions_){
+            if(champion->id() == unprepared[prepareChoice-1]->id()){
+                for (auto& ab : champion->abilities()){
+                    if(Card::triggerToString(ab.trigger) == "Expend" || Card::triggerToString(ab.trigger) == "ExpendChoice" ){
+                        if(ab.used){
+                            ab.used = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 bool Player::isFactionInPlay(Faction faction){
     for (Card* card : inPlay_){
         if(card->faction() == faction){
@@ -257,30 +299,34 @@ bool Player::isGuarded(){
 }
 
 void Player::stunChampion(){
-    std::cout << "Which champion do you want to stun ? :\n";
-    for (int i=0;i<(int)champions_.size();i++){
-        std::cout << " - " << i+1 << "\n";
-        champions_[i]->printCardInfo();
-    }
+    if(champions_.size() == 0){
+        std::cout << "This player doesnt have a stunnable champion";
+    } else {
+        std::cout << "Which champion do you want to stun ? :\n";
+        for (int i=0;i<(int)champions_.size();i++){
+            std::cout << " - " << i+1 << "\n";
+            champions_[i]->printCardInfo();
+        }
 
-    int championChoice;
-    while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)champions_.size()){
-        std::cout << "Invalid input. Please enter a valid choice: ";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
+        int championChoice;
+        while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)champions_.size()){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
 
-    std::cout << "The following champion was stunned :\n";
-    champions_[championChoice-1]->printCardInfo();
+        std::cout << "The following champion was stunned :\n";
+        champions_[championChoice-1]->printCardInfo();
 
-    for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
-    {
-        // *it sert à récupérer l'objet Card pointé par l'itérateur
-        if (discardPile_[championChoice-1]->id() == (*it)->id()){
-            it = champions_.erase(it);
-            break;
-        } else {
-                ++it;
+        for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
+        {
+            // *it sert à récupérer l'objet Card pointé par l'itérateur
+            if (discardPile_[championChoice-1]->id() == (*it)->id()){
+                it = champions_.erase(it);
+                break;
+            } else {
+                    ++it;
+            }
         }
     }
 }
