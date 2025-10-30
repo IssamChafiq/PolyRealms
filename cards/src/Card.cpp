@@ -82,7 +82,10 @@ std::string Card::triggerToString(Trigger tr) {
         case Trigger::OnPlay:    return "OnPlay";
         case Trigger::Expend:    return "Expend";
         case Trigger::Sacrifice: return "Sacrifice";
-        case Trigger::NewTurn:   return "NewTurn";
+        case Trigger::SacrificeChoice: return "SacrificeChoice";
+        case Trigger::ExpendChoice: return "ExpendChoice";
+        case Trigger::OnPlayChoice: return "OnPlayChoice";
+        case Trigger::Ally: return "Ally";
     }
     return "UnknownTrigger";
 }
@@ -97,7 +100,7 @@ std::string Card::abilityNameToString(AbilityName a) {
         case AbilityName::PrepareFriendlyChampion:  return "PrepareFriendlyChampion";
         case AbilityName::SacrificeCards:            return "SacrificeCards";
         case AbilityName::AcquireToTop:             return "AcquireToTop";
-        case AbilityName::OpponentDiscardsOne:      return "OpponentDiscardsOne";
+        case AbilityName::OpponentDiscard:      return "OpponentDiscard";
     }
     return "UnknownAbility";
 }
@@ -129,7 +132,8 @@ void Card::printCardInfo() const {
             std::cout << "  - Trigger=" << triggerToString(ab.trigger)
                       << ", Name=" << abilityNameToString(ab.ability)
                       << ", Amount=" << ab.amount
-                      << ", RequiresAlly=" << (ab.requiresAlly ? "Yes" : "No");
+                      << ", RequiresAlly=" << (ab.requiresAlly ? "Yes" : "No")
+                      << ", Used="<< (ab.used ? "Yes" : "No") << std::endl;
             if (ab.requiresAlly) {
                 std::cout << " (" << factionToString(ab.requiredAllyFaction) << " Ally)";
             }

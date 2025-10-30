@@ -13,7 +13,7 @@
 
 
 int main() {
-    std::string csvFile = "BaseSet_1stKickstarter_Cards_clean.csv";
+    std::string csvFile = "BaseSet_Cards_clean.csv";
 
     std::cout << "=== DEBUG CARD CREATION START ===\n";
 

@@ -21,7 +21,10 @@ enum class Trigger : uint8_t {
     OnPlay,     
     Expend,     
     Sacrifice,  
-    NewTurn     
+    Ally,
+    OnPlayChoice,
+    ExpendChoice,
+    SacrificeChoice
 };
 
 enum class AbilityName : uint8_t {
@@ -33,7 +36,8 @@ enum class AbilityName : uint8_t {
     PrepareFriendlyChampion,
     SacrificeCards,
     AcquireToTop,
-    OpponentDiscardsOne
+    OpponentDiscard,
+
 };
 
 // helper for parsing factions from strings like "Imperial Ally"

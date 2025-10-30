@@ -12,7 +12,11 @@ public:
     static void drawCards(Player& player, int n);
     static void stunTargetChampion(Player& opponent);
     static void prepareFriendlyChampion(Player& player);
-    static void sacrificeCards(Player& player, int num);
+    static void sacrificeCards(Player player, int num);
     static void acquireToTop(Player& player);
-    static void opponentDiscardsOne(Player& player, Player& opponent);
+    static void opponentDiscard(Player& opponent);
 };
+
+// Santé ou atatack en fonction du nombre de champions
+// manage the acquire to top
+// Manage the choice add them in enum
