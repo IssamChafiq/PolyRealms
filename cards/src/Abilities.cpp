@@ -5,75 +5,79 @@
 #include "Card.hpp"
 #include <limits>
 
-void Abilities::execute(Player* player,
+bool Abilities::execute(Player* player,
                         AbilityName name,
                         Player* opponent,
                         int amount) {
     switch (name) {
-        case AbilityName::GainGold:                gainGold(player, amount); break;
-        case AbilityName::GainCombat:              gainCombat(player, amount); break;
-        case AbilityName::GainAuthority:           gainAuthority(player, amount); break;
-        case AbilityName::DrawCards:               drawCards(player, amount); break;
-        case AbilityName::StunTargetChampion:      stunTargetChampion(opponent); break;
-        case AbilityName::PrepareFriendlyChampion: prepareFriendlyChampion(player); break;
-        case AbilityName::SacrificeCards:          sacrificeCards(player, amount); break;
-        case AbilityName::OpponentDiscard:     opponentDiscard(opponent); break;
-        case AbilityName::AddCombatPerChamp:                addCombatPerChamp(player,amount); break;
-        case AbilityName::AddCombatPerGuard:                addCombatPerGuard(player,amount)  ; break;
-        case AbilityName::AddHealthPerChamp:                addHealthPerChamp(player,amount) ; break;
-        case AbilityName::PutNextAcquiredCardInHand:        putNextAcquiredCardInHand(player); break;
-        case AbilityName::PutNextAcquiredActionCardOnDeck:  putNextAcquiredActionCardOnDeck(player) ; break;
-        case AbilityName::PutCardFromDiscardOnDeck:         putCardFromDiscardOnDeck(player) ; break;
-        case AbilityName::PutNextAcquiredCardOnDeck:        putNextAcquiredCardOnDeck(player) ; break;
-        case AbilityName::SacrificeForCombat:                 sacrificeForCombat(player,amount); break;
-        case AbilityName::DrawAndDiscard:                   drawAndDiscard(player,amount) ; break;
-        case AbilityName::MayDrawAndDiscard:        mayDrawAndDiscard(player, amount) ; break;
-        case AbilityName::PutChampFromDiscardOnDeck:        putChampFromDiscardOnDeck(player) ; break;
-        case AbilityName::AddCombatPerAlly:        addCombatPerAlly(player, amount) ; break;
+        case AbilityName::GainGold:                return gainGold(player, amount); break;
+        case AbilityName::GainCombat:              return gainCombat(player, amount); break;
+        case AbilityName::GainAuthority:           return gainAuthority(player, amount); break;
+        case AbilityName::DrawCards:               return drawCards(player, amount); break;
+        case AbilityName::StunTargetChampion:      return stunTargetChampion(opponent); break;
+        case AbilityName::PrepareFriendlyChampion: return prepareFriendlyChampion(player); break;
+        case AbilityName::SacrificeCards:          return sacrificeCards(player, amount); break;
+        case AbilityName::OpponentDiscard:     return opponentDiscard(opponent); break;
+        case AbilityName::AddCombatPerChamp:                return addCombatPerChamp(player,amount); break;
+        case AbilityName::AddCombatPerGuard:                return addCombatPerGuard(player,amount)  ; break;
+        case AbilityName::AddHealthPerChamp:                return addHealthPerChamp(player,amount) ; break;
+        case AbilityName::PutNextAcquiredCardInHand:        return putNextAcquiredCardInHand(player); break;
+        case AbilityName::PutNextAcquiredActionCardOnDeck:  return putNextAcquiredActionCardOnDeck(player) ; break;
+        case AbilityName::PutCardFromDiscardOnDeck:         return putCardFromDiscardOnDeck(player) ; break;
+        case AbilityName::PutNextAcquiredCardOnDeck:        return putNextAcquiredCardOnDeck(player) ; break;
+        case AbilityName::SacrificeForCombat:                 return sacrificeForCombat(player,amount); break;
+        case AbilityName::DrawAndDiscard:                   return drawAndDiscard(player,amount) ; break;
+        case AbilityName::MayDrawAndDiscard:         return mayDrawAndDiscard(player, amount) ; break;
+        case AbilityName::PutChampFromDiscardOnDeck:        return putChampFromDiscardOnDeck(player) ; break;
+        case AbilityName::AddCombatPerAlly:        return addCombatPerAlly(player, amount) ; break;
     }
 }
 
-void Abilities::gainGold(Player* player, int amount) {
+bool Abilities::gainGold(Player* player, int amount) {
     player->setGold(player->getGold() + amount);
+    return true;
 }
 
-void Abilities::gainCombat(Player* player, int amount) {
+bool Abilities::gainCombat(Player* player, int amount) {
+    return true;
     player->setCombat(player->getCombat() + amount);
 }
 
-void Abilities::gainAuthority(Player* player, int amount) {
+bool Abilities::gainAuthority(Player* player, int amount) {
+    return true;
     player->setAuthority(player->getAuthority() + amount);
 }
 
-void Abilities::drawCards(Player* player, int n) {
-    player->draw(n);
+bool Abilities::drawCards(Player* player, int n) {
+    return player->draw(n);
 }
 
-void Abilities::stunTargetChampion(Player* opponent) {
-    opponent->stunChampion();
+bool Abilities::stunTargetChampion(Player* opponent) {
+    return opponent->stunChampion();
 }
 
-void Abilities::prepareFriendlyChampion(Player* player) {
-    player->prepareFriendlyChampion();
+bool Abilities::prepareFriendlyChampion(Player* player) {
+    return player->prepareFriendlyChampion();
 }
 
-void Abilities::sacrificeCards(Player* player, int n) {
-    player->cardEffectSacrifice(n);
+bool Abilities::sacrificeCards(Player* player, int n) {
+    return player->cardEffectSacrifice(n);
 }
 
-void Abilities::opponentDiscard(Player* opponent) {
-    opponent->discard(1);
+bool Abilities::opponentDiscard(Player* opponent) {
+    return opponent->discard(1);
 }
 
-void Abilities::addCombatPerChamp(Player* player,int amount){
+bool Abilities::addCombatPerChamp(Player* player,int amount){
     int n = 0;
     for (int i=0; i<(int)player->getChampions().size();i++) {
         n++;
     }
     player->setCombat(player->getCombat() + amount * n);
+    return true;
 }
 
-void Abilities::addCombatPerGuard(Player* player,int amount){
+bool Abilities::addCombatPerGuard(Player* player,int amount){
     int n = 0;
     for (Champion* c : player->getChampions()){
         if (c->isGuard()) {
@@ -81,37 +85,46 @@ void Abilities::addCombatPerGuard(Player* player,int amount){
         }
     }
     player->setCombat(player->getCombat() + amount * n);
+    return true;
 }
 
-void Abilities::addHealthPerChamp(Player* player,int amount){
+bool Abilities::addHealthPerChamp(Player* player,int amount){
     int n = 0;
     for (int i=0; i<(int)player->getChampions().size();i++) n++;
     player->setAuthority(player->getAuthority() + amount * n);
+    return true;
 }
 
-void Abilities::putNextAcquiredCardInHand(Player* player){
+bool Abilities::putNextAcquiredCardInHand(Player* player){
     player->setNextBuyInHand(true);
+    return true;
 }
 
-void Abilities::putNextAcquiredActionCardOnDeck(Player* player){
-    player->setNextActionBuyOnDeck(true); 
+bool Abilities::putNextAcquiredActionCardOnDeck(Player* player){
+    player->setNextActionBuyOnDeck(true);
+    return true;
 }
 
-void Abilities::putCardFromDiscardOnDeck(Player* player){
+bool Abilities::putCardFromDiscardOnDeck(Player* player){
     player->getCardFromDiscardToDeck();
+    return true;
 }
 
-void Abilities::putNextAcquiredCardOnDeck(Player* player){
+bool Abilities::putNextAcquiredCardOnDeck(Player* player){
     player->setNextBuyTopOfDeck(true);
+    return true;
 }
 
-void Abilities::sacrificeForCombat(Player* player,int amount){
+bool Abilities::sacrificeForCombat(Player* player,int amount){
     if(player->cardEffectSacrifice(1)){
         player->setCombat(player->getCombat() + amount);
+        return true;
+    } else {
+        return false;
     }
 }
 
-void Abilities::mayDrawAndDiscard(Player* player,int amount){
+bool Abilities::mayDrawAndDiscard(Player* player,int amount){
     std::cout << "Do you want to draw " << amount << " card(s) ? (1. Yes /2. No)\n";
     int drawChoice;
     while(!(std::cin >> drawChoice) || drawChoice < 1 || drawChoice > 2){
@@ -120,23 +133,22 @@ void Abilities::mayDrawAndDiscard(Player* player,int amount){
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     if(drawChoice == 1){
-        player->draw(amount);
-        player->discard(amount);
+        return player->draw(amount) && player->discard(amount);
     } else if (drawChoice == 2){
         std::cout << "No cards drawn.\n";
+        return false;
     }
 }
 
-void Abilities::drawAndDiscard(Player* player,int amount){
-    player->draw(amount);
-    player->discard(amount);
+bool Abilities::drawAndDiscard(Player* player,int amount){
+    return player->draw(amount) && player->discard(amount);
 }
 
-void Abilities::putChampFromDiscardOnDeck(Player* player){
+bool Abilities::putChampFromDiscardOnDeck(Player* player){
     player->getChampionFromDiscardToDeck();
 }
 
-void Abilities::addCombatPerAlly(Player* player, int amount) {
+bool Abilities::addCombatPerAlly(Player* player, int amount) {
     // Ajoute du combat pour chaque autre carte alliée de la même faction (Wild dans la plupart des cas)
     // Parcourt les cartes actuellement en jeu (actions + champions)
     int alliesCount = 0;
@@ -159,4 +171,5 @@ void Abilities::addCombatPerAlly(Player* player, int amount) {
     } else {
         std::cout << "Aucun allié Wild en jeu, aucun bonus de combat." << std::endl;
     }
+    return true;
 }

@@ -50,20 +50,20 @@ public:
     void setChampions(std::vector<Champion*> champions) {champions_ = champions;};
     void removeChampion(Champion* champion);
 
-    void draw(int n);
+    bool draw(int n);
     void play(Card* card);
     bool buy(Card* card, Market market);
     bool godmodeBuy(Card* card, Market market);
 
-    void discard(int amount);
+    bool discard(int amount);
     bool cardEffectSacrifice(int amount);
-    void prepareFriendlyChampion();
-    void getChampionFromDiscardToDeck();
+    bool prepareFriendlyChampion();
+    bool getChampionFromDiscardToDeck();
     void getCardFromDiscardToDeck();
     bool isFactionInPlay(Faction faction);
     bool isFactionInPlayExclude(Faction faction, Card* card);
     bool isGuarded();
-    void stunChampion();
+    bool stunChampion();
     void attack(Player* player);
     void useAbility(int cardChoice);
 

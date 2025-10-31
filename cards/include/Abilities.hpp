@@ -5,27 +5,27 @@
 
 class Abilities {
 public:
-    static void execute(Player* player, AbilityName name, Player* opponent, int amount = 0);
-    static void gainGold(Player* player, int amount);
-    static void gainCombat(Player* player, int amount);
-    static void gainAuthority(Player* player, int amount);
-    static void drawCards(Player* player, int n);
-    static void stunTargetChampion(Player* opponent);
-    static void prepareFriendlyChampion(Player* player);
-    static void sacrificeCards(Player* player, int num);
-    static void opponentDiscard(Player* opponent);
-    static void addCombatPerChamp(Player* player,int amount);
-    static void addCombatPerGuard(Player* player,int amount);
-    static void addHealthPerChamp(Player* player,int amount);
-    static void putNextAcquiredCardInHand(Player* player);
-    static void putNextAcquiredActionCardOnDeck(Player* player);
-    static void putCardFromDiscardOnDeck(Player* player);
-    static void putNextAcquiredCardOnDeck(Player* player);
-    static void sacrificeForCombat(Player* player,int amount);
-    static void mayDrawAndDiscard(Player* player,int amount);
-    static void drawAndDiscard(Player* player,int amount);
-    static void putChampFromDiscardOnDeck(Player* player);
-    static void addCombatPerAlly(Player* player, int amount);
+    static bool execute(Player* player, AbilityName name, Player* opponent, int amount = 0);
+    static bool gainGold(Player* player, int amount);
+    static bool gainCombat(Player* player, int amount);
+    static bool gainAuthority(Player* player, int amount);
+    static bool drawCards(Player* player, int n);
+    static bool stunTargetChampion(Player* opponent);
+    static bool prepareFriendlyChampion(Player* player);
+    static bool sacrificeCards(Player* player, int num);
+    static bool opponentDiscard(Player* opponent);
+    static bool addCombatPerChamp(Player* player,int amount);
+    static bool addCombatPerGuard(Player* player,int amount);
+    static bool addHealthPerChamp(Player* player,int amount);
+    static bool putNextAcquiredCardInHand(Player* player);
+    static bool putNextAcquiredActionCardOnDeck(Player* player);
+    static bool putCardFromDiscardOnDeck(Player* player);
+    static bool putNextAcquiredCardOnDeck(Player* player);
+    static bool sacrificeForCombat(Player* player,int amount);
+    static bool mayDrawAndDiscard(Player* player,int amount);
+    static bool drawAndDiscard(Player* player,int amount);
+    static bool putChampFromDiscardOnDeck(Player* player);
+    static bool addCombatPerAlly(Player* player, int amount);
 };
 
 

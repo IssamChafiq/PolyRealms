@@ -443,15 +443,23 @@ void Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
         if (playerList_[spellChoice-1] == player){
             std::cout << "You cannot target yourself with this ability.\n";
         } else {
-            Abilities::execute(player,ab.ability,playerList_[spellChoice-1],ab.amount);
+            if(Abilities::execute(player,ab.ability,playerList_[spellChoice-1],ab.amount)){
+                std::cout << "Ability used :\n";
+                ab.printAbility();
+                ab.used = true;
+            } else {
+                std::cout << "Couldn't use the following ability, you may try to use it again after making sure you are able to use it :\n";
+                ab.printAbility();
+            }
+        }
+    } else {
+        if(Abilities::execute(player,ab.ability,player,ab.amount)){
             std::cout << "Ability used :\n";
             ab.printAbility();
             ab.used = true;
+        } else {
+            std::cout << "Couldn't use the following ability, you may try to use it again after making sure you are able to use it :\n";
+            ab.printAbility();
         }
-    } else {
-        Abilities::execute(player,ab.ability,player,ab.amount);
-        std::cout << "Ability used :\n";
-        ab.printAbility();
-        ab.used = true;
     }
 }

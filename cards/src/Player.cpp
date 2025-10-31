@@ -36,9 +36,13 @@ void Player::removeChampion(Champion* champion){
     }
 }
 
-void Player::draw(int n){
+bool Player::draw(int n){
     int cardsLeft = deck_.getDeckContents().size();
-    if(n >= cardsLeft){
+    int discardLeft = discardPile_.size();
+    if(cardsLeft + discardLeft < n){
+        std::cout << "Impossible de piocher " << n << " cartes, on en pioche " << cardsLeft + discardLeft << " à la place.\n";
+        draw(cardsLeft + discardLeft);
+    } else if(n >= cardsLeft){
         // Je tire toutes les cartes restantes dans le deck
         std::vector<Card*> listLeft = deck_.draw(cardsLeft);
         hand_.insert(hand_.end(), listLeft.cbegin(), listLeft.cend());
@@ -50,11 +54,14 @@ void Player::draw(int n){
         // Je pioche le reste des cartes
         std::vector<Card*> listNew = deck_.draw(n-cardsLeft);
         hand_.insert(hand_.end(), listNew.cbegin(), listNew.cend());
+        std::cout << name_ << " has drawn " << n << " cards.\n";
     } else {
         // Je pioche normalement
         std::vector<Card*> drawn = deck_.draw(n);
         hand_.insert(hand_.end(), drawn.cbegin(), drawn.cend());
+        std::cout << name_ << " has drawn " << n << " cards.\n";
     }
+    return true;
 }
 
 void Player::play(Card* card){
@@ -129,7 +136,7 @@ bool Player::godmodeBuy(Card* card, Market market){
     }  
 }
 
-void Player::discard(int amount){
+bool Player::discard(int amount){
     std::cout << name_ << ", you have to discard " << amount << " cards :\n";
     for (int i=0;i<amount;i++){
         if ((int)hand_.size() > 0){
@@ -167,6 +174,7 @@ void Player::discard(int amount){
             break;
         } 
     }
+    return true;
 }
 
 bool Player::cardEffectSacrifice(int amount){
@@ -260,7 +268,7 @@ bool Player::cardEffectSacrifice(int amount){
     return false;
 }
 
-void Player::prepareFriendlyChampion(){
+bool Player::prepareFriendlyChampion(){
     std::vector<Champion*> unprepared = {};
     for (Champion* champion : champions_){
         for (const auto& ab : champion->abilities()){
@@ -274,6 +282,7 @@ void Player::prepareFriendlyChampion(){
     }
     if (unprepared.empty()){
         std::cout << "You do not have a champion you can prepare\n";
+        return false;
     } else {
         std::cout << "Which champion do you want to prepare ? :\n";
         for (int i=0;i<(int)unprepared.size();i++){
@@ -302,9 +311,10 @@ void Player::prepareFriendlyChampion(){
             }
         }
     }
+    return true;
 }
 
-void Player::getChampionFromDiscardToDeck(){
+bool Player::getChampionFromDiscardToDeck(){
     std::vector<Champion*> championsDiscard = {};
     for (Card* card : discardPile_){
         if(card->isChampion()){
@@ -313,6 +323,7 @@ void Player::getChampionFromDiscardToDeck(){
     }
     if(championsDiscard.size() == 0){
         std::cout << "There are no champions in the discard pile\n";
+        return false;
     } else {
         std::cout << "Which champion do you want to bring to the top of your deck ?\n";
         for (int i=0;i<(int)championsDiscard.size();i++){
@@ -340,6 +351,7 @@ void Player::getChampionFromDiscardToDeck(){
         std::cout << "Champion added to the top of the deck :\n";
         championsDiscard[choice-1]->printCardInfo();
     }
+    return true;
 }
 
 void Player::getCardFromDiscardToDeck(){
@@ -422,9 +434,10 @@ bool Player::isGuarded(){
     return false;
 }
 
-void Player::stunChampion(){
+bool Player::stunChampion(){
     if(champions_.size() == 0){
         std::cout << "This player doesnt have a stunnable champion";
+        return false;
     } else {
         if(isGuarded()){
             std::vector<Champion*> guards = getGuards();
@@ -488,6 +501,7 @@ void Player::stunChampion(){
             }
         }
     }
+    return true;
 }
 
 void Player::attack(Player* player){
