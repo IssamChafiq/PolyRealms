@@ -8,7 +8,7 @@
 class Player {
     std::string name_;
     int authority_;
-    int gold_ = 15;
+    int gold_ = 0;
     int combat_ = 0;
     Deck deck_;
     std::vector<Card*> hand_ = {};
@@ -52,8 +52,8 @@ public:
 
     bool draw(int n);
     void play(Card* card);
-    bool buy(Card* card, Market market);
-    bool godmodeBuy(Card* card, Market market);
+    bool buy(Card* card, Market& market);
+    bool godmodeBuy(Card* card, Market& market);
 
     bool discard(int amount);
     bool cardEffectSacrifice(int amount);

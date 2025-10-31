@@ -30,6 +30,7 @@ bool Abilities::execute(Player* player,
         case AbilityName::MayDrawAndDiscard:         return mayDrawAndDiscard(player, amount) ; break;
         case AbilityName::PutChampFromDiscardOnDeck:        return putChampFromDiscardOnDeck(player) ; break;
         case AbilityName::AddCombatPerAlly:        return addCombatPerAlly(player, amount) ; break;
+        default: return true;
     }
 }
 
@@ -133,11 +134,12 @@ bool Abilities::mayDrawAndDiscard(Player* player,int amount){
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     if(drawChoice == 1){
-        return player->draw(amount) && player->discard(amount);
+        return (player->draw(amount) && player->discard(amount));
     } else if (drawChoice == 2){
         std::cout << "No cards drawn.\n";
         return false;
     }
+    return false;
 }
 
 bool Abilities::drawAndDiscard(Player* player,int amount){
@@ -145,13 +147,13 @@ bool Abilities::drawAndDiscard(Player* player,int amount){
 }
 
 bool Abilities::putChampFromDiscardOnDeck(Player* player){
-    player->getChampionFromDiscardToDeck();
+    return player->getChampionFromDiscardToDeck();
 }
 
 bool Abilities::addCombatPerAlly(Player* player, int amount) {
     // Ajoute du combat pour chaque autre carte alliée de la même faction (Wild dans la plupart des cas)
     // Parcourt les cartes actuellement en jeu (actions + champions)
-    int alliesCount = 0;
+    int alliesCount = -1; // La carte se compte elle-même et je sais pas vraiment comment l'en empêcher donc je commence à -1 pour que ça fasse 0 en la comptant.
 
     // On compte toutes les cartes "Wild" en jeu (hors la carte déclencheuse)
     for (Card* c : player->getInPlay()) {

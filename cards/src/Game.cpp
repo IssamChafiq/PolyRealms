@@ -6,18 +6,26 @@
 #include <sstream>
 #include <limits>
 
-// Déclaration de la sacrificePile_ statique afin de pouvoir y accéder dans Game::sacrifice
+// Déclaration des variables statiques
 std::vector<Card*> Game::sacrificePile_ = {};
 std::vector<Player*> Game::playerList_ = {};
-int Game::fireGemStack_ = 16;
+std::vector<Card*> Game::fireGems_ = {};
 
-Game::Game(Market market, std::vector<Card*> startingDeck, Card* fireGem): market_(market), startingDeck_(startingDeck), fireGem_(fireGem) {}
+Game::Game(Market market, std::vector<Card*> startingDeck,std::vector<Card*> fireGems): market_(market), startingDeck_(startingDeck) {
+    fireGems_ = fireGems;
+}
 
 Game::~Game() {
     for (Player* player : playerList_) {
         delete player;
     }
     playerList_.clear();
+    
+    for (Card* c : sacrificePile_) delete c;
+    sacrificePile_.clear();
+
+    for (Card* c : fireGems_) delete c;
+    fireGems_.clear();
 };
 
 void Game::initialize(){
@@ -82,7 +90,7 @@ void Game::startFFA(){
     while(!gameOver){
         for(Player* player : playerList_){
             bool turnOver = false;
-            std::cout << "\n\nIt's " << player->getName() << "'s turn.\n";
+            std::cout << "\nIt's " << player->getName() << "'s turn.\n";
             // On réutilise les capacités onPlay des champions à chaque tour
             for(Champion* champion : player->getChampions()){
                 for(auto& ab : champion->abilities()){
@@ -92,7 +100,7 @@ void Game::startFFA(){
                 }
             }
             while(!turnOver){
-                std::cout << "Choose an action:\n\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Use a spell - 5. Attack - 6. End Turn.\n";
+                std::cout << "Choose an action:\n\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Attack - 5. Use a spell - 6. End Turn.\n";
                 std::cout << "Type 'godmode' to activate godmode or access its features.\n";
                 std::cout << "Type 'exit' or 'quit' to exit the game.\n";
                 
@@ -134,7 +142,7 @@ void Game::startFFA(){
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
                             playerList_[healthChoice-1]->setAuthority(1);
-                            std::cout << playerList_[healthChoice-1] << " now has 1 health point.\n";
+                            std::cout << playerList_[healthChoice-1]->getName() << " now has 1 health point.\n";
                         } else if(godmodeChoice == 2){
                             std::cout << "Godmode deactivated !";
                             godmode_ = false;
@@ -192,8 +200,10 @@ void Game::startFFA(){
                         */
                         if(godmode_){
                             std::cout << "Which card do you want to buy (godmode activated, you can buy from the market deck too) ? :\n";
-                            std::cout << " - 1. Fire Gem ( " << fireGemStack_ << " left):\n";
-                            fireGem_->printCardInfo();
+                            std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
+                            if(fireGems_.size() > 0){
+                                fireGems_.front()->printCardInfo();
+                            }
                             std::cout << "Market row cards :\n";
                             for (int i=0;i<(int)market_.getMarketRow().size();i++){
                                 std::cout << " - " << i+2 << ":\n";
@@ -212,9 +222,9 @@ void Game::startFFA(){
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
                             if(godmodeBuyChoice == 1){
-                                if(fireGemStack_ > 0){
-                                    if(player->godmodeBuy(fireGem_,market_)){
-                                        fireGemStack_ -= 1;
+                                if((int)fireGems_.size() > 0){
+                                    if(player->godmodeBuy(fireGems_.front(),market_)){
+                                        fireGems_.erase(fireGems_.begin());
                                     }
                                 } else {
                                     std::cout << "Not any fire gems left.\n";
@@ -226,8 +236,10 @@ void Game::startFFA(){
                             }
                         } else {
                             std::cout << "Which card do you want to buy ? :\n";
-                            std::cout << " - 1. Fire Gem ( " << fireGemStack_ << " left):\n";
-                            fireGem_->printCardInfo();
+                            std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
+                            if(fireGems_.size() > 0){
+                                fireGems_.front()->printCardInfo();
+                            }
                             for (int i=0;i<(int)market_.getMarketRow().size();i++){
                                 std::cout << " - " << i+2 << ":\n";
                                 market_.getMarketRow()[i]->printCardInfo();
@@ -239,9 +251,9 @@ void Game::startFFA(){
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
                             if(buyChoice == 1){
-                                if(fireGemStack_ > 0){
-                                    if(player->buy(fireGem_,market_)){
-                                        fireGemStack_ -= 1;
+                                if(fireGems_.size() > 0){
+                                    if(player->buy(fireGems_.front(),market_)){
+                                        fireGems_.erase(fireGems_.begin());
                                     }
                                 } else {
                                     std::cout << "Not any fire gems left.\n";
@@ -329,21 +341,16 @@ void Game::startFFA(){
                         player->useAbility(cardChoice);
                         break; 
                     case 6:
-                        // Logique de fin de tour : phases de défausse et de pioche, on regarde si il y a fin de partie.
-                        for (Player* p : playerList_){
-                            if(p->getAuthority() <= 0){
+                        std::vector<Player*> toRemove;
+                        for (Player* p : playerList_) {
+                            if (p->getAuthority() <= 0) {
                                 std::cout << "The player " << p->getName() << " has died.\n";
-                                for (std::vector<Player*>::iterator it = playerList_.begin(); it != playerList_.end();)
-                                {
-                                    // *it sert à récupérer l'objet Card pointé par l'itérateur
-                                    if (p->getName() == (*it)->getName()){
-                                        it = playerList_.erase(it);
-                                        break;
-                                    } else {
-                                            ++it;
-                                    }
-                                }
+                                toRemove.push_back(p);
                             }
+                        }
+                        for (Player* dead : toRemove) {
+                            auto it = std::find(playerList_.begin(), playerList_.end(), dead);
+                            if (it != playerList_.end()) playerList_.erase(it);
                         }
                         if((int)playerList_.size() == 1){
                             std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
@@ -412,9 +419,7 @@ void Game::lookAt(Player* player){
 // Sert juste à mettre des cartes dans la pile de sacrifices
 void Game::sacrifice(Card* card){
     if(card->name() == "Fire Gem"){
-        fireGemStack_ += 1;
-        // Les fire gems ont toutes le même id dans cette implémentation du jeu.
-        // Je m'assure donc ici qu'il n'y ait jamais de problème où un joueur ne peut pas utiliser sa fire gem car un autre l'a utilisé avant en remettant toujours la capacité à non used après un sacrifice.
+        fireGems_.push_back(card);
         for (auto& ab : card->abilities()){
             ab.used = false;
         }
@@ -426,9 +431,9 @@ void Game::sacrifice(Card* card){
 }
 
 // Sert à exécuter une capacité et à demander un ennemi à cibler si besoin.
-void Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
+bool Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
     // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
-    if(Card::abilityNameToString(ab.ability) == "OpponentDiscard" || Card::abilityNameToString(ab.ability) == "StunTargetChampion"){
+    if(ab.ability == AbilityName::OpponentDiscard || ab.ability == AbilityName::StunTargetChampion){
         std::cout << "Which player do you want to use " << Card::abilityNameToString(ab.ability) << " on ?\n";
         for (int i=0;i<(int)playerList_.size();i++){
             std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
@@ -447,9 +452,11 @@ void Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
                 std::cout << "Ability used :\n";
                 ab.printAbility();
                 ab.used = true;
+                return true;
             } else {
                 std::cout << "Couldn't use the following ability, you may try to use it again after making sure you are able to use it :\n";
                 ab.printAbility();
+                return false;
             }
         }
     } else {
@@ -457,9 +464,12 @@ void Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
             std::cout << "Ability used :\n";
             ab.printAbility();
             ab.used = true;
+            return true;
         } else {
             std::cout << "Couldn't use the following ability, you may try to use it again after making sure you are able to use it :\n";
             ab.printAbility();
+            return false;
         }
     }
+    return false;
 }

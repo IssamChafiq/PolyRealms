@@ -38,7 +38,24 @@ int main() {
         CardCreator::findCard("shortsword-1",cards)
     };
 
-    Card* fireGem = CardCreator::findCard("fire-gem-1",cards);
+    std::vector<Card*> fireGems = {
+        CardCreator::findCard("fire-gem-1",cards),
+        CardCreator::findCard("fire-gem-2",cards),
+        CardCreator::findCard("fire-gem-3",cards),
+        CardCreator::findCard("fire-gem-4",cards),
+        CardCreator::findCard("fire-gem-5",cards),
+        CardCreator::findCard("fire-gem-6",cards),
+        CardCreator::findCard("fire-gem-7",cards),
+        CardCreator::findCard("fire-gem-8",cards),
+        CardCreator::findCard("fire-gem-9",cards),
+        CardCreator::findCard("fire-gem-10",cards),
+        CardCreator::findCard("fire-gem-11",cards),
+        CardCreator::findCard("fire-gem-12",cards),
+        CardCreator::findCard("fire-gem-13",cards),
+        CardCreator::findCard("fire-gem-14",cards),
+        CardCreator::findCard("fire-gem-15",cards),
+        CardCreator::findCard("fire-gem-16",cards),
+    };
 
     // Je récupère toutes les cartes du deck du marché (elles sont toutes avant la première firegem) pour éviter de les chercher une par une et de faire des recherches à l'infini en boucle
     std::vector<Card*> marketCards = {};
@@ -52,7 +69,7 @@ int main() {
 
     Market market = Market(Deck(marketCards));
 
-    Game game = Game(market, starterDeck, fireGem);
+    Game game = Game(market, starterDeck, fireGems);
 
     std::cout << "\n=== GAME START ===\n";
 

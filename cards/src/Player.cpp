@@ -84,7 +84,7 @@ void Player::play(Card* card){
     }
 
     if(card->isChampion()){
-        champions_.push_back((Champion*)card);
+        champions_.push_back(static_cast<Champion*>(card));
     } else {
         inPlay_.push_back(card);
     }
@@ -92,7 +92,7 @@ void Player::play(Card* card){
     card->printCardInfo();
 }
 
-bool Player::buy(Card* card, Market market){
+bool Player::buy(Card* card, Market& market){
     if(gold_ >= card->cost()){
         gold_ -= card->cost();
         if(nextActionBuyOnDeck && card->type() == CardType::Action){
@@ -119,7 +119,7 @@ bool Player::buy(Card* card, Market market){
     }  
 }
 
-bool Player::godmodeBuy(Card* card, Market market){
+bool Player::godmodeBuy(Card* card, Market& market){
     if(gold_ >= card->cost()){
         gold_ -= card->cost();
         hand_.push_back(card);
@@ -236,7 +236,7 @@ bool Player::cardEffectSacrifice(int amount){
                     }
 
                     int discardSacrificeChoice;
-                    while(!(std::cin >> discardSacrificeChoice) || discardSacrificeChoice < 1 || discardSacrificeChoice > (int)hand_.size()){
+                    while(!(std::cin >> discardSacrificeChoice) || discardSacrificeChoice < 1 || discardSacrificeChoice > (int)discardPile_.size()){
                         std::cout << "Invalid input. Please enter a valid choice: ";
                         std::cin.clear();
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -300,7 +300,7 @@ bool Player::prepareFriendlyChampion(){
         for (Champion* champion : champions_){
             if(champion->id() == unprepared[prepareChoice-1]->id()){
                 for (auto& ab : champion->abilities()){
-                    if(Card::triggerToString(ab.trigger) == "Expend" || Card::triggerToString(ab.trigger) == "ExpendChoice" ){
+                    if(ab.trigger == Trigger::Expend || ab.trigger == Trigger::ExpendChoice){
                         if(ab.used){
                             ab.used = false;
                         }
@@ -318,7 +318,7 @@ bool Player::getChampionFromDiscardToDeck(){
     std::vector<Champion*> championsDiscard = {};
     for (Card* card : discardPile_){
         if(card->isChampion()){
-            championsDiscard.push_back((Champion*)card);
+            championsDiscard.push_back(static_cast<Champion*>(card));
         }
     }
     if(championsDiscard.size() == 0){
@@ -535,14 +535,9 @@ void Player::attack(Player* player){
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         if (choice == 1){
-            int temp = combat_-player->getAuthority();
-            player->setAuthority(player->getAuthority()-combat_);
-            // Pour ne pas perdre du combat lors d'un overkill
-            if (temp > 0){
-                combat_ = temp;
-            } else {
-                combat_ = 0;
-            }
+            int dmg = std::min(combat_, player->getAuthority());
+            player->setAuthority(player->getAuthority() - dmg);
+            combat_ -= dmg;
         } else if (choice == 2){
             for (int i=0;i<(int)player->getChampions().size();i++){
             std::cout << " - " << i+1 << ". " << player->getChampions()[i]->name() << ":";
@@ -550,7 +545,7 @@ void Player::attack(Player* player){
             std::cout << "\n";
 
             int championChoice;
-            while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)champions_.size()){
+            while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)player->getChampions().size()){
                 std::cout << "Invalid input. Please enter a valid choice: ";
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -636,19 +631,20 @@ void Player::useAbility(int cardChoice){
                         } 
                     }
                     std::cout << "Chose the effect you want to use :\n";
-                    for (int i=0;i<(int)choiceAbilities.size();i++){
-                        std::cout << " - " << i+1 << "\n";
-                        choiceAbilities[i]->printAbility();
-                        // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
-                        choiceAbilities[i]->used = true;
-                    }
                     int effectChoice;
                     while(!(std::cin >> effectChoice) || effectChoice < 1 || effectChoice > (int)choiceAbilities.size()){
                         std::cout << "Invalid input. Please enter a valid choice: ";
                         std::cin.clear();
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     }
-                    Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1]);
+                    if(Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1])){
+                        for (int i=0;i<(int)choiceAbilities.size();i++){
+                            std::cout << " - " << i+1 << "\n";
+                            choiceAbilities[i]->printAbility();
+                            // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
+                            choiceAbilities[i]->used = true;
+                        }
+                    }
                 } else {
                     std::cout << "This card does not have an expendChoice ability.\n";
                 }
@@ -756,19 +752,20 @@ void Player::useAbility(int cardChoice){
                         } 
                     }
                     std::cout << "Chose the effect you want to use :\n";
-                    for (int i=0;i<(int)choiceAbilities.size();i++){
-                        std::cout << " - " << i+1 << "\n";
-                        choiceAbilities[i]->printAbility();
-                        // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
-                        choiceAbilities[i]->used = true;
-                    }
                     int effectChoice;
                     while(!(std::cin >> effectChoice) || effectChoice < 1 || effectChoice > (int)choiceAbilities.size()){
                         std::cout << "Invalid input. Please enter a valid choice: ";
                         std::cin.clear();
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     }
-                    Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1]);
+                    if(Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1])){
+                        for (int i=0;i<(int)choiceAbilities.size();i++){
+                            std::cout << " - " << i+1 << "\n";
+                            choiceAbilities[i]->printAbility();
+                            // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
+                            choiceAbilities[i]->used = true;
+                        }
+                    }
                 } else {
                     std::cout << "This card does not have an expendChoice ability.\n";
                 }
