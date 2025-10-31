@@ -258,7 +258,7 @@ bool Player::cardEffectSacrifice(int amount){
                     }
                     return true;
                 } else {
-                    std::cout << "No cards left in hand : cannot sacrifice";
+                    std::cout << "No cards left in discard pile : cannot sacrifice\n";
                     return false;
                 }
                 break;

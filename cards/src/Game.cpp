@@ -215,9 +215,10 @@ void Game::startFFA(){
                                 std::cout << " - " << i+(int)market_.getMarketRow().size()+2 << ":\n";
                                 market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
                             }
+                            std::cout << " - " << market_.getMarketRow().size()+market_.getMarketDeck().getDeckContents().size()+2 << ". Return.\n";
                             std::cout << "You have " << player->getGold() << " gold.\n";
                             int godmodeBuyChoice;
-                            while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+1){
+                            while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -230,6 +231,8 @@ void Game::startFFA(){
                                 } else {
                                     std::cout << "Not any fire gems left.\n";
                                 }
+                            } else if(godmodeBuyChoice == market_.getMarketRow().size()+market_.getMarketDeck().getDeckContents().size()+2){
+                                return;
                             } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
                                 player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
                             } else {
@@ -245,6 +248,7 @@ void Game::startFFA(){
                                 std::cout << " - " << i+2 << ":\n";
                                 market_.getMarketRow()[i]->printCardInfo();
                             }
+                            std::cout << " - " << market_.getMarketRow().size()+2 << ". Return.\n";
                             int buyChoice;
                             while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
@@ -259,6 +263,7 @@ void Game::startFFA(){
                                 } else {
                                     std::cout << "Not any fire gems left.\n";
                                 }
+                            } else if(buyChoice == market_.getMarketRow().size()+2) {
                             } else {
                                 player->buy(market_.getMarketRow()[buyChoice-2],market_);
                             }
