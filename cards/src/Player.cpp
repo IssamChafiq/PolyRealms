@@ -631,16 +631,21 @@ void Player::useAbility(int cardChoice){
                         } 
                     }
                     std::cout << "Chose the effect you want to use :\n";
+
+                    for (int i=0;i<(int)choiceAbilities.size();i++){
+                        std::cout << " - " << i+1 << "\n";
+                        choiceAbilities[i]->printAbility();
+                    }
+
                     int effectChoice;
                     while(!(std::cin >> effectChoice) || effectChoice < 1 || effectChoice > (int)choiceAbilities.size()){
                         std::cout << "Invalid input. Please enter a valid choice: ";
                         std::cin.clear();
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     }
+
                     if(Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1])){
                         for (int i=0;i<(int)choiceAbilities.size();i++){
-                            std::cout << " - " << i+1 << "\n";
-                            choiceAbilities[i]->printAbility();
                             // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
                             choiceAbilities[i]->used = true;
                         }
@@ -751,6 +756,11 @@ void Player::useAbility(int cardChoice){
                             }
                         } 
                     }
+                    for (int i=0;i<(int)choiceAbilities.size();i++){
+                            std::cout << " - " << i+1 << "\n";
+                            choiceAbilities[i]->printAbility();
+                    }
+
                     std::cout << "Chose the effect you want to use :\n";
                     int effectChoice;
                     while(!(std::cin >> effectChoice) || effectChoice < 1 || effectChoice > (int)choiceAbilities.size()){
@@ -758,10 +768,9 @@ void Player::useAbility(int cardChoice){
                         std::cin.clear();
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     }
+                    
                     if(Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1])){
                         for (int i=0;i<(int)choiceAbilities.size();i++){
-                            std::cout << " - " << i+1 << "\n";
-                            choiceAbilities[i]->printAbility();
                             // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
                             choiceAbilities[i]->used = true;
                         }
