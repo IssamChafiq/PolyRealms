@@ -83,7 +83,7 @@ void Player::play(Card* card){
     }
 }
 
-void Player::buy(Card* card, Market market){
+bool Player::buy(Card* card, Market market){
     if(gold_ >= card->cost()){
         gold_ -= card->cost();
         if(nextActionBuyOnDeck && card->type() == CardType::Action){
@@ -97,20 +97,28 @@ void Player::buy(Card* card, Market market){
         } else {
             discardPile_.push_back(card);
         }
-        market.sell(card);
+        if(!(card->name() == "Fire Gem")){
+            market.sell(card);
+        }
+        return true;
     } else {
         std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
+        return false;
         // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
 }
 
-void Player::godmodeBuy(Card* card, Market market){
+bool Player::godmodeBuy(Card* card, Market market){
     if(gold_ >= card->cost()){
         gold_ -= card->cost();
         hand_.push_back(card);
-        market.godmodeSell(card);
+        if(!(card->name() == "Fire Gem")){
+            market.godmodeSell(card);
+        }
+        return true;
     } else {
         std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
+        return false;
         // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
 }
@@ -247,6 +255,7 @@ bool Player::cardEffectSacrifice(int amount){
             default: return false;
         }
     }
+    return false;
 }
 
 void Player::prepareFriendlyChampion(){
@@ -386,6 +395,20 @@ bool Player::isFactionInPlay(Faction faction){
     return false;
 }
 
+bool Player::isFactionInPlayExclude(Faction faction, Card* card){
+    for (Card* c : inPlay_){
+        if(c->faction() == faction && card->id() != c->id()){
+            return true;
+        }
+    }
+    for (Champion* champion : champions_){
+        if(champion->faction() == faction && card->id() != champion->id()){
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Player::isGuarded(){
     for (Champion* champion : champions_){
         if (champion->isGuard()){
@@ -399,30 +422,65 @@ void Player::stunChampion(){
     if(champions_.size() == 0){
         std::cout << "This player doesnt have a stunnable champion";
     } else {
-        std::cout << "Which champion do you want to stun ? :\n";
-        for (int i=0;i<(int)champions_.size();i++){
-            std::cout << " - " << i+1 << "\n";
-            champions_[i]->printCardInfo();
-        }
+        if(isGuarded()){
+            std::vector<Champion*> guards = getGuards();
+            std::cout << "This opponent is guarded, you can only stun his guards. Which guard do you want to stun ? :\n";
+            for (int i=0;i<(int)guards.size();i++){
+                std::cout << " - " << i+1 << "\n";
+                guards[i]->printCardInfo();
+            }
 
-        int championChoice;
-        while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)champions_.size()){
-            std::cout << "Invalid input. Please enter a valid choice: ";
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
+            int guardChoice;
+            while(!(std::cin >> guardChoice) || guardChoice < 1 || guardChoice > (int)guards.size()){
+                std::cout << "Invalid input. Please enter a valid choice: ";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
 
-        std::cout << "The following champion was stunned :\n";
-        champions_[championChoice-1]->printCardInfo();
+            std::cout << "The following champion was stunned :\n";
+            guards[guardChoice-1]->printCardInfo();
 
-        for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
-        {
-            // *it sert à récupérer l'objet Card pointé par l'itérateur
-            if (discardPile_[championChoice-1]->id() == (*it)->id()){
-                it = champions_.erase(it);
-                break;
-            } else {
-                    ++it;
+            discardPile_.push_back(guards[guardChoice-1]);
+
+            // On enlève le garde stun
+            for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
+            {
+                // *it sert à récupérer l'objet Card pointé par l'itérateur
+                if (guards[guardChoice-1]->id() == (*it)->id()){
+                    it = champions_.erase(it);
+                    break;
+                } else {
+                        ++it;
+                }
+            }
+        } else {
+            std::cout << "Which champion do you want to stun ? :\n";
+            for (int i=0;i<(int)champions_.size();i++){
+                std::cout << " - " << i+1 << "\n";
+                champions_[i]->printCardInfo();
+            }
+
+            int championChoice;
+            while(!(std::cin >> championChoice) || championChoice < 1 || championChoice > (int)champions_.size()){
+                std::cout << "Invalid input. Please enter a valid choice: ";
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+
+            std::cout << "The following champion was stunned :\n";
+            champions_[championChoice-1]->printCardInfo();
+
+            discardPile_.push_back(champions_[championChoice-1]);
+
+            for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
+            {
+                // *it sert à récupérer l'objet Card pointé par l'itérateur
+                if (champions_[championChoice-1]->id() == (*it)->id()){
+                    it = champions_.erase(it);
+                    break;
+                } else {
+                        ++it;
+                }
             }
         }
     }
@@ -468,8 +526,8 @@ void Player::attack(Player* player){
                 combat_ = 0;
             }
         } else if (choice == 2){
-            for (int i=0;i<(int)champions_.size();i++){
-            std::cout << " - " << i+1 << ". " << champions_[i]->name();
+            for (int i=0;i<(int)player->getChampions().size();i++){
+            std::cout << " - " << i+1 << ". " << player->getChampions()[i]->name();
             }
             std::cout << "\n";
 
@@ -480,9 +538,9 @@ void Player::attack(Player* player){
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
 
-            if(champions_[championChoice-1]->takeDamage(combat_)){
-                combat_ = combat_ - champions_[championChoice-1]->getMaxShield();
-                player->removeChampion(champions_[championChoice-1]);
+            if(player->getChampions()[championChoice-1]->takeDamage(combat_)){
+                combat_ = combat_ - player->getChampions()[championChoice-1]->getMaxShield();
+                player->removeChampion(player->getChampions()[championChoice-1]);
             } else {
                 std::cout << "Pas assez de combat pour tuer ce champion\n";
             }
@@ -490,12 +548,265 @@ void Player::attack(Player* player){
     }
 }
 
+void Player::useAbility(int cardChoice){
+    if(cardChoice <= (int)champions_.size()){
+
+        Champion* chosenCard = champions_[cardChoice-1];
+                            
+        std::cout << "The card you picked has the following abilities :\n";
+        for(auto& ab : chosenCard->abilities()){
+            ab.printAbility();
+        }
+        std::cout << "Which type of ability do you want to use ? (all the abilities with the same trigger will be activated at once.):\n";
+        std::cout << "1. Ally - 2. Expend - 3. ExpendChoice - 4. Sacrifice - 5. Return.\n";
+
+        int typeChoice;
+        while(!(std::cin >> typeChoice) || typeChoice < 1 || typeChoice > 5){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        switch(typeChoice){
+            case 1:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::Ally)){
+                    if(isFactionInPlayExclude(chosenCard->faction(),chosenCard)){
+                        for(auto& ab : chosenCard->abilities()){
+                            if (ab.trigger == Trigger::Ally){
+                                if(!ab.used){
+                                    Game::smartAbilityExecute(this,ab);
+                                } else {
+                                    std::cout << "This ability has already been used !\n";
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        std::cout << "This card cannot activate its ally ability, there are no other cards of the same faction on your board.\n";
+                    }
+                } else {
+                    std::cout << "This card does not have an ally ability.\n";
+                }
+                break;
+            case 2:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::Expend)){
+                    for(auto& ab : chosenCard->abilities()){
+                        if (ab.trigger == Trigger::Expend){
+                            if(!ab.used){
+                                Game::smartAbilityExecute(this,ab);
+                            } else {
+                                std::cout << "This ability has already been used !\n";
+                                break;
+                            }
+                        } 
+                    }
+                } else {
+                    std::cout << "This card does not have an expend ability.\n";
+                }
+                break;
+            case 3:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::ExpendChoice)){
+                    std::vector<Card::CardAbility*> choiceAbilities = {};
+                    for(auto& ab : chosenCard->abilities()){
+                        if (ab.trigger == Trigger::ExpendChoice){
+                            if(!ab.used){
+                                choiceAbilities.push_back(&ab);
+                            } else {
+                                std::cout << "This ability has already been used !\n";
+                                break;
+                            }
+                        } 
+                    }
+                    std::cout << "Chose the effect you want to use :\n";
+                    for (int i=0;i<(int)choiceAbilities.size();i++){
+                        std::cout << " - " << i+1 << "\n";
+                        choiceAbilities[i]->printAbility();
+                        // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
+                        choiceAbilities[i]->used = true;
+                    }
+                    int effectChoice;
+                    while(!(std::cin >> effectChoice) || effectChoice < 1 || effectChoice > (int)choiceAbilities.size()){
+                        std::cout << "Invalid input. Please enter a valid choice: ";
+                        std::cin.clear();
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    }
+                    Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1]);
+                } else {
+                    std::cout << "This card does not have an expendChoice ability.\n";
+                }
+                break;
+            case 4:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::Sacrifice)){
+                    bool sacrificed = true;
+                    for(auto& ab : chosenCard->abilities()){
+                        if (ab.trigger == Trigger::Sacrifice){
+                            if(!ab.used){
+                                Game::smartAbilityExecute(this,ab);
+                            } else {
+                                std::cout << "This ability has already been used !\n";
+                                sacrificed = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(sacrificed){
+                        Game::sacrifice(chosenCard);
+                        for (std::vector<Champion*>::iterator it = champions_.begin(); it != champions_.end();)
+                        {
+                            // *it sert à récupérer l'objet Card pointé par l'itérateur
+                            if (champions_[cardChoice-1]->id() == (*it)->id()){
+                                it = champions_.erase(it);
+                                break;
+                            } else {
+                                    ++it;
+                            }
+                        }
+                    }
+                } else {
+                    std::cout << "This card does not have a sacrifice ability.\n";
+                }
+                break;
+            case 5:
+                std::cout << "No ability played. Returning to action choice.\n";
+                break;
+        }
+    } else {
+        Card* chosenCard = inPlay_[cardChoice-champions_.size()-1];
+                            
+        std::cout << "The card you picked has the following abilities :\n";
+        for(auto& ab : chosenCard->abilities()){
+            ab.printAbility();
+        }
+        std::cout << "Which type of ability do you want to use ? (all the abilities with the same trigger will be activated at once.):\n";
+        std::cout << "1. Ally - 2. Expend - 3. ExpendChoice - 4. Sacrifice - 5. Return.\n";
+
+        int typeChoice;
+        while(!(std::cin >> typeChoice) || typeChoice < 1 || typeChoice > 5){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        switch(typeChoice){
+            case 1:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::Ally)){
+                    if(isFactionInPlayExclude(chosenCard->faction(),chosenCard)){
+                        for(auto& ab : chosenCard->abilities()){
+                            if (ab.trigger == Trigger::Ally){
+                                if(!ab.used){
+                                    Game::smartAbilityExecute(this,ab);
+                                } else {
+                                    std::cout << "This ability has already been used !\n";
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        std::cout << "This card cannot activate its ally ability, there are no other cards of the same faction on your board.\n";
+                    }
+                } else {
+                    std::cout << "This card does not have an ally ability.\n";
+                }
+                break;
+            case 2:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::Expend)){
+                    for(auto& ab : chosenCard->abilities()){
+                        if (ab.trigger == Trigger::Expend){
+                            if(!ab.used){
+                                Game::smartAbilityExecute(this,ab);
+                            } else {
+                                std::cout << "This ability has already been used !\n";
+                                break;
+                            }
+                        } 
+                    }
+                } else {
+                    std::cout << "This card does not have an expend ability.\n";
+                }
+                break;
+            case 3:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::ExpendChoice)){
+                    std::vector<Card::CardAbility*> choiceAbilities = {};
+                    for(auto& ab : chosenCard->abilities()){
+                        if (ab.trigger == Trigger::ExpendChoice){
+                            if(!ab.used){
+                                choiceAbilities.push_back(&ab);
+                            } else {
+                                std::cout << "This ability has already been used !\n";
+                                break;
+                            }
+                        } 
+                    }
+                    std::cout << "Chose the effect you want to use :\n";
+                    for (int i=0;i<(int)choiceAbilities.size();i++){
+                        std::cout << " - " << i+1 << "\n";
+                        choiceAbilities[i]->printAbility();
+                        // On met toutes les capacités à used pour ne pas pouvoir utiliser chaque choix séparément.
+                        choiceAbilities[i]->used = true;
+                    }
+                    int effectChoice;
+                    while(!(std::cin >> effectChoice) || effectChoice < 1 || effectChoice > (int)choiceAbilities.size()){
+                        std::cout << "Invalid input. Please enter a valid choice: ";
+                        std::cin.clear();
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    }
+                    Game::smartAbilityExecute(this,*choiceAbilities[effectChoice-1]);
+                } else {
+                    std::cout << "This card does not have an expendChoice ability.\n";
+                }
+                break;
+            case 4:
+                if(chosenCard->hasAbilitiesWithTrigger(Trigger::Sacrifice)){
+                    bool sacrificed = true;
+                    for(auto& ab : chosenCard->abilities()){
+                        if (ab.trigger == Trigger::Sacrifice){
+                            if(!ab.used){
+                                Game::smartAbilityExecute(this,ab);
+                            } else {
+                                std::cout << "This ability has already been used !\n";
+                                sacrificed = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(sacrificed){
+                        Game::sacrifice(chosenCard);
+                        for (std::vector<Card*>::iterator it = inPlay_.begin(); it != inPlay_.end();)
+                        {
+                            // *it sert à récupérer l'objet Card pointé par l'itérateur
+                            if (inPlay_[cardChoice-champions_.size()-1]->id() == (*it)->id()){
+                                it = inPlay_.erase(it);
+                                break;
+                            } else {
+                                    ++it;
+                            }
+                        }
+                    }
+                } else {
+                    std::cout << "This card does not have a sacrifice ability.\n";
+                }
+                break;
+            case 5:
+                std::cout << "No ability played. Returning to action choice.\n";
+                break;
+        }
+    }
+}
+
 void Player::cleanup(){
     for (Champion* champion : champions_){
+        for (auto& ab : champion->abilities()){
+            ab.used = false;
+        }
         champion->heal();
     }
     discardPile_.insert(discardPile_.end(), hand_.cbegin(), hand_.cend());
     discardPile_.insert(discardPile_.end(), inPlay_.cbegin(), inPlay_.cend());
+    for (Card* card : discardPile_){
+        for (auto& ab : card->abilities()){
+            ab.used = false;
+        }
+    }
     hand_.clear();
     inPlay_.clear();
     gold_ = 0;
@@ -503,5 +814,4 @@ void Player::cleanup(){
     nextActionBuyOnDeck = false;
     nextBuyInHand = false;
     nextBuyTopOfDeck = false;
-    // Il faudra aussi réinitialiser les sorts et capacités utilisées pendant le tour
 }

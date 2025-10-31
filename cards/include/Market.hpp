@@ -7,7 +7,6 @@
 
 class Market {
     std::vector<Card*> tradeRow_;
-    int fireGemStack_ = 16;
     Deck tradeDeck_;
 public:
     Market(Deck tradeDeck);

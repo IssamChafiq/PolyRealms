@@ -17,6 +17,7 @@ public:
         bool requiresAlly;          
         Faction requiredAllyFaction;
         bool used;
+        void printAbility() const;
     };
 
     Card(std::string id,
@@ -56,6 +57,7 @@ public:
     // abilities access
     std::vector<CardAbility>& abilities();
     const std::vector<CardAbility>& abilities() const;
+    bool hasAbilitiesWithTrigger(Trigger t);
 
     virtual bool isChampion() const;
 

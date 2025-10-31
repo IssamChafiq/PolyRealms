@@ -8,16 +8,18 @@
 
 // Déclaration de la sacrificePile_ statique afin de pouvoir y accéder dans Game::sacrifice
 std::vector<Card*> Game::sacrificePile_ = {};
+std::vector<Player*> Game::playerList_ = {};
+int Game::fireGemStack_ = 16;
 
-Game::Game(Market market, std::vector<Card*> startingDeck): market_(market), startingDeck_(startingDeck) {}
+Game::Game(Market market, std::vector<Card*> startingDeck, Card* fireGem): market_(market), startingDeck_(startingDeck), fireGem_(fireGem) {}
 
 Game::~Game() = default;
 
 void Game::initialize(){
     int numPlayers;
 
-    std::cout << "Enter number of players: ";
-    while(!(std::cin >> numPlayers)){
+    std::cout << "Enter number of players: (max 4 players)";
+    while(!(std::cin >> numPlayers) || numPlayers < 1 || numPlayers > 4){
         std::cout << "Invalid input. Please enter a valid choice: ";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -76,8 +78,16 @@ void Game::startFFA(){
         for(Player* player : playerList_){
             bool turnOver = false;
             std::cout << "\n\nIt's " << player->getName() << "'s turn.\n";
+            // On réutilise les capacités onPlay des champions à chaque tour
+            for(Champion* champion : player->getChampions()){
+                for(auto& ab : champion->abilities()){
+                    if(ab.trigger == Trigger::OnPlay){
+                        smartAbilityExecute(player,ab);
+                    }
+                }
+            }
             while(!turnOver){
-                std::cout << "Choose an action:\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Use a spell - 5. Attack - 6. End Turn.\n";
+                std::cout << "Choose an action:\n\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Use a spell - 5. Attack - 6. End Turn.\n";
                 std::cout << "Type 'godmode' to activate godmode or access its features.\n";
                 std::cout << "Type 'exit' or 'quit' to exit the game.\n";
                 
@@ -176,41 +186,63 @@ void Game::startFFA(){
                         */
                         if(godmode_){
                             std::cout << "Which card do you want to buy (godmode activated, you can buy from the market deck too) ? :\n";
+                            std::cout << " - 1. Fire Gem ( " << fireGemStack_ << " left):\n";
+                            fireGem_->printCardInfo();
                             std::cout << "Market row cards :\n";
                             for (int i=0;i<(int)market_.getMarketRow().size();i++){
-                                std::cout << " - " << i+1 << "\n";
+                                std::cout << " - " << i+2 << "\n";
                                 market_.getMarketRow()[i]->printCardInfo();
                             }
                             std::cout << "Market deck cards :\n";
                             for (int i=0;i<(int)market_.getMarketDeck().getDeckContents().size();i++){
-                                std::cout << " - " << i+(int)market_.getMarketRow().size()+1 << "\n";
+                                std::cout << " - " << i+(int)market_.getMarketRow().size()+2 << "\n";
                                 market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
                             }
                             std::cout << "You have " << player->getGold() << " gold.\n";
                             int godmodeBuyChoice;
-                            while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()){
+                            while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
-                            if(godmodeBuyChoice <= (int)market_.getMarketRow().size()){
-                                player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-1],market_);
+                            if(godmodeBuyChoice == 1){
+                                if(fireGemStack_ > 0){
+                                    if(player->godmodeBuy(fireGem_,market_)){
+                                        fireGemStack_ -= 1;
+                                    }
+                                } else {
+                                    std::cout << "Not any fire gems left.\n";
+                                }
+                            } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
+                                player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
                             } else {
-                                player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-1],market_);
+                                player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-2],market_);
                             }
                         } else {
                             std::cout << "Which card do you want to buy ? :\n";
+                            std::cout << " - 1. Fire Gem ( " << fireGemStack_ << " left):\n";
+                            fireGem_->printCardInfo();
                             for (int i=0;i<(int)market_.getMarketRow().size();i++){
-                                std::cout << " - " << i+1 << "\n";
+                                std::cout << " - " << i+2 << "\n";
                                 market_.getMarketRow()[i]->printCardInfo();
                             }
                             int buyChoice;
-                            while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()){
+                            while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
-                            player->buy(market_.getMarketRow()[buyChoice-1],market_);
+                            if(buyChoice == 1){
+                                if(fireGemStack_ > 0){
+                                    if(player->buy(fireGem_,market_)){
+                                        fireGemStack_ -= 1;
+                                    }
+                                } else {
+                                    std::cout << "Not any fire gems left.\n";
+                                }
+                            } else {
+                                player->buy(market_.getMarketRow()[buyChoice-2],market_);
+                            }
                         }
                         break;
                     case 3:
@@ -230,37 +262,9 @@ void Game::startFFA(){
                             }
 
                             // Utilisation des capacités onPlay et Ally de la carte
-                            for(auto ab : player->getHand()[playChoice-1]->abilities()){
-                                if(Card::triggerToString(ab.trigger) == "OnPlay"){
+                            for(auto& ab : player->getHand()[playChoice-1]->abilities()){
+                                if(ab.trigger == Trigger::OnPlay){
                                     smartAbilityExecute(player,ab);
-                                } else if (Card::triggerToString(ab.trigger) == "Ally"){
-                                    if(player->isFactionInPlay(ab.requiredAllyFaction)){
-                                        smartAbilityExecute(player,ab);
-                                    }
-                                }
-                            }
-
-                            // On réactive toutes les capacités aliées qui n'auraient pas déjà été activées
-                            for(Card* card : player->getInPlay()){
-                                if(card->faction() == player->getHand()[playChoice-1]->faction()){
-                                    for(auto ab : card->abilities()){
-                                        if (Card::triggerToString(ab.trigger) == "Ally"){
-                                            if(!ab.used){
-                                                smartAbilityExecute(player,ab);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            for(Champion* champion : player->getChampions()){
-                                if(champion->faction() == player->getHand()[playChoice-1]->faction()){
-                                    for(auto ab : champion->abilities()){
-                                        if (Card::triggerToString(ab.trigger) == "Ally"){
-                                            if(!ab.used){
-                                                smartAbilityExecute(player,ab);
-                                            }
-                                        }
-                                    }
                                 }
                             }
 
@@ -271,7 +275,7 @@ void Game::startFFA(){
                         /* 
                             ATTACK A PLAYER CASE
                         */
-                        std::cout << "Who do you want to attack ? : \n";
+                        std::cout << "Who do you want to attack ? : (Combat power : " << player->getCombat() << ")\n";
                         for (int i=0;i<(int)playerList_.size();i++){
                             std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
                         }
@@ -290,10 +294,58 @@ void Game::startFFA(){
                         }
                         break;
                     case 5:
+                        /* 
+                            USE AN ABILITY CASE
+                        */
+                        std::cout << "Which card's ability do you want to use ?\n";
+                        std::cout << "Champion cards :\n";
+                        for (int i=0;i<(int)player->getChampions().size();i++){
+                            std::cout << " - " << i+1 << "\n";
+                            player->getChampions()[i]->printCardInfo();
+                        }
+                        std::cout << "In play cards :\n";
+                        for (int i=0;i<(int)player->getInPlay().size();i++){
+                            std::cout << " - " << i+(int)player->getChampions().size()+1 << "\n";
+                            player->getInPlay()[i]->printCardInfo();
+                        }
+                        std::cout << " - " << (int)player->getChampions().size()+(int)player->getInPlay().size()+1 << ". Return.\n";
+                        int cardChoice;
+                        while(!(std::cin >> cardChoice) || cardChoice < 1 || cardChoice > (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
+                            std::cout << "Invalid input. Please enter a valid choice: ";
+                            std::cin.clear();
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        }
+
+                        // Return case
+                        if(cardChoice == (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
+                            break;
+                        }
+                        player->useAbility(cardChoice);
                         break; 
                     case 6:
-                        turnOver = true;
                         // Logique de fin de tour : phases de défausse et de pioche, on regarde si il y a fin de partie.
+                        for (Player* p : playerList_){
+                            if(p->getAuthority() <= 0){
+                                std::cout << "The player " << p->getName() << " has died.\n";
+                                for (std::vector<Player*>::iterator it = playerList_.begin(); it != playerList_.end();)
+                                {
+                                    // *it sert à récupérer l'objet Card pointé par l'itérateur
+                                    if (p->getName() == (*it)->getName()){
+                                        it = playerList_.erase(it);
+                                        break;
+                                    } else {
+                                            ++it;
+                                    }
+                                }
+                            }
+                        }
+                        if((int)playerList_.size() == 1){
+                            std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
+                            gameOver = true;
+                        }
+                        player->cleanup(); // phase de défausse
+                        player->draw(5); // phase de pioche
+                        turnOver = true;
                         break;
                 }
             }
@@ -349,12 +401,22 @@ void Game::lookAt(Player* player){
     }
 }
 
-
+// Sert juste à mettre des cartes dans la pile de sacrifices
 void Game::sacrifice(Card* card){
-    sacrificePile_.push_back(card);
+    if(card->name() == "Fire Gem"){
+        fireGemStack_ += 1;
+        // Les fire gems ont toutes le même id dans cette implémentation du jeu.
+        // Je m'assure donc ici qu'il n'y ait jamais de problème où un joueur ne peut pas utiliser sa fire gem car un autre l'a utilisé avant en remettant toujours la capacité à non used après un sacrifice.
+        for (auto& ab : card->abilities()){
+            ab.used = false;
+        }
+    } else {
+        sacrificePile_.push_back(card);
+    }
 }
 
-void Game::smartAbilityExecute(Player* player, Card::CardAbility ab){
+// Sert à exécuter une capacité et à demander un ennemi à cibler si besoin.
+void Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
     // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
     if(Card::abilityNameToString(ab.ability) == "OpponentDiscard" || Card::abilityNameToString(ab.ability) == "StunTargetChampion"){
         std::cout << "Which player do you want to use " << Card::abilityNameToString(ab.ability) << " on ?\n";

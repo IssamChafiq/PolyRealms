@@ -52,14 +52,7 @@ void Champion::printCardInfo() const{
     if (!abilities().empty()) {
         std::cout << "Abilities:\n";
         for (const auto& ab : abilities()) {
-            std::cout << "  - Trigger=" << triggerToString(ab.trigger)
-                      << ", Name=" << abilityNameToString(ab.ability)
-                      << ", Amount=" << ab.amount
-                      << ", RequiresAlly=" << (ab.requiresAlly ? "Yes" : "No");
-            if (ab.requiresAlly) {
-                std::cout << " (" << factionToString(ab.requiredAllyFaction) << " Ally)";
-            }
-            std::cout << "\n";
+            ab.printAbility();
         }
     } else {
         std::cout << "Abilities: (none parsed)\n";

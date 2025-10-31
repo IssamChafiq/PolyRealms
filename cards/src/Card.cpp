@@ -55,6 +55,15 @@ void Card::onNewTurn(CardController& ctrl) {
 std::vector<Card::CardAbility>& Card::abilities() { return abilities_; }
 const std::vector<Card::CardAbility>& Card::abilities() const { return abilities_; }
 
+bool Card::hasAbilitiesWithTrigger(Trigger t){
+    for (const auto& ab : abilities()){
+        if(ab.trigger == t){
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Card::isChampion() const { return false; }
 
 std::string Card::factionToString(Faction f) {
@@ -142,19 +151,26 @@ void Card::printCardInfo() const {
     if (!abilities().empty()) {
         std::cout << "Abilities:\n";
         for (const auto& ab : abilities()) {
-            std::cout << "  - Trigger=" << triggerToString(ab.trigger)
-                      << ", Name=" << abilityNameToString(ab.ability)
-                      << ", Amount=" << ab.amount
-                      << ", RequiresAlly=" << (ab.requiresAlly ? "Yes" : "No")
-                      << ", Used="<< (ab.used ? "Yes" : "No") << std::endl;
-            if (ab.requiresAlly) {
-                std::cout << " (" << factionToString(ab.requiredAllyFaction) << " Ally)";
-            }
-            std::cout << "\n";
+            ab.printAbility();
         }
     } else {
         std::cout << "Abilities: (none parsed)\n";
     }
 
     std::cout << "----------------------------------------\n\n";
+}
+
+void Card::CardAbility::printAbility() const {
+    std::cout << "---\n";
+    std::cout << "  -Trigger: " << Card::triggerToString(trigger) << "\n";
+    std::cout << "  -Ability: " << Card::abilityNameToString(ability);
+    if (amount > 0) {
+        std::cout << " (amount: " << amount << ")";
+    }
+    std::cout << "\n";
+    if (requiresAlly) {
+        std::cout << "  -Requires ally: " << Card::factionToString(requiredAllyFaction) << "\n";
+    }
+    std::cout << "  -Used: " << (used ? "Yes" : "No") << "\n";
+    std::cout << "---\n";
 }

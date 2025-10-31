@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include "Champion.hpp"
 #include "Card.hpp"
+#include <limits>
 
 void Abilities::execute(Player* player,
                         AbilityName name,
@@ -66,7 +67,7 @@ void Abilities::opponentDiscard(Player* opponent) {
 
 void Abilities::addCombatPerChamp(Player* player,int amount){
     int n = 0;
-    for (Champion* c : player->getChampions()) {
+    for (int i=0; i<(int)player->getChampions().size();i++) {
         n++;
     }
     player->setCombat(player->getCombat() + amount * n);
@@ -84,7 +85,7 @@ void Abilities::addCombatPerGuard(Player* player,int amount){
 
 void Abilities::addHealthPerChamp(Player* player,int amount){
     int n = 0;
-    for (Champion* c : player->getChampions()) n++;
+    for (int i=0; i<(int)player->getChampions().size();i++) n++;
     player->setAuthority(player->getAuthority() + amount * n);
 }
 

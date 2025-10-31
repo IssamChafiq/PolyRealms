@@ -52,8 +52,8 @@ public:
 
     void draw(int n);
     void play(Card* card);
-    void buy(Card* card, Market market);
-    void godmodeBuy(Card* card, Market market);
+    bool buy(Card* card, Market market);
+    bool godmodeBuy(Card* card, Market market);
 
     void discard(int amount);
     bool cardEffectSacrifice(int amount);
@@ -61,9 +61,11 @@ public:
     void getChampionFromDiscardToDeck();
     void getCardFromDiscardToDeck();
     bool isFactionInPlay(Faction faction);
+    bool isFactionInPlayExclude(Faction faction, Card* card);
     bool isGuarded();
     void stunChampion();
     void attack(Player* player);
+    void useAbility(int cardChoice);
 
     void cleanup();
 };
