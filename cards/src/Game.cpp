@@ -250,7 +250,7 @@ void Game::startFFA(){
                             }
                             std::cout << " - " << market_.getMarketRow().size()+2 << ". Return.\n";
                             int buyChoice;
-                            while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+1){
+                            while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+2){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
