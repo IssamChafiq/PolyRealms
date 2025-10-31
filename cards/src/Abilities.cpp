@@ -40,13 +40,13 @@ bool Abilities::gainGold(Player* player, int amount) {
 }
 
 bool Abilities::gainCombat(Player* player, int amount) {
-    return true;
     player->setCombat(player->getCombat() + amount);
+    return true;
 }
 
 bool Abilities::gainAuthority(Player* player, int amount) {
-    return true;
     player->setAuthority(player->getAuthority() + amount);
+    return true;
 }
 
 bool Abilities::drawCards(Player* player, int n) {

@@ -187,6 +187,7 @@ void Game::startFFA(){
                                 card->printCardInfo();
                             }
                         } else if(lookChoice == 2){
+                            std::cout << "Sacrifice pile :\n";
                             for (Card* card : sacrificePile_){
                                 card->printCardInfo();
                             }
@@ -272,13 +273,18 @@ void Game::startFFA(){
                                 std::cout << " - " << i+1 << ":\n";
                                 player->getHand()[i]->printCardInfo();
                             }
+                            std::cout << " - " << player->getHand().size() << ". Return.\n";
                             int playChoice;
-                            while(!(std::cin >> playChoice) || playChoice < 1 || playChoice > (int)player->getHand().size()){
+                            while(!(std::cin >> playChoice) || playChoice < 1 || playChoice > (int)player->getHand().size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
 
+                            if(playChoice == player->getHand().size()){
+                                break;
+                            }
+                            
                             // Utilisation des capacités onPlay et Ally de la carte
                             for(auto& ab : player->getHand()[playChoice-1]->abilities()){
                                 if(ab.trigger == Trigger::OnPlay){

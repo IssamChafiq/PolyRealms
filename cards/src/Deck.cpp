@@ -37,7 +37,7 @@ std::vector<Card*> Deck::draw(int n) {
             cards_.erase(cards_.begin());
         }
     } else {
-        std::cout << "Impossible de piocher " << n << " cartes, le deck n'en possède que " << cards_.size();
+        std::cout << "Cannot draw " << n << " cards, the deck only has " << cards_.size();
     }
     return draws;
 }
