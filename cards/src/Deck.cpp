@@ -17,7 +17,7 @@ std::vector<Card*> Deck::getDeckContents() const {
 }
 
 void Deck::setDeck(std::vector<Card*> deck){
-    std::copy(deck.begin(), deck.end(), cards_.begin());
+    cards_ = deck;
 }
 
 void Deck::shuffle() {

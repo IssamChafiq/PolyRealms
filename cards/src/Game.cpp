@@ -273,7 +273,7 @@ void Game::startFFA(){
                                 std::cout << " - " << i+1 << ":\n";
                                 player->getHand()[i]->printCardInfo();
                             }
-                            std::cout << " - " << player->getHand().size() << ". Return.\n";
+                            std::cout << " - " << player->getHand().size()+1 << ". Return.\n";
                             int playChoice;
                             while(!(std::cin >> playChoice) || playChoice < 1 || playChoice > (int)player->getHand().size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
@@ -281,7 +281,7 @@ void Game::startFFA(){
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
 
-                            if(playChoice == player->getHand().size()){
+                            if(playChoice == (int)player->getHand().size()+1){
                                 break;
                             }
                             
@@ -295,7 +295,7 @@ void Game::startFFA(){
                             // On enlève la carte de la main et on la place au bon endroit sur le plateau de jeu
                             player->play(player->getHand()[playChoice-1]);
                         break;
-                    case 4:
+                    case 4:{
                         /* 
                             ATTACK A PLAYER CASE
                         */
@@ -316,7 +316,25 @@ void Game::startFFA(){
                             std::cout << "Attacking " << playerList_[attackChoice-1]->getName() << "\n";
                             player->attack(playerList_[attackChoice-1]);
                         }
+                        // On supprime le joueur si il meurt.
+                        std::vector<Player*> toRemove;
+                        for (Player* p : playerList_) {
+                            if (p->getAuthority() <= 0) {
+                                std::cout << "The player " << p->getName() << " has died.\n";
+                                toRemove.push_back(p);
+                            }
+                        }
+                        for (Player* dead : toRemove) {
+                            auto it = std::find(playerList_.begin(), playerList_.end(), dead);
+                            if (it != playerList_.end()) playerList_.erase(it);
+                        }
+                        if((int)playerList_.size() == 1){
+                            std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
+                            turnOver = true;
+                            gameOver = true;
+                        }
                         break;
+                    }
                     case 5:
                         /* 
                             USE AN ABILITY CASE
@@ -347,21 +365,6 @@ void Game::startFFA(){
                         player->useAbility(cardChoice);
                         break; 
                     case 6:
-                        std::vector<Player*> toRemove;
-                        for (Player* p : playerList_) {
-                            if (p->getAuthority() <= 0) {
-                                std::cout << "The player " << p->getName() << " has died.\n";
-                                toRemove.push_back(p);
-                            }
-                        }
-                        for (Player* dead : toRemove) {
-                            auto it = std::find(playerList_.begin(), playerList_.end(), dead);
-                            if (it != playerList_.end()) playerList_.erase(it);
-                        }
-                        if((int)playerList_.size() == 1){
-                            std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
-                            gameOver = true;
-                        }
                         player->cleanup(); // phase de défausse
                         player->draw(5); // phase de pioche
                         turnOver = true;
