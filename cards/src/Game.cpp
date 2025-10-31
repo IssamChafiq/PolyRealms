@@ -13,12 +13,17 @@ int Game::fireGemStack_ = 16;
 
 Game::Game(Market market, std::vector<Card*> startingDeck, Card* fireGem): market_(market), startingDeck_(startingDeck), fireGem_(fireGem) {}
 
-Game::~Game() = default;
+Game::~Game() {
+    for (Player* player : playerList_) {
+        delete player;
+    }
+    playerList_.clear();
+};
 
 void Game::initialize(){
     int numPlayers;
 
-    std::cout << "Enter number of players: (max 4 players)";
+    std::cout << "Enter number of players (max 4 players): ";
     while(!(std::cin >> numPlayers) || numPlayers < 1 || numPlayers > 4){
         std::cout << "Invalid input. Please enter a valid choice: ";
         std::cin.clear();
@@ -119,7 +124,7 @@ void Game::startFFA(){
                         if(godmodeChoice == 1){
                             std::cout << "Which player do you want to bring down to 1 hp ? :";
                             for (int i=0;i<(int)playerList_.size();i++){
-                                std::cout << " - " << i+1 << ". " << playerList_[i]->getName() << "'s board";
+                                std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
                             }
                             std::cout << "\n";
                             int healthChoice;
@@ -129,6 +134,7 @@ void Game::startFFA(){
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
                             playerList_[healthChoice-1]->setAuthority(1);
+                            std::cout << playerList_[healthChoice-1] << " now has 1 health point.\n";
                         } else if(godmodeChoice == 2){
                             std::cout << "Godmode deactivated !";
                             godmode_ = false;
@@ -190,12 +196,12 @@ void Game::startFFA(){
                             fireGem_->printCardInfo();
                             std::cout << "Market row cards :\n";
                             for (int i=0;i<(int)market_.getMarketRow().size();i++){
-                                std::cout << " - " << i+2 << "\n";
+                                std::cout << " - " << i+2 << ":\n";
                                 market_.getMarketRow()[i]->printCardInfo();
                             }
                             std::cout << "Market deck cards :\n";
                             for (int i=0;i<(int)market_.getMarketDeck().getDeckContents().size();i++){
-                                std::cout << " - " << i+(int)market_.getMarketRow().size()+2 << "\n";
+                                std::cout << " - " << i+(int)market_.getMarketRow().size()+2 << ":\n";
                                 market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
                             }
                             std::cout << "You have " << player->getGold() << " gold.\n";
@@ -223,7 +229,7 @@ void Game::startFFA(){
                             std::cout << " - 1. Fire Gem ( " << fireGemStack_ << " left):\n";
                             fireGem_->printCardInfo();
                             for (int i=0;i<(int)market_.getMarketRow().size();i++){
-                                std::cout << " - " << i+2 << "\n";
+                                std::cout << " - " << i+2 << ":\n";
                                 market_.getMarketRow()[i]->printCardInfo();
                             }
                             int buyChoice;
@@ -251,7 +257,7 @@ void Game::startFFA(){
                         */
                         std::cout << "Which card do you want to play ? :\n";
                             for (int i=0;i<(int)player->getHand().size();i++){
-                                std::cout << " - " << i+1 << "\n";
+                                std::cout << " - " << i+1 << ":\n";
                                 player->getHand()[i]->printCardInfo();
                             }
                             int playChoice;
@@ -359,9 +365,9 @@ void Game::startFFA(){
 // Sert à regarder le plateau d'un joueur en particulier
 void Game::lookAt(Player* player){
     std::cout << player->getName() << ":\nHealth : " << player->getAuthority() << "\nGold : " << player->getGold() << "\nCombat : " << player->getCombat() << ".\n";
-    std::cout << "Which part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck.\n";
+    std::cout << "Which part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck - 6. Return\n";
     int choice;
-    while(!(std::cin >> choice) || choice < 1 || choice > 5){
+    while(!(std::cin >> choice) || choice < 1 || choice > 6){
         std::cout << "Invalid input. Please enter a valid choice: ";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -398,6 +404,8 @@ void Game::lookAt(Player* player){
                 card->printCardInfo();
             }
             break;
+        case 6:
+            break;
     }
 }
 
@@ -413,6 +421,8 @@ void Game::sacrifice(Card* card){
     } else {
         sacrificePile_.push_back(card);
     }
+    std::cout << "Card sacrificed :\n";
+    card->printCardInfo();
 }
 
 // Sert à exécuter une capacité et à demander un ennemi à cibler si besoin.
@@ -434,10 +444,14 @@ void Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
             std::cout << "You cannot target yourself with this ability.\n";
         } else {
             Abilities::execute(player,ab.ability,playerList_[spellChoice-1],ab.amount);
+            std::cout << "Ability used :\n";
+            ab.printAbility();
             ab.used = true;
         }
     } else {
         Abilities::execute(player,ab.ability,player,ab.amount);
+        std::cout << "Ability used :\n";
+        ab.printAbility();
         ab.used = true;
     }
 }

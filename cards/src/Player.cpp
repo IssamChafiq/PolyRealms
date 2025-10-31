@@ -81,6 +81,8 @@ void Player::play(Card* card){
     } else {
         inPlay_.push_back(card);
     }
+    std::cout << name_ << " played the following card:\n";
+    card->printCardInfo();
 }
 
 bool Player::buy(Card* card, Market market){
@@ -100,6 +102,8 @@ bool Player::buy(Card* card, Market market){
         if(!(card->name() == "Fire Gem")){
             market.sell(card);
         }
+        std::cout << name_ << " bought the following card:\n";
+        card->printCardInfo();
         return true;
     } else {
         std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
@@ -115,6 +119,8 @@ bool Player::godmodeBuy(Card* card, Market market){
         if(!(card->name() == "Fire Gem")){
             market.godmodeSell(card);
         }
+        std::cout << name_ << " bought the following card:\n";
+        card->printCardInfo();
         return true;
     } else {
         std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
@@ -129,7 +135,7 @@ void Player::discard(int amount){
         if ((int)hand_.size() > 0){
 
             for (int i=0;i<(int)hand_.size();i++){
-                std::cout << " - " << i+1 << "\n";
+                std::cout << " - " << i+1 << ":\n";
                 hand_[i]->printCardInfo();
             }
 
@@ -183,7 +189,7 @@ bool Player::cardEffectSacrifice(int amount){
             case 1:
                 if ((int)hand_.size() > 0){
                     for (int i=0;i<(int)hand_.size();i++){
-                        std::cout << " - " << i+1 << "\n";
+                        std::cout << " - " << i+1 << ":\n";
                         hand_[i]->printCardInfo();
                     }
 
@@ -196,8 +202,6 @@ bool Player::cardEffectSacrifice(int amount){
 
                     // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte
                     Game::sacrifice(hand_[handSacrificeChoice-1]); 
-                    std::cout << name_ << " has sacrificed the following card :\n";
-                    hand_[handSacrificeChoice-1]->printCardInfo();
 
                     // Supprime la carte
                     for (std::vector<Card*>::iterator it = hand_.begin(); it != hand_.end();)
@@ -232,8 +236,6 @@ bool Player::cardEffectSacrifice(int amount){
 
                     // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte 
                     Game::sacrifice(discardPile_[discardSacrificeChoice-1]);
-                    std::cout << name_ << " has sacrificed the following card :\n";
-                    discardPile_[discardSacrificeChoice-1]->printCardInfo();
 
                     // Supprime la carte
                     for (std::vector<Card*>::iterator it = discardPile_.begin(); it != discardPile_.end();)
@@ -275,7 +277,7 @@ void Player::prepareFriendlyChampion(){
     } else {
         std::cout << "Which champion do you want to prepare ? :\n";
         for (int i=0;i<(int)unprepared.size();i++){
-            std::cout << " - " << i+1 << "\n";
+            std::cout << " - " << i+1 << ":\n";
             unprepared[i]->printCardInfo();
         }
 
@@ -295,6 +297,8 @@ void Player::prepareFriendlyChampion(){
                         }
                     }
                 }
+                std::cout << name_ << " prepared the following champion :\n";
+                champion->printCardInfo();
             }
         }
     }
@@ -352,7 +356,7 @@ void Player::getCardFromDiscardToDeck(){
         } else {
             std::cout << "Which card do you want to bring to the top of your deck ?\n";
             for (int i=0;i<(int)discardPile_.size();i++){
-                std::cout << " - " << i+1 << "\n";
+                std::cout << " - " << i+1 << ":\n";
                 discardPile_[i]->printCardInfo();
             }
             int choice;
@@ -426,7 +430,7 @@ void Player::stunChampion(){
             std::vector<Champion*> guards = getGuards();
             std::cout << "This opponent is guarded, you can only stun his guards. Which guard do you want to stun ? :\n";
             for (int i=0;i<(int)guards.size();i++){
-                std::cout << " - " << i+1 << "\n";
+                std::cout << " - " << i+1 << ":\n";
                 guards[i]->printCardInfo();
             }
 
@@ -456,7 +460,7 @@ void Player::stunChampion(){
         } else {
             std::cout << "Which champion do you want to stun ? :\n";
             for (int i=0;i<(int)champions_.size();i++){
-                std::cout << " - " << i+1 << "\n";
+                std::cout << " - " << i+1 << ":\n";
                 champions_[i]->printCardInfo();
             }
 
@@ -492,7 +496,7 @@ void Player::attack(Player* player){
         std::cout << player->getName() << " is guarded, you can only attack his guards !";
         std::cout << "Which guard do you want to attack ? : ";
         for (int i=0;i<(int)guards.size();i++){
-            std::cout << " - " << i+1 << ". " << guards[i]->name();
+            std::cout << " - " << i+1 << ". " << guards[i]->name() << ":";
         }
         std::cout << "\n";
         int guardChoice;
@@ -527,7 +531,7 @@ void Player::attack(Player* player){
             }
         } else if (choice == 2){
             for (int i=0;i<(int)player->getChampions().size();i++){
-            std::cout << " - " << i+1 << ". " << player->getChampions()[i]->name();
+            std::cout << " - " << i+1 << ". " << player->getChampions()[i]->name() << ":";
             }
             std::cout << "\n";
 

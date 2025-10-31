@@ -9,9 +9,9 @@ class Game {
     static std::vector<Player*> playerList_;
     Market market_;
     // J'ai mis les fireGems ici parce que sinon j'avais des problèmes pour le sacrifice car sacrifice est statique et ne pouvait pas accéder au marché (où les gemmes étaient de base).
+    std::vector<Card*> startingDeck_;
     static int fireGemStack_;
     Card* fireGem_;
-    std::vector<Card*> startingDeck_;
     static std::vector<Card*> sacrificePile_;
     bool godmode_ = false;
 public:

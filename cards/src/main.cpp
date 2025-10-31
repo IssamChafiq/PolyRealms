@@ -21,10 +21,6 @@ int main() {
     // this will now spam diagnostics for every row
     std::vector<Card*> cards = CardCreator::loadFromCsv(csvFile);
 
-    for (Card* card : cards){
-        card->printCardInfo();
-    }
-
     std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
 
     std::cout << "=== DEBUG CARD CREATION END ===\n";
@@ -42,7 +38,7 @@ int main() {
         CardCreator::findCard("shortsword-1",cards)
     };
 
-    Card* fireGem = CardCreator::findCard("fire-gem-1",cards),
+    Card* fireGem = CardCreator::findCard("fire-gem-1",cards);
 
     // Je récupère toutes les cartes du deck du marché (elles sont toutes avant la première firegem) pour éviter de les chercher une par une et de faire des recherches à l'infini en boucle
     std::vector<Card*> marketCards = {};
@@ -60,7 +56,7 @@ int main() {
 
     std::cout << "\n=== GAME START ===\n";
 
-    //game.initialize();
+    game.initialize();
 
     return 0;
 }

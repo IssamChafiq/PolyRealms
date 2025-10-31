@@ -30,28 +30,6 @@ int Card::cost() const { return cost_; }
 Faction Card::faction() const { return faction_; }
 CardType Card::type() const { return type_; }
 
-bool Card::isExpendable() const { return expendable_; }
-bool Card::isSacrificeable() const { return sacrificeable_; }
-bool Card::isExpended() const { return expended_; }
-bool Card::isSacrificed() const { return sacrificed_; }
-
-void Card::setOwnerId(std::string owner) { ownerId_ = std::move(owner); }
-void Card::setOpponentId(std::string opp) { opponentId_ = std::move(opp); }
-
-// gameplay hooks (stubs for now)
-void Card::onPlay(CardController& ctrl) {
-    (void)ctrl;
-}
-void Card::onExpend(CardController& ctrl) {
-    (void)ctrl;
-}
-void Card::onSacrifice(CardController& ctrl) {
-    (void)ctrl;
-}
-void Card::onNewTurn(CardController& ctrl) {
-    (void)ctrl;
-}
-
 std::vector<Card::CardAbility>& Card::abilities() { return abilities_; }
 const std::vector<Card::CardAbility>& Card::abilities() const { return abilities_; }
 
@@ -124,16 +102,6 @@ std::string Card::abilityNameToString(AbilityName a) {
     
     }
     return "UnknownAbility";
-}
-
-
-bool Card::hasAllySameFaction() {
-    // faut créer la classe joueur pour avoir la liste de cartes et vérifier l'existence de ally
-    return false;
-}
-
-void Card::removeSelfFromPlayerZones() {
-    // faut créer la classe joueur pour avoir la liste de cartes / deck et enlever cette carte
 }
 
 // print with abilities

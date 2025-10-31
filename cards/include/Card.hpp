@@ -37,23 +37,6 @@ public:
     Faction faction() const;
     CardType type() const;
 
-    bool isExpendable() const;
-    bool isSacrificeable() const;
-    bool isExpended() const;
-    bool isSacrificed() const;
-
-    // Pour preparer le champion
-    void prepare(){expended_ = false;}
-
-    void setOwnerId(std::string owner);
-    void setOpponentId(std::string opp);
-
-    // gameplay hooks
-    virtual void onPlay(CardController& ctrl);
-    virtual void onExpend(CardController& ctrl);
-    virtual void onSacrifice(CardController& ctrl);
-    virtual void onNewTurn(CardController& ctrl);
-
     // abilities access
     std::vector<CardAbility>& abilities();
     const std::vector<CardAbility>& abilities() const;
@@ -70,10 +53,6 @@ public:
     virtual void printCardInfo() const;
 
 protected:
-    bool hasAllySameFaction();
-    void removeSelfFromPlayerZones();
-
-protected:
     std::string id_;
     std::string name_;
     int cost_;
@@ -84,9 +63,6 @@ protected:
     bool expended_;
     bool sacrificeable_;
     bool sacrificed_;
-
-    std::string ownerId_;
-    std::string opponentId_;
 
     std::vector<CardAbility> abilities_;
 };
