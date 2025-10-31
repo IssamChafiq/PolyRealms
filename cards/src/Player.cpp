@@ -180,89 +180,95 @@ bool Player::discard(int amount){
 bool Player::cardEffectSacrifice(int amount){
     std::cout << "You can sacrifice " << amount << " cards :\n";
     for (int i=0;i<amount;i++){
-        std::cout << "What do you want to do ? 1. Sacrifice from hand - 2. Sacrifice from discard pile - 3. Do nothing\n";
+        bool sacrificeDone = false;
+        while(!sacrificeDone){
+            std::cout << "What do you want to do ? 1. Sacrifice from hand - 2. Sacrifice from discard pile - 3. Do nothing\n";
 
-        int choice;
-            while(!(std::cin >> choice) || choice < 1 || choice > 3){
-                std::cout << "Invalid input. Please enter a valid choice: ";
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
+            int choice;
+                while(!(std::cin >> choice) || choice < 1 || choice > 3){
+                    std::cout << "Invalid input. Please enter a valid choice: ";
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
 
-        if (choice == 3){
-            return false;
-        }
+            if (choice == 3){
+                sacrificeDone = true;
+                return false;
+            }
 
-        switch(choice){
-            case 1:
-                if ((int)hand_.size() > 0){
-                    for (int i=0;i<(int)hand_.size();i++){
-                        std::cout << " - " << i+1 << ":\n";
-                        hand_[i]->printCardInfo();
-                    }
-
-                    int handSacrificeChoice;
-                    while(!(std::cin >> handSacrificeChoice) || handSacrificeChoice < 1 || handSacrificeChoice > (int)hand_.size()){
-                        std::cout << "Invalid input. Please enter a valid choice: ";
-                        std::cin.clear();
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    }
-
-                    // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte
-                    Game::sacrifice(hand_[handSacrificeChoice-1]); 
-
-                    // Supprime la carte
-                    for (std::vector<Card*>::iterator it = hand_.begin(); it != hand_.end();)
-                    {
-                        // *it sert à récupérer l'objet Card pointé par l'itérateur
-                        if (hand_[handSacrificeChoice-1]->id() == (*it)->id()){
-                            it = hand_.erase(it);
-                            break;
-                        } else {
-                            ++it;
+            switch(choice){
+                case 1:
+                    if ((int)hand_.size() > 0){
+                        for (int i=0;i<(int)hand_.size();i++){
+                            std::cout << " - " << i+1 << ":\n";
+                            hand_[i]->printCardInfo();
                         }
-                    }
-                    return true;
-                } else {
-                    std::cout << "No cards left in hand : cannot sacrifice";
-                    return false;
-                }
-                break;
-            case 2:
-                if ((int)discardPile_.size() > 0){
-                    for (int i=0;i<(int)discardPile_.size();i++){
-                        std::cout << " - " << i+1 << "\n";
-                        discardPile_[i]->printCardInfo();
-                    }
 
-                    int discardSacrificeChoice;
-                    while(!(std::cin >> discardSacrificeChoice) || discardSacrificeChoice < 1 || discardSacrificeChoice > (int)discardPile_.size()){
-                        std::cout << "Invalid input. Please enter a valid choice: ";
-                        std::cin.clear();
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    }
-
-                    // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte 
-                    Game::sacrifice(discardPile_[discardSacrificeChoice-1]);
-
-                    // Supprime la carte
-                    for (std::vector<Card*>::iterator it = discardPile_.begin(); it != discardPile_.end();)
-                    {
-                        // *it sert à récupérer l'objet Card pointé par l'itérateur
-                        if (discardPile_[discardSacrificeChoice-1]->id() == (*it)->id()){
-                            it = discardPile_.erase(it);
-                            break;
-                        } else {
-                            ++it;
+                        int handSacrificeChoice;
+                        while(!(std::cin >> handSacrificeChoice) || handSacrificeChoice < 1 || handSacrificeChoice > (int)hand_.size()){
+                            std::cout << "Invalid input. Please enter a valid choice: ";
+                            std::cin.clear();
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         }
+
+                        // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte
+                        Game::sacrifice(hand_[handSacrificeChoice-1]); 
+
+                        // Supprime la carte
+                        for (std::vector<Card*>::iterator it = hand_.begin(); it != hand_.end();)
+                        {
+                            // *it sert à récupérer l'objet Card pointé par l'itérateur
+                            if (hand_[handSacrificeChoice-1]->id() == (*it)->id()){
+                                it = hand_.erase(it);
+                                break;
+                            } else {
+                                ++it;
+                            }
+                        }
+                        sacrificeDone = true;
+                        return true;
+                    } else {
+                        std::cout << "No cards left in hand : cannot sacrifice. Please try again or give up on the sacrifice.\n";
+                        continue;
                     }
-                    return true;
-                } else {
-                    std::cout << "No cards left in discard pile : cannot sacrifice\n";
-                    return false;
-                }
-                break;
-            default: return false;
+                    break;
+                case 2:
+                    if ((int)discardPile_.size() > 0){
+                        for (int i=0;i<(int)discardPile_.size();i++){
+                            std::cout << " - " << i+1 << "\n";
+                            discardPile_[i]->printCardInfo();
+                        }
+
+                        int discardSacrificeChoice;
+                        while(!(std::cin >> discardSacrificeChoice) || discardSacrificeChoice < 1 || discardSacrificeChoice > (int)discardPile_.size()){
+                            std::cout << "Invalid input. Please enter a valid choice: ";
+                            std::cin.clear();
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        }
+
+                        // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte 
+                        Game::sacrifice(discardPile_[discardSacrificeChoice-1]);
+
+                        // Supprime la carte
+                        for (std::vector<Card*>::iterator it = discardPile_.begin(); it != discardPile_.end();)
+                        {
+                            // *it sert à récupérer l'objet Card pointé par l'itérateur
+                            if (discardPile_[discardSacrificeChoice-1]->id() == (*it)->id()){
+                                it = discardPile_.erase(it);
+                                break;
+                            } else {
+                                ++it;
+                            }
+                        }
+                        sacrificeDone = true;
+                        return true;
+                    } else {
+                        std::cout << "No cards left in hand : cannot sacrifice. Please try again or give up on the sacrifice.\n";
+                        continue;
+                    }
+                    break;
+                default: return false;
+            }
         }
     }
     return false;

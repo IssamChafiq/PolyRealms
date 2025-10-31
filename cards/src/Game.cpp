@@ -231,7 +231,7 @@ void Game::startFFA(){
                                 } else {
                                     std::cout << "Not any fire gems left.\n";
                                 }
-                            } else if(godmodeBuyChoice == market_.getMarketRow().size()+market_.getMarketDeck().getDeckContents().size()+2){
+                            } else if(godmodeBuyChoice == (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
                                 return;
                             } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
                                 player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
@@ -263,7 +263,7 @@ void Game::startFFA(){
                                 } else {
                                     std::cout << "Not any fire gems left.\n";
                                 }
-                            } else if(buyChoice == market_.getMarketRow().size()+2) {
+                            } else if(buyChoice == (int)market_.getMarketRow().size()+2) {
                             } else {
                                 player->buy(market_.getMarketRow()[buyChoice-2],market_);
                             }
