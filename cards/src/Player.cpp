@@ -193,7 +193,7 @@ bool Player::cardEffectSacrifice(int amount){
 
             if (choice == 3){
                 sacrificeDone = true;
-                return false;
+                return true;
             }
 
             switch(choice){
