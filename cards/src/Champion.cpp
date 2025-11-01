@@ -38,7 +38,7 @@ void Champion::printCardInfo() const{
     std::cout << "----------------------------------------\n";
     std::cout << "Card Name: " << name_ << "\n";
     std::cout << "Card ID:   " << id_ << "\n";
-    std::cout << "Cost:      " << cost_ << "\n";
+    std::cout << "Cost:      \033[1;93m" << cost_ << "\033[0m\n";
     std::cout << "Faction:   " << factionToString(faction_) << "\n";
     std::cout << "Type:      " << typeToString(type_) << "\n";
 
