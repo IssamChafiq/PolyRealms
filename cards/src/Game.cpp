@@ -270,7 +270,7 @@ void Game::startFFA(){
                             }
                         }
                         break;
-                    case 3:
+                    case 3:{
                         /* 
                             PLAYING A CARD CASE
                         */
@@ -303,6 +303,7 @@ void Game::startFFA(){
                                 }
                             }
                         break;
+                    }
                     case 4:{
                         /* 
                             ATTACK A PLAYER CASE
