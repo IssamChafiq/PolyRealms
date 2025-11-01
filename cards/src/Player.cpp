@@ -40,7 +40,7 @@ bool Player::draw(int n){
     int cardsLeft = deck_.getDeckContents().size();
     int discardLeft = discardPile_.size();
     if(cardsLeft + discardLeft < n){
-        std::cout << "Impossible de piocher " << n << " cartes, on en pioche " << cardsLeft + discardLeft << " à la place.\n";
+        std::cout << "Cannot draw " << n << " cards, we draw " << cardsLeft + discardLeft << " instead.\n";
         draw(cardsLeft + discardLeft);
     } else if(n >= cardsLeft){
         // Je tire toutes les cartes restantes dans le deck
@@ -113,9 +113,8 @@ bool Player::buy(Card* card, Market& market){
         card->printCardInfo();
         return true;
     } else {
-        std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
+        std::cout << "Not enough gold to buy this card : it costs " << card->cost() << " gold and you have " << gold_ << ".\n";
         return false;
-        // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
 }
 
@@ -130,9 +129,8 @@ bool Player::godmodeBuy(Card* card, Market& market){
         card->printCardInfo();
         return true;
     } else {
-        std::cout << "Pas assez d'or pour acheter cette carte : elle coûte " << card->cost() << " or et vous en avez " << gold_ << "\n";
+        std::cout << "Not enough gold to buy this card : it costs " << card->cost() << " gold and you have " << gold_ << ".\n";
         return false;
-        // Out : pas assez de golds, il faut modifier le player.hpp j'ai mis 15 golds de départ pour que ça marche
     }  
 }
 

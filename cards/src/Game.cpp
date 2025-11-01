@@ -5,6 +5,8 @@
 #include <vector>
 #include <sstream>
 #include <limits>
+#include <thread>
+#include <chrono>
 
 // Déclaration des variables statiques
 std::vector<Card*> Game::sacrificePile_ = {};
@@ -235,6 +237,8 @@ void Game::startFFA(){
                                     if((int)fireGems_.size() > 0){
                                         if(player->godmodeBuy(fireGems_.front(),market_)){
                                             fireGems_.erase(fireGems_.begin());
+                                            // On temporise l'affichage du marché à nouveau
+                                            std::this_thread::sleep_for(std::chrono::seconds(1));
                                         }
                                     } else {
                                         std::cout << "Not any fire gems left.\n";
@@ -243,8 +247,12 @@ void Game::startFFA(){
                                     buyOver = true;
                                 } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
                                     player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
+                                    // On temporise l'affichage du marché à nouveau
+                                    std::this_thread::sleep_for(std::chrono::seconds(1));
                                 } else {
                                     player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-2],market_);
+                                    // On temporise l'affichage du marché à nouveau
+                                    std::this_thread::sleep_for(std::chrono::seconds(1));
                                 }
                             } else {
                                 std::cout << "Which card do you want to buy ? :\n";
@@ -276,6 +284,8 @@ void Game::startFFA(){
                                     buyOver = true;
                                 } else {
                                     player->buy(market_.getMarketRow()[buyChoice-2],market_);
+                                    // On temporise l'affichage du marché à nouveau
+                                    std::this_thread::sleep_for(std::chrono::seconds(1));
                                 }
                             }
                         }
