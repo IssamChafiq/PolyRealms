@@ -452,7 +452,7 @@ void Game::sacrifice(Card* card){
 bool Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
     // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
     if(ab.ability == AbilityName::OpponentDiscard || ab.ability == AbilityName::StunTargetChampion){
-        std::cout << "Which player do you want to use " << Card::abilityNameToString(ab.ability) << " on ?\n";
+        std::cout << "Which player do you want to use '" << Card::abilityNameToString(ab.ability) << "' on ?\n";
         for (int i=0;i<(int)playerList_.size();i++){
             std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
         }

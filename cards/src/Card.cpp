@@ -79,26 +79,27 @@ std::string Card::triggerToString(Trigger tr) {
 
 std::string Card::abilityNameToString(AbilityName a) {
     switch (a) {
-        case AbilityName::GainGold:                      return "GainGold";
-        case AbilityName::GainCombat:                    return "GainCombat";
-        case AbilityName::GainAuthority:                 return "GainAuthority";
-        case AbilityName::DrawCards:                     return "DrawCards";
-        case AbilityName::StunTargetChampion:            return "StunTargetChampion";
-        case AbilityName::PrepareFriendlyChampion:       return "PrepareFriendlyChampion";
-        case AbilityName::SacrificeCards:                return "SacrificeCards";
-        case AbilityName::OpponentDiscard:               return "OpponentDiscard";
-        case AbilityName::AddCombatPerChamp:             return "AddCombatPerChamp";
-        case AbilityName::AddCombatPerGuard:             return "AddCombatPerGuard";
-        case AbilityName::AddHealthPerChamp:             return "AddHealthPerChamp";
-        case AbilityName::PutNextAcquiredCardInHand:     return "PutNextAcquiredCardInHand";
-        case AbilityName::PutNextAcquiredActionCardOnDeck:return "PutNextAcquiredActionCardOnDeck";
-        case AbilityName::PutCardFromDiscardOnDeck:      return "PutCardFromDiscardOnDeck";
-        case AbilityName::PutNextAcquiredCardOnDeck:     return "PutNextAcquiredCardOnDeck";
-        case AbilityName::SacrificeForCombat:            return "SacrificeForCombat";
-        case AbilityName::MayDrawAndDiscard:             return "MayDrawAndDiscard";
-        case AbilityName::DrawAndDiscard:                return "DrawAndDiscard";
-        case AbilityName::PutChampFromDiscardOnDeck:     return "PutChampFromDiscardOnDeck";
-        case AbilityName::AddCombatPerAlly:              return "AddCombatPerAlly";
+        case AbilityName::GainGold:                      return "Gain x gold.";
+        case AbilityName::GainCombat:                    return "Gain x combat.";
+        case AbilityName::GainAuthority:                 return "Gain x health.";
+        case AbilityName::DrawCards:                     return "Draw x card(s).";
+        case AbilityName::StunTargetChampion:            return "Stun target champion.";
+        case AbilityName::PrepareFriendlyChampion:       return "Prepare a champion.";
+        case AbilityName::SacrificeCards:                return "You may sacrifice x card(s) in your hand or discard pile.";
+        case AbilityName::OpponentDiscard:               return "Target opponent discards a card.";
+        case AbilityName::AddCombatPerChamp:             return "Gain x combat for each champion you have in play.";
+        case AbilityName::AddCombatPerOtherGuard:        return "Gain x combat for each other guard you have in play.";
+        case AbilityName::AddCombatPerOtherChamp:        return "Gain x combat for each other champion you have in play.";
+        case AbilityName::AddHealthPerChamp:             return "Gain x health for each champion you have in play.";
+        case AbilityName::PutNextAcquiredCardInHand:     return "Put the next card you acquire this turn into your hand.";
+        case AbilityName::PutNextAcquiredActionCardOnDeck:return "Put the next action you acquire this turn on top of your deck.";
+        case AbilityName::PutCardFromDiscardOnDeck:      return "You may put a card from your discard pile on top of your deck";
+        case AbilityName::PutNextAcquiredCardOnDeck:     return "Put the next card you acquire this turn on top of your deck.";
+        case AbilityName::SacrificeForCombat:            return "You may sacrifice a card in your hand or discard pile. If you do, gain an additional x combat.";
+        case AbilityName::MayDrawAndDiscard:             return "You may draw up to x card(s). If you do, discard x card(s).";
+        case AbilityName::DrawAndDiscard:                return "Draw a card, then discard a card.";
+        case AbilityName::PutChampFromDiscardOnDeck:     return "Take a champion from your discard pile and put it on top of your deck.";
+        case AbilityName::AddCombatPerAlly:              return "Gain 2 combat + x combat for each other Wild card you have in play.";
     
     }
     return "UnknownAbility";

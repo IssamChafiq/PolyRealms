@@ -370,7 +370,7 @@ void Player::getCardFromDiscardToDeck(){
     }
     if(drawChoice == 1){
         if(discardPile_.size() == 0){
-            std::cout << "There are no champions in the discard pile\n";
+            std::cout << "There are no cards in the discard pile\n";
         } else {
             std::cout << "Which card do you want to bring to the top of your deck ?\n";
             for (int i=0;i<(int)discardPile_.size();i++){
@@ -395,7 +395,8 @@ void Player::getCardFromDiscardToDeck(){
                         ++it;
                 }
             }
-            std::cout << "Champion added to the top of the deck :\n";
+            
+            std::cout << "Card added to the top of the deck :\n";
             discardPile_[choice-1]->printCardInfo();
         }
     } else if (drawChoice == 2){

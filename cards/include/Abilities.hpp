@@ -15,7 +15,8 @@ public:
     static bool sacrificeCards(Player* player, int num);
     static bool opponentDiscard(Player* opponent);
     static bool addCombatPerChamp(Player* player,int amount);
-    static bool addCombatPerGuard(Player* player,int amount);
+    static bool addCombatPerOtherGuard(Player* player,int amount);
+    static bool addCombatPerOtherChamp(Player* player,int amount);
     static bool addHealthPerChamp(Player* player,int amount);
     static bool putNextAcquiredCardInHand(Player* player);
     static bool putNextAcquiredActionCardOnDeck(Player* player);

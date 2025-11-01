@@ -19,7 +19,8 @@ bool Abilities::execute(Player* player,
         case AbilityName::SacrificeCards:          return sacrificeCards(player, amount); break;
         case AbilityName::OpponentDiscard:     return opponentDiscard(opponent); break;
         case AbilityName::AddCombatPerChamp:                return addCombatPerChamp(player,amount); break;
-        case AbilityName::AddCombatPerGuard:                return addCombatPerGuard(player,amount)  ; break;
+        case AbilityName::AddCombatPerOtherGuard:                return addCombatPerOtherGuard(player,amount)  ; break;
+        case AbilityName::AddCombatPerOtherChamp:                return addCombatPerOtherChamp(player,amount); break;
         case AbilityName::AddHealthPerChamp:                return addHealthPerChamp(player,amount) ; break;
         case AbilityName::PutNextAcquiredCardInHand:        return putNextAcquiredCardInHand(player); break;
         case AbilityName::PutNextAcquiredActionCardOnDeck:  return putNextAcquiredActionCardOnDeck(player) ; break;
@@ -78,12 +79,21 @@ bool Abilities::addCombatPerChamp(Player* player,int amount){
     return true;
 }
 
-bool Abilities::addCombatPerGuard(Player* player,int amount){
-    int n = 0;
+bool Abilities::addCombatPerOtherGuard(Player* player,int amount){
+    int n = -1; // On gagne du combat pour chaque AUTRE garde, donc on commence à -1 pour que la carte puisse se compter elle-même.
     for (Champion* c : player->getChampions()){
         if (c->isGuard()) {
             n++;
         }
+    }
+    player->setCombat(player->getCombat() + amount * n);
+    return true;
+}
+
+bool Abilities::addCombatPerOtherChamp(Player* player,int amount){
+    int n = -1; // On gagne du combat pour chaque AUTRE champion, donc on commence à -1 pour que la carte puisse se compter elle-même.
+    for (int i=0; i<(int)player->getChampions().size();i++) {
+        n++;
     }
     player->setCombat(player->getCombat() + amount * n);
     return true;
@@ -126,20 +136,25 @@ bool Abilities::sacrificeForCombat(Player* player,int amount){
 }
 
 bool Abilities::mayDrawAndDiscard(Player* player,int amount){
-    std::cout << "Do you want to draw " << amount << " card(s) ? (1. Yes /2. No)\n";
-    int drawChoice;
-    while(!(std::cin >> drawChoice) || drawChoice < 1 || drawChoice > 2){
-        std::cout << "Invalid input. Please enter a valid choice: ";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "You may draw " << amount << " card(s\n";
+    for(int i=0; i<amount; i++){
+        std::cout << "Do you want to draw a card ? You will have to discard one if you do. (1. Yes /2. No)\n";
+        int drawChoice;
+        while(!(std::cin >> drawChoice) || drawChoice < 1 || drawChoice > 2){
+            std::cout << "Invalid input. Please enter a valid choice: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if(drawChoice == 1){
+            if(!player->draw(1) || !player->discard(1)){
+                return false;
+            }
+        } else if (drawChoice == 2){
+            std::cout << "No card drawn.\n";
+            return true;
+        }
     }
-    if(drawChoice == 1){
-        return (player->draw(amount) && player->discard(amount));
-    } else if (drawChoice == 2){
-        std::cout << "No cards drawn.\n";
-        return false;
-    }
-    return false;
+    return true;
 }
 
 bool Abilities::drawAndDiscard(Player* player,int amount){
