@@ -534,9 +534,9 @@ void Player::attack(Player* player){
             std::cout << "Pas assez de combat pour tuer ce garde\n";
         }
     } else {
-        std::cout << "What do you want to attack ? :\n1. " << player->getName() << " - 2. Their champions";
+        std::cout << "What do you want to attack ? :\n1. " << player->getName() << " - 2. Their champions - 3. Return";
         int choice;
-        while(!(std::cin >> choice) || choice < 1 || choice > 2){
+        while(!(std::cin >> choice) || choice < 1 || choice > 3){
             std::cout << "Invalid input. Please enter a valid choice: ";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -564,6 +564,8 @@ void Player::attack(Player* player){
             } else {
                 std::cout << "Pas assez de combat pour tuer ce champion\n";
             }
+        } else if (choice == 3){
+            return;
         }
     }
 }

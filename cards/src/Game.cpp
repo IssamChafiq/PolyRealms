@@ -166,116 +166,128 @@ void Game::startFFA(){
                 }
 
                 switch(actionChoice){
-                    case 1:
+                    case 1:{
                         /* 
                             LOOKING AT SOMETHING CASE
                         */
-                        std::cout << "What do you want to look at ? :\n1. Market row - 2. Sacrifice pile";
-                        for (int i=0;i<(int)playerList_.size();i++){
-                            std::cout << " - " << i+3 << ". " << playerList_[i]->getName() << "'s board";
-                        }
-                        std::cout << "\n";
-                        int lookChoice;
-                        while(!(std::cin >> lookChoice) || lookChoice < 1 || lookChoice > (int)playerList_.size()+2){
-                            std::cout << "Invalid input. Please enter a valid choice: ";
-                            std::cin.clear();
-                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        }
-                        if(lookChoice == 1){
-                            std::cout << "Market row :\n";
-                            for (Card* card : market_.getMarketRow()){
-                                card->printCardInfo();
+                        bool lookOver = false;
+                        while (!lookOver){
+                            std::cout << "What do you want to look at ? :\n1. Market row - 2. Sacrifice pile";
+                            for (int i=0;i<(int)playerList_.size();i++){
+                                std::cout << " - " << i+3 << ". " << playerList_[i]->getName() << "'s board";
                             }
-                        } else if(lookChoice == 2){
-                            std::cout << "Sacrifice pile :\n";
-                            for (Card* card : sacrificePile_){
-                                card->printCardInfo();
+                            std::cout << " - " << (int)playerList_.size()+3 << ". Return.\n";
+                            int lookChoice;
+                            while(!(std::cin >> lookChoice) || lookChoice < 1 || lookChoice > (int)playerList_.size()+3){
+                                std::cout << "Invalid input. Please enter a valid choice: ";
+                                std::cin.clear();
+                                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
-                        } else {
-                            lookAt(playerList_[lookChoice-3]);
+                            if(lookChoice == 1){
+                                std::cout << "Market row :\n";
+                                for (Card* card : market_.getMarketRow()){
+                                    card->printCardInfo();
+                                }
+                            } else if(lookChoice == 2){
+                                std::cout << "Sacrifice pile :\n";
+                                for (Card* card : sacrificePile_){
+                                    card->printCardInfo();
+                                }
+                            } else if(lookChoice == (int)playerList_.size()+3) {
+                                lookOver = true;
+                            } else {
+                                lookAt(playerList_[lookChoice-3]);
+                            }
                         }
                         break;
-                    case 2:
+                    }
+                    case 2:{
                         /* 
                             BUYING A CARD CASE
                         */
-                        if(godmode_){
-                            std::cout << "Which card do you want to buy (godmode activated, you can buy from the market deck too) ? :\n";
-                            std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
-                            if(fireGems_.size() > 0){
-                                fireGems_.front()->printCardInfo();
-                            }
-                            std::cout << "Market row cards :\n";
-                            for (int i=0;i<(int)market_.getMarketRow().size();i++){
-                                std::cout << " - " << i+2 << ":\n";
-                                market_.getMarketRow()[i]->printCardInfo();
-                            }
-                            std::cout << "Market deck cards :\n";
-                            for (int i=0;i<(int)market_.getMarketDeck().getDeckContents().size();i++){
-                                std::cout << " - " << i+(int)market_.getMarketRow().size()+2 << ":\n";
-                                market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
-                            }
-                            std::cout << " - " << market_.getMarketRow().size()+market_.getMarketDeck().getDeckContents().size()+2 << ". Return.\n";
-                            std::cout << "You have " << player->getGold() << " gold.\n";
-                            int godmodeBuyChoice;
-                            while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
-                                std::cout << "Invalid input. Please enter a valid choice: ";
-                                std::cin.clear();
-                                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                            }
-                            if(godmodeBuyChoice == 1){
-                                if((int)fireGems_.size() > 0){
-                                    if(player->godmodeBuy(fireGems_.front(),market_)){
-                                        fireGems_.erase(fireGems_.begin());
-                                    }
-                                } else {
-                                    std::cout << "Not any fire gems left.\n";
-                                }
-                            } else if(godmodeBuyChoice == (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
-                                break;
-                            } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
-                                player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
-                            } else {
-                                player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-2],market_);
-                            }
-                        } else {
-                            std::cout << "Which card do you want to buy ? :\n";
-                            std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
-                            if(fireGems_.size() > 0){
-                                fireGems_.front()->printCardInfo();
-                            }
-                            for (int i=0;i<(int)market_.getMarketRow().size();i++){
-                                std::cout << " - " << i+2 << ":\n";
-                                market_.getMarketRow()[i]->printCardInfo();
-                            }
-                            std::cout << " - " << market_.getMarketRow().size()+2 << ". Return.\n";
-                            std::cout << "You have " << player->getGold() << " gold.\n";
-                            int buyChoice;
-                            while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+2){
-                                std::cout << "Invalid input. Please enter a valid choice: ";
-                                std::cin.clear();
-                                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                            }
-                            if(buyChoice == 1){
+                        bool buyOver = false;
+                        while(!buyOver){
+                            if(godmode_){
+                                std::cout << "Which card do you want to buy (godmode activated, you can buy from the market deck too) ? :\n";
+                                std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
                                 if(fireGems_.size() > 0){
-                                    if(player->buy(fireGems_.front(),market_)){
-                                        fireGems_.erase(fireGems_.begin());
-                                    }
-                                } else {
-                                    std::cout << "Not any fire gems left.\n";
+                                    fireGems_.front()->printCardInfo();
                                 }
-                            } else if(buyChoice == (int)market_.getMarketRow().size()+2) {
-                                break;
+                                std::cout << "Market row cards :\n";
+                                for (int i=0;i<(int)market_.getMarketRow().size();i++){
+                                    std::cout << " - " << i+2 << ":\n";
+                                    market_.getMarketRow()[i]->printCardInfo();
+                                }
+                                std::cout << "Market deck cards :\n";
+                                for (int i=0;i<(int)market_.getMarketDeck().getDeckContents().size();i++){
+                                    std::cout << " - " << i+(int)market_.getMarketRow().size()+2 << ":\n";
+                                    market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
+                                }
+                                std::cout << " - " << market_.getMarketRow().size()+market_.getMarketDeck().getDeckContents().size()+2 << ". Return.\n";
+                                std::cout << "You have " << player->getGold() << " gold.\n";
+                                int godmodeBuyChoice;
+                                while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
+                                    std::cout << "Invalid input. Please enter a valid choice: ";
+                                    std::cin.clear();
+                                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                }
+                                if(godmodeBuyChoice == 1){
+                                    if((int)fireGems_.size() > 0){
+                                        if(player->godmodeBuy(fireGems_.front(),market_)){
+                                            fireGems_.erase(fireGems_.begin());
+                                        }
+                                    } else {
+                                        std::cout << "Not any fire gems left.\n";
+                                    }
+                                } else if(godmodeBuyChoice == (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
+                                    buyOver = true;
+                                } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
+                                    player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
+                                } else {
+                                    player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-2],market_);
+                                }
                             } else {
-                                player->buy(market_.getMarketRow()[buyChoice-2],market_);
+                                std::cout << "Which card do you want to buy ? :\n";
+                                std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
+                                if(fireGems_.size() > 0){
+                                    fireGems_.front()->printCardInfo();
+                                }
+                                for (int i=0;i<(int)market_.getMarketRow().size();i++){
+                                    std::cout << " - " << i+2 << ":\n";
+                                    market_.getMarketRow()[i]->printCardInfo();
+                                }
+                                std::cout << " - " << market_.getMarketRow().size()+2 << ". Return.\n";
+                                std::cout << "You have " << player->getGold() << " gold.\n";
+                                int buyChoice;
+                                while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+2){
+                                    std::cout << "Invalid input. Please enter a valid choice: ";
+                                    std::cin.clear();
+                                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                                }
+                                if(buyChoice == 1){
+                                    if(fireGems_.size() > 0){
+                                        if(player->buy(fireGems_.front(),market_)){
+                                            fireGems_.erase(fireGems_.begin());
+                                        }
+                                    } else {
+                                        std::cout << "Not any fire gems left.\n";
+                                    }
+                                } else if(buyChoice == (int)market_.getMarketRow().size()+2) {
+                                    buyOver = true;
+                                } else {
+                                    player->buy(market_.getMarketRow()[buyChoice-2],market_);
+                                }
                             }
                         }
                         break;
+                    }
                     case 3:{
                         /* 
                             PLAYING A CARD CASE
                         */
-                        std::cout << "Which card do you want to play ? :\n";
+                        bool playOver = false;
+                        while(!playOver){
+                            std::cout << "Which card do you want to play ? :\n";
                             for (int i=0;i<(int)player->getHand().size();i++){
                                 std::cout << " - " << i+1 << ":\n";
                                 player->getHand()[i]->printCardInfo();
@@ -289,96 +301,109 @@ void Game::startFFA(){
                             }
 
                             if(playChoice == (int)player->getHand().size()+1){
-                                break;
-                            }
-                            
-                            Card* chosenCard = player->getHand()[playChoice-1];
+                                playOver = true;
+                            } else {
+                                Card* chosenCard = player->getHand()[playChoice-1];
 
-                            // On enlève la carte de la main et on la place au bon endroit sur le plateau de jeu
-                            player->play(player->getHand()[playChoice-1]);
+                                // On enlève la carte de la main et on la place au bon endroit sur le plateau de jeu
+                                player->play(player->getHand()[playChoice-1]);
 
-                            // Utilisation des capacités onPlay et Ally de la carte
-                            for(auto& ab : chosenCard->abilities()){
-                                if(ab.trigger == Trigger::OnPlay){
-                                    smartAbilityExecute(player,ab);
+                                // Utilisation des capacités onPlay et Ally de la carte
+                                for(auto& ab : chosenCard->abilities()){
+                                    if(ab.trigger == Trigger::OnPlay){
+                                        smartAbilityExecute(player,ab);
+                                    }
                                 }
                             }
+                        }
                         break;
                     }
                     case 4:{
                         /* 
                             ATTACK A PLAYER CASE
                         */
-                        std::cout << "Who do you want to attack ? : (Combat power : " << player->getCombat() << ")\n";
-                        for (int i=0;i<(int)playerList_.size();i++){
-                            std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
-                        }
-                        std::cout << "\n";
-                        int attackChoice;
-                        while(!(std::cin >> attackChoice) || attackChoice < 1 || attackChoice > (int)playerList_.size()){
-                            std::cout << "Invalid input. Please enter a valid choice: ";
-                            std::cin.clear();
-                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        }
-                        if (player == playerList_[attackChoice-1]){
-                            std::cout << "You cannot attack yourself\n";
-                        } else {
-                            std::cout << "Attacking " << playerList_[attackChoice-1]->getName() << "\n";
-                            player->attack(playerList_[attackChoice-1]);
-                        }
-                        // On supprime le joueur si il meurt.
-                        std::vector<Player*> toRemove;
-                        for (Player* p : playerList_) {
-                            if (p->getAuthority() <= 0) {
-                                std::cout << "The player " << p->getName() << " has died.\n";
-                                toRemove.push_back(p);
+                        bool attackOver = false;
+                        while(!attackOver){
+                            std::cout << "Who do you want to attack ? (Combat power : " << player->getCombat() << ") :";
+                            for (int i=0;i<(int)playerList_.size();i++){
+                                std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
                             }
-                        }
-                        for (Player* dead : toRemove) {
-                            auto it = std::find(playerList_.begin(), playerList_.end(), dead);
-                            if (it != playerList_.end()) playerList_.erase(it);
-                        }
-                        if((int)playerList_.size() == 1){
-                            std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
-                            turnOver = true;
-                            gameOver = true;
+                            std::cout << " - " << (int)playerList_.size()+1 << ". Return.\n";
+                            int attackChoice;
+                            while(!(std::cin >> attackChoice) || attackChoice < 1 || attackChoice > (int)playerList_.size()+1){
+                                std::cout << "Invalid input. Please enter a valid choice: ";
+                                std::cin.clear();
+                                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                            }
+
+                            if (attackChoice == (int)playerList_.size()+1){
+                                attackOver = true;
+                            } else if (player == playerList_[attackChoice-1]){
+                                std::cout << "You cannot attack yourself\n";
+                            } else {
+                                std::cout << "Attacking " << playerList_[attackChoice-1]->getName() << "\n";
+                                player->attack(playerList_[attackChoice-1]);
+
+                                // On supprime le joueur si il meurt.
+                                std::vector<Player*> toRemove;
+                                for (Player* p : playerList_) {
+                                    if (p->getAuthority() <= 0) {
+                                        std::cout << "The player " << p->getName() << " has died.\n";
+                                        toRemove.push_back(p);
+                                    }
+                                }
+                                for (Player* dead : toRemove) {
+                                    auto it = std::find(playerList_.begin(), playerList_.end(), dead);
+                                    if (it != playerList_.end()) playerList_.erase(it);
+                                }
+                                if((int)playerList_.size() == 1){
+                                    std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
+                                    turnOver = true;
+                                    gameOver = true;
+                                }
+                            }
                         }
                         break;
                     }
-                    case 5:
+                    case 5:{
                         /* 
                             USE AN ABILITY CASE
                         */
-                        std::cout << "Which card's ability do you want to use ?\n";
-                        std::cout << "Champion cards :\n";
-                        for (int i=0;i<(int)player->getChampions().size();i++){
-                            std::cout << " - " << i+1 << "\n";
-                            player->getChampions()[i]->printCardInfo();
-                        }
-                        std::cout << "In play cards :\n";
-                        for (int i=0;i<(int)player->getInPlay().size();i++){
-                            std::cout << " - " << i+(int)player->getChampions().size()+1 << "\n";
-                            player->getInPlay()[i]->printCardInfo();
-                        }
-                        std::cout << " - " << (int)player->getChampions().size()+(int)player->getInPlay().size()+1 << ". Return.\n";
-                        int cardChoice;
-                        while(!(std::cin >> cardChoice) || cardChoice < 1 || cardChoice > (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
-                            std::cout << "Invalid input. Please enter a valid choice: ";
-                            std::cin.clear();
-                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        }
+                        bool abilityOver = false;
+                        while(!abilityOver){
+                            std::cout << "Which card's ability do you want to use ?\n";
+                            std::cout << "Champion cards :\n";
+                            for (int i=0;i<(int)player->getChampions().size();i++){
+                                std::cout << " - " << i+1 << "\n";
+                                player->getChampions()[i]->printCardInfo();
+                            }
+                            std::cout << "In play cards :\n";
+                            for (int i=0;i<(int)player->getInPlay().size();i++){
+                                std::cout << " - " << i+(int)player->getChampions().size()+1 << "\n";
+                                player->getInPlay()[i]->printCardInfo();
+                            }
+                            std::cout << " - " << (int)player->getChampions().size()+(int)player->getInPlay().size()+1 << ". Return.\n";
+                            int cardChoice;
+                            while(!(std::cin >> cardChoice) || cardChoice < 1 || cardChoice > (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
+                                std::cout << "Invalid input. Please enter a valid choice: ";
+                                std::cin.clear();
+                                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                            }
 
-                        // Return case
-                        if(cardChoice == (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
-                            break;
+                            if(cardChoice == (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
+                                abilityOver = true;
+                            } else {
+                                player->useAbility(cardChoice);
+                            }
                         }
-                        player->useAbility(cardChoice);
                         break; 
-                    case 6:
+                    }
+                    case 6:{
                         player->cleanup(); // phase de défausse
                         player->draw(5); // phase de pioche
                         turnOver = true;
                         break;
+                    } 
                 }
             }
             if (gameOver){
