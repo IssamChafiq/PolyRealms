@@ -114,9 +114,6 @@ void Card::printCardInfo() const {
     std::cout << "Faction:   " << factionToString(faction_) << "\n";
     std::cout << "Type:      " << typeToString(type_) << "\n";
 
-    std::cout << "Expendable: " << (expendable_ ? "Yes" : "No") << "\n";
-    std::cout << "Sacrificeable: " << (sacrificeable_ ? "Yes" : "No") << "\n";
-
     if (!abilities().empty()) {
         std::cout << "Abilities:\n";
         for (const auto& ab : abilities()) {
