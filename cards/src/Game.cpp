@@ -291,15 +291,17 @@ void Game::startFFA(){
                                 break;
                             }
                             
+                            Card* chosenCard = player->getHand()[playChoice-1];
+
+                            // On enlève la carte de la main et on la place au bon endroit sur le plateau de jeu
+                            player->play(player->getHand()[playChoice-1]);
+
                             // Utilisation des capacités onPlay et Ally de la carte
-                            for(auto& ab : player->getHand()[playChoice-1]->abilities()){
+                            for(auto& ab : chosenCard->abilities()){
                                 if(ab.trigger == Trigger::OnPlay){
                                     smartAbilityExecute(player,ab);
                                 }
                             }
-
-                            // On enlève la carte de la main et on la place au bon endroit sur le plateau de jeu
-                            player->play(player->getHand()[playChoice-1]);
                         break;
                     case 4:{
                         /* 
