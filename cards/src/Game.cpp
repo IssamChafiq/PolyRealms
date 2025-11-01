@@ -249,6 +249,7 @@ void Game::startFFA(){
                                 market_.getMarketRow()[i]->printCardInfo();
                             }
                             std::cout << " - " << market_.getMarketRow().size()+2 << ". Return.\n";
+                            std::cout << "You have " << player->getGold() << " gold.\n";
                             int buyChoice;
                             while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+2){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
