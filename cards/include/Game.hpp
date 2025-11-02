@@ -7,6 +7,7 @@
 
 class Game {
     static std::vector<Player*> playerList_;
+    static std::vector<Player*> opponentList_;
     Market market_;
     // J'ai mis les fireGems ici parce que sinon j'avais des problèmes pour le sacrifice car sacrifice est statique et ne pouvait pas accéder au marché (où les gemmes étaient de base).
     std::vector<Card*> startingDeck_;
@@ -17,8 +18,9 @@ public:
     Game(Market market, std::vector<Card*> startingDeck, std::vector<Card*> fireGem);
     ~Game();
     void initialize();
-    void startFFA();
+    void startGame(int mode);
     static void lookAt(Player* player);
     static void sacrifice(Card* card);
     static bool smartAbilityExecute(Player* player, Card::CardAbility& ab);
+    int getPlayerIndex(Player* player);
 };

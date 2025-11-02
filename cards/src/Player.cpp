@@ -509,7 +509,7 @@ bool Player::stunChampion(){
     return true;
 }
 
-void Player::attack(Player* player){
+void Player::attack(Player* player, bool toRight){
     if(player->isGuarded()){
         std::vector<Champion*> guards = player->getGuards();
         std::cout << player->getName() << " is guarded, you can only attack his guards !";
@@ -540,9 +540,13 @@ void Player::attack(Player* player){
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         if (choice == 1){
-            int dmg = std::min(combat_, player->getAuthority());
-            player->setAuthority(player->getAuthority() - dmg);
-            combat_ -= dmg;
+            if(toRight){
+                std::cout << "You can only attack the player to your left in this mode. You can however attack the champions of this player.\n";
+            } else {
+                int dmg = std::min(combat_, player->getAuthority());
+                player->setAuthority(player->getAuthority() - dmg);
+                combat_ -= dmg;
+            }
         } else if (choice == 2){
             if((int)player->getChampions().size() == 0){
                 std::cout << "This player doesnt have any champions.";

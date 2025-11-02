@@ -11,6 +11,7 @@
 // Déclaration des variables statiques
 std::vector<Card*> Game::sacrificePile_ = {};
 std::vector<Player*> Game::playerList_ = {};
+std::vector<Player*> Game::opponentList_ = {};
 std::vector<Card*> Game::fireGems_ = {};
 
 Game::Game(Market market, std::vector<Card*> startingDeck,std::vector<Card*> fireGems): market_(market), startingDeck_(startingDeck) {
@@ -57,9 +58,9 @@ void Game::initialize(){
         playerList_.push_back(newPlayer);
     }
 
-    std::cout << "Which gamemode would you like to play ?\n1. Free For All (2+ players).\n";
+    std::cout << "Which gamemode would you like to play ?\n1. Free For All (2+ players)\n2. First blood (3+ players)\n3. Last standing (3+ players)\n";
     int modeChoice;
-    while(!(std::cin >> modeChoice) || modeChoice < 1 || modeChoice > 1){
+    while(!(std::cin >> modeChoice) || modeChoice < 1 || modeChoice > 3){
         std::cout << "Invalid input. Please enter a valid choice: ";
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -70,12 +71,27 @@ void Game::initialize(){
             std::cout << "Free For All requires at least 2 players. Exiting.\n";
             return;
         } else {
-            startFFA();
+            std::cout << "Starting Free For All mode with " << numPlayers << " players.\n";
+            std::cout << "The last player alive wins !\n";
+            startGame(1);
         }
+    } else if (modeChoice == 2){
+        if(numPlayers < 3){
+            std::cout << "First Blood requires at least 3 players. Exiting.\n";
+            return;
+        } else {
+            std::cout << "Starting First Blood mode with " << numPlayers << " players.\n";
+            std::cout << "The player to the right of the first player to die wins !\n";
+            startGame(2);
+        }
+    } else if (modeChoice == 3){
+        std::cout << "Starting Last Standing mode with " << numPlayers << " players.\n";
+        std::cout << "Just like First Blood, but every time a player dies, the player to its right gains 10 health points and draws a card, and the game ends when there is only one player left!\n";
+        startGame(3);
     }
 }
 
-void Game::startFFA(){
+void Game::startGame(int mode){
     bool gameOver = false;
 
     if(playerList_.size() == 2){
@@ -92,6 +108,35 @@ void Game::startFFA(){
     while(!gameOver){
         for(Player* player : playerList_){
             bool turnOver = false;
+
+            opponentList_.clear();
+
+            if(mode == 1){
+                for (Player* p : playerList_){
+                    if(p != player){
+                        opponentList_.push_back(p);
+                    }
+                }
+            } else if(mode == 2 || mode == 3){
+                int id = getPlayerIndex(player);
+                int leftId, rightId;
+                if((int)playerList_.size() == 2){
+                    opponentList_.push_back(playerList_[(id + 1) % 2]);
+                } else {
+                    if(id == 0){
+                        leftId = (int)playerList_.size() - 1;
+                    } else {
+                        leftId = id - 1;
+                    }
+                    if(id == (int)playerList_.size() - 1){
+                        rightId = 0;
+                    } else {
+                        rightId = id + 1;
+                    }
+                    opponentList_ = {playerList_[leftId], playerList_[rightId]};
+                }
+            }
+
             std::cout << "\nIt's " << player->getName() << "'s turn.\n";
             // On réutilise les capacités onPlay des champions à chaque tour
             for(Champion* champion : player->getChampions()){
@@ -334,42 +379,82 @@ void Game::startFFA(){
                         */
                         bool attackOver = false;
                         while(!attackOver){
-                            std::cout << "Who do you want to attack ? (Combat power : " << player->getCombat() << ") :";
-                            for (int i=0;i<(int)playerList_.size();i++){
-                                std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
+                            if(mode == 2 || mode == 3){
+                                std::cout << "In this mode, you can only attack the players to your left and right. The first player is to your left and the second is to your right.\n";
                             }
-                            std::cout << " - " << (int)playerList_.size()+1 << ". Return.\n";
+                            std::cout << "Who do you want to attack ? (Combat power : " << player->getCombat() << ") :";
+                            for (int i=0;i<(int)opponentList_.size();i++){
+                                std::cout << " - " << i+1 << ". " << opponentList_[i]->getName();
+                            }
+                            std::cout << " - " << (int)opponentList_.size()+1 << ". Return.\n";
+
                             int attackChoice;
-                            while(!(std::cin >> attackChoice) || attackChoice < 1 || attackChoice > (int)playerList_.size()+1){
+                            while(!(std::cin >> attackChoice) || attackChoice < 1 || attackChoice > (int)opponentList_.size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
                                 std::cin.clear();
                                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                             }
 
-                            if (attackChoice == (int)playerList_.size()+1){
+                            if (attackChoice == (int)opponentList_.size()+1){
                                 attackOver = true;
-                            } else if (player == playerList_[attackChoice-1]){
+                            } else if (player == opponentList_[attackChoice-1]){
                                 std::cout << "You cannot attack yourself\n";
+                            } else if((mode == 2 && attackChoice > 1) || (mode == 3 && attackChoice > 1)){
+                                std::cout << "Attacking " << opponentList_[attackChoice-1]->getName() << "test\n";
+                                player->attack(opponentList_[attackChoice-1], true);
                             } else {
-                                std::cout << "Attacking " << playerList_[attackChoice-1]->getName() << "\n";
-                                player->attack(playerList_[attackChoice-1]);
+                                std::cout << "Attacking " << opponentList_[attackChoice-1]->getName() << "\n";
+                                player->attack(opponentList_[attackChoice-1], false);
 
-                                // On supprime le joueur si il meurt.
+                                // On met à jour la liste des joueurs morts
                                 std::vector<Player*> toRemove;
-                                for (Player* p : playerList_) {
+                                for (Player* p : opponentList_) {
                                     if (p->getAuthority() <= 0) {
                                         std::cout << "The player " << p->getName() << " has died.\n";
                                         toRemove.push_back(p);
+                                        if(mode == 3){
+                                            int deadId = getPlayerIndex(p);
+                                            int rightId;
+                                            if(deadId == (int)playerList_.size() - 1){
+                                                rightId = 0;
+                                            } else {
+                                                rightId = deadId + 1;
+                                            }
+                                            playerList_[rightId]->setAuthority(playerList_[rightId]->getAuthority() + 10);
+                                            std::cout << playerList_[rightId]->getName() << " gains 10 health points and now has " << playerList_[rightId]->getAuthority() << " health points.\n";
+                                            playerList_[rightId]->draw(1);
+                                        }
                                     }
                                 }
+
+                                // Condition de victoire pour le mode First Blood
+                                if(mode == 2 && toRemove.size() > 0){
+                                    std::cout << "The game is over ! The winner is ";
+                                    int deadId = getPlayerIndex(toRemove[0]);
+                                    int winnerId;
+                                    if(deadId == (int)playerList_.size() - 1){
+                                        winnerId = 0;
+                                    } else {
+                                        winnerId = deadId + 1;
+                                    }
+                                    std::cout << playerList_[winnerId]->getName() << " ! Congratulations !\n";
+                                    gameOver = true;
+                                    turnOver = true;
+                                    attackOver = true;
+                                }
+                                
+                                // On retire les joueurs morts de la partie
                                 for (Player* dead : toRemove) {
                                     auto it = std::find(playerList_.begin(), playerList_.end(), dead);
                                     if (it != playerList_.end()) playerList_.erase(it);
                                 }
+
+                                // On vérifie si la partie est finie (dernier joueur debout)
                                 if((int)playerList_.size() == 1){
-                                    std::cout << "Congratulations ! The player " << playerList_[0]->getName() << " has won the game !\n";
+                                    std::cout << "The game is over ! The winner is " << playerList_[0]->getName() << " ! Congratulations !\n";
                                     turnOver = true;
                                     gameOver = true;
+                                    attackOver = true;
                                 }
                             }
                         }
@@ -489,20 +574,20 @@ bool Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
     // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
     if(ab.ability == AbilityName::OpponentDiscard || ab.ability == AbilityName::StunTargetChampion){
         std::cout << "Which player do you want to use '" << Card::abilityNameToString(ab.ability) << "' on ?\n";
-        for (int i=0;i<(int)playerList_.size();i++){
-            std::cout << " - " << i+1 << ". " << playerList_[i]->getName();
+        for (int i=0;i<(int)opponentList_.size();i++){
+            std::cout << " - " << i+1 << ". " << opponentList_[i]->getName();
         }
         std::cout << "\n";
         int spellChoice;
-        while(!(std::cin >> spellChoice) || spellChoice < 1 || spellChoice > (int)playerList_.size()){
+        while(!(std::cin >> spellChoice) || spellChoice < 1 || spellChoice > (int)opponentList_.size()){
             std::cout << "Invalid input. Please enter a valid choice: ";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-        if (playerList_[spellChoice-1] == player){
+        if (opponentList_[spellChoice-1] == player){
             std::cout << "You cannot target yourself with this ability.\n";
         } else {
-            if(Abilities::execute(player,ab.ability,playerList_[spellChoice-1],ab.amount)){
+            if(Abilities::execute(player,ab.ability,opponentList_[spellChoice-1],ab.amount)){
                 std::cout << "Ability used :\n";
                 ab.printAbility();
                 ab.used = true;
@@ -526,4 +611,13 @@ bool Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
         }
     }
     return false;
+}
+
+int Game::getPlayerIndex(Player* player){
+    for (int i=0;i<(int)playerList_.size();i++){
+        if (playerList_[i] == player){
+            return i;
+        }
+    }
+    return -1;
 }
