@@ -529,10 +529,10 @@ void Player::attack(Player* player){
             combat_ = combat_ - guards[guardChoice-1]->getMaxShield();
             player->removeChampion(guards[guardChoice-1]);
         } else {
-            std::cout << "Pas assez de combat pour tuer ce garde\n";
+            std::cout << "Pas assez de combat pour tuer ce garde.\n";
         }
     } else {
-        std::cout << "What do you want to attack ? :\n1. " << player->getName() << " - 2. Their champions - 3. Return";
+        std::cout << "What do you want to attack ? :\n1. " << player->getName() << " - 2. Their champions - 3. Return\n";
         int choice;
         while(!(std::cin >> choice) || choice < 1 || choice > 3){
             std::cout << "Invalid input. Please enter a valid choice: ";
@@ -544,6 +544,10 @@ void Player::attack(Player* player){
             player->setAuthority(player->getAuthority() - dmg);
             combat_ -= dmg;
         } else if (choice == 2){
+            if((int)player->getChampions().size() == 0){
+                std::cout << "This player doesnt have any champions.";
+                return;
+            }
             for (int i=0;i<(int)player->getChampions().size();i++){
             std::cout << " - " << i+1 << ". " << player->getChampions()[i]->name() << ":";
             }
@@ -560,7 +564,7 @@ void Player::attack(Player* player){
                 combat_ = combat_ - player->getChampions()[championChoice-1]->getMaxShield();
                 player->removeChampion(player->getChampions()[championChoice-1]);
             } else {
-                std::cout << "Pas assez de combat pour tuer ce champion\n";
+                std::cout << "Not enough combat to kill this champion\n";
             }
         } else if (choice == 3){
             return;
