@@ -37,16 +37,19 @@ bool Abilities::execute(Player* player,
 
 bool Abilities::gainGold(Player* player, int amount) {
     player->setGold(player->getGold() + amount);
+    std::cout << player->getName() << " gains " << amount << " gold.\n";
     return true;
 }
 
 bool Abilities::gainCombat(Player* player, int amount) {
     player->setCombat(player->getCombat() + amount);
+    std::cout << player->getName() << " gains " << amount << " combat.\n";
     return true;
 }
 
 bool Abilities::gainAuthority(Player* player, int amount) {
     player->setAuthority(player->getAuthority() + amount);
+    std::cout << player->getName() << " gains " << amount << " health.\n";
     return true;
 }
 
@@ -76,6 +79,7 @@ bool Abilities::addCombatPerChamp(Player* player,int amount){
         n++;
     }
     player->setCombat(player->getCombat() + amount * n);
+    std::cout << player->getName() << " gains " << amount * n << " combat (" << amount << " per champion in play).\n";
     return true;
 }
 
@@ -87,6 +91,7 @@ bool Abilities::addCombatPerOtherGuard(Player* player,int amount){
         }
     }
     player->setCombat(player->getCombat() + amount * n);
+    std::cout << player->getName() << " gains " << amount * n << " combat (" << amount << " per other guard in play).\n";
     return true;
 }
 
@@ -96,6 +101,7 @@ bool Abilities::addCombatPerOtherChamp(Player* player,int amount){
         n++;
     }
     player->setCombat(player->getCombat() + amount * n);
+    std::cout << player->getName() << " gains " << amount * n << " combat (" << amount << " per other champion in play).\n";
     return true;
 }
 
@@ -103,16 +109,19 @@ bool Abilities::addHealthPerChamp(Player* player,int amount){
     int n = 0;
     for (int i=0; i<(int)player->getChampions().size();i++) n++;
     player->setAuthority(player->getAuthority() + amount * n);
+    std::cout << player->getName() << " gains " << amount * n << " health (" << amount << " per champion in play).\n";
     return true;
 }
 
 bool Abilities::putNextAcquiredCardInHand(Player* player){
     player->setNextBuyInHand(true);
+    std::cout << "The next acquired card will be put in hand.\n";
     return true;
 }
 
 bool Abilities::putNextAcquiredActionCardOnDeck(Player* player){
     player->setNextActionBuyOnDeck(true);
+    std::cout << "The next acquired action card will be put on top of the deck.\n";
     return true;
 }
 
@@ -123,20 +132,23 @@ bool Abilities::putCardFromDiscardOnDeck(Player* player){
 
 bool Abilities::putNextAcquiredCardOnDeck(Player* player){
     player->setNextBuyTopOfDeck(true);
+    std::cout << "The next acquired card will be put on top of the deck.\n";
     return true;
 }
 
 bool Abilities::sacrificeForCombat(Player* player,int amount){
     if(player->cardEffectSacrifice(1)){
         player->setCombat(player->getCombat() + amount);
+        std::cout << player->getName() << " gains " << amount << " combat by sacrificing a card.\n";
         return true;
     } else {
         return false;
     }
 }
 
+// On donne au joueur la possibilité de piocher des cartes et de défausser ensuite
 bool Abilities::mayDrawAndDiscard(Player* player,int amount){
-    std::cout << "You may draw " << amount << " card(s\n";
+    std::cout << "You may draw " << amount << " card(s)\n";
     for(int i=0; i<amount; i++){
         std::cout << "Do you want to draw a card ? You will have to discard one if you do. (1. Yes /2. No)\n";
         int drawChoice;
@@ -157,6 +169,7 @@ bool Abilities::mayDrawAndDiscard(Player* player,int amount){
     return true;
 }
 
+// On force le joueur à piocher des cartes et à défausser ensuite
 bool Abilities::drawAndDiscard(Player* player,int amount){
     return player->draw(amount) && player->discard(amount);
 }

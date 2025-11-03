@@ -7,6 +7,7 @@
 #include <limits>
 #include <thread>
 #include <chrono>
+#include <stdlib.h>
 
 // Déclaration des variables statiques
 std::vector<Card*> Game::sacrificePile_ = {};
@@ -19,6 +20,7 @@ Game::Game(Market market, std::vector<Card*> startingDeck,std::vector<Card*> fir
 }
 
 Game::~Game() {
+    // Nettoyage de la mémoire
     for (Player* player : playerList_) {
         delete player;
     }
@@ -112,12 +114,14 @@ void Game::startGame(int mode){
             opponentList_.clear();
 
             if(mode == 1){
+                // En Free For All, tous les autres joueurs sont des adversaires
                 for (Player* p : playerList_){
                     if(p != player){
                         opponentList_.push_back(p);
                     }
                 }
             } else if(mode == 2 || mode == 3){
+                // On récupère ici les joueurs à gauche et à droite du joueur courant, si il n'y a que 2 joueurs on prend l'autre joueur comme adversaire unique pour éviter de le dédoubler.
                 int id = getPlayerIndex(player);
                 int leftId, rightId;
                 if((int)playerList_.size() == 2){
@@ -147,13 +151,19 @@ void Game::startGame(int mode){
                 }
             }
             while(!turnOver){
-                std::cout << "Choose an action:\n\n1. Look at something on the board - 2. Buy Card - 3. Play Card - 4. Attack - 5. Use a spell - 6. End Turn.\n";
+                // On temporise pour voir l'affichage du changement de joueur avant de clear.
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                system("clear||cls");
+                std::cout << "\n" << player->getName() << ": Health: " << player->getAuthority() << ", Gold: " << player->getGold() << ", Combat: " << player->getCombat() << ".\n";
+                std::cout << "\nChoose an action:\n\033[1;93m1\033[0m. Look at something on the board - \033[1;93m2\033[0m. Buy Card - \033[1;93m3\033[0m. Play Card - \033[1;93m4\033[0m. Attack - \033[1;93m5\033[0m. Use a spell - \033[1;93m6\033[0m. End Turn.\n";
                 std::cout << "Type 'godmode' to activate godmode or access its features.\n";
                 std::cout << "Type 'exit' or 'quit' to exit the game.\n";
+                std::cout << "Your choice: ";
                 
                 std::string input;
                 std::cin >> input;
                 
+                // Godmode
                 if(input == "godmode"){
                     if(godmode_ == false){
                         std::cout << "Activate godmode ? (y/n)\n";
@@ -168,7 +178,7 @@ void Game::startGame(int mode){
                             std::cout << "Invalid input. Please try again.";
                         } 
                     } else {
-                        std::cout << "What would you like to do ?\n1. Set a player's health to 1 - 2. Deactivate godmode - 3. Return\n";
+                        std::cout << "\nWhat would you like to do ?\n1. Set a player's health to 1 - 2. Deactivate godmode - 3. Return\n";
                         int godmodeChoice;
                         while(!(std::cin >> godmodeChoice) || godmodeChoice < 1 || godmodeChoice > 3){
                             std::cout << "Invalid input. Please enter a valid choice: ";
@@ -219,7 +229,7 @@ void Game::startGame(int mode){
                         */
                         bool lookOver = false;
                         while (!lookOver){
-                            std::cout << "What do you want to look at ? :\n1. Market row - 2. Sacrifice pile";
+                            std::cout << "\nWhat do you want to look at ? :\n1. Market row - 2. Sacrifice pile";
                             for (int i=0;i<(int)playerList_.size();i++){
                                 std::cout << " - " << i+3 << ". " << playerList_[i]->getName() << "'s board";
                             }
@@ -255,7 +265,8 @@ void Game::startGame(int mode){
                         bool buyOver = false;
                         while(!buyOver){
                             if(godmode_){
-                                std::cout << "Which card do you want to buy (godmode activated, you can buy from the market deck too) ? :\n";
+                                player->setGold(100); // On donne de l'or supplémentaire pour que le joueur puisse acheter librement en godmode (et pour des raisons de tests plus faciles aussi)
+                                std::cout << "\nWhich card do you want to buy (godmode activated, you can buy from the market deck too) ? :\n";
                                 std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
                                 if(fireGems_.size() > 0){
                                     fireGems_.front()->printCardInfo();
@@ -283,7 +294,7 @@ void Game::startGame(int mode){
                                         if(player->godmodeBuy(fireGems_.front(),market_)){
                                             fireGems_.erase(fireGems_.begin());
                                             // On temporise l'affichage du marché à nouveau
-                                            std::this_thread::sleep_for(std::chrono::seconds(1));
+                                            std::this_thread::sleep_for(std::chrono::seconds(2));
                                         }
                                     } else {
                                         std::cout << "Not any fire gems left.\n";
@@ -293,14 +304,14 @@ void Game::startGame(int mode){
                                 } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
                                     player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
                                     // On temporise l'affichage du marché à nouveau
-                                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                                    std::this_thread::sleep_for(std::chrono::seconds(2));
                                 } else {
                                     player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-2],market_);
                                     // On temporise l'affichage du marché à nouveau
-                                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                                    std::this_thread::sleep_for(std::chrono::seconds(2));
                                 }
                             } else {
-                                std::cout << "Which card do you want to buy ? :\n";
+                                std::cout << "\nWhich card do you want to buy ? :\n";
                                 std::cout << " - 1. Fire Gem ( " << fireGems_.size() << " left):\n";
                                 if(fireGems_.size() > 0){
                                     fireGems_.front()->printCardInfo();
@@ -342,7 +353,7 @@ void Game::startGame(int mode){
                         */
                         bool playOver = false;
                         while(!playOver){
-                            std::cout << "Which card do you want to play ? :\n";
+                            std::cout << "\nWhich card do you want to play ? :\n";
                             for (int i=0;i<(int)player->getHand().size();i++){
                                 std::cout << " - " << i+1 << ":\n";
                                 player->getHand()[i]->printCardInfo();
@@ -382,9 +393,9 @@ void Game::startGame(int mode){
                             if(mode == 2 || mode == 3){
                                 std::cout << "In this mode, you can only attack the players to your left and right. The first player is to your left and the second is to your right.\n";
                             }
-                            std::cout << "Who do you want to attack ? (Combat power : " << player->getCombat() << ") :";
+                            std::cout << "\nWho do you want to attack ? (Combat power : " << player->getCombat() << ") :";
                             for (int i=0;i<(int)opponentList_.size();i++){
-                                std::cout << " - " << i+1 << ". " << opponentList_[i]->getName();
+                                std::cout << " - " << i+1 << ". " << opponentList_[i]->getName() << "'s board";
                             }
                             std::cout << " - " << (int)opponentList_.size()+1 << ". Return.\n";
 
@@ -398,19 +409,20 @@ void Game::startGame(int mode){
                             if (attackChoice == (int)opponentList_.size()+1){
                                 attackOver = true;
                             } else if (player == opponentList_[attackChoice-1]){
+                                // Il est techniquement impossible d'attaquer soi-même avec la configuration actuelle, mais je garde cette vérification au cas où
                                 std::cout << "You cannot attack yourself\n";
                             } else if((mode == 2 && attackChoice > 1) || (mode == 3 && attackChoice > 1)){
-                                std::cout << "Attacking " << opponentList_[attackChoice-1]->getName() << "test\n";
+                                std::cout << "Attacking " << opponentList_[attackChoice-1]->getName() << "'s board.\n";
                                 player->attack(opponentList_[attackChoice-1], true);
                             } else {
-                                std::cout << "Attacking " << opponentList_[attackChoice-1]->getName() << "\n";
+                                std::cout << "Attacking " << opponentList_[attackChoice-1]->getName() << "'s board.\n";
                                 player->attack(opponentList_[attackChoice-1], false);
 
                                 // On met à jour la liste des joueurs morts
                                 std::vector<Player*> toRemove;
                                 for (Player* p : opponentList_) {
                                     if (p->getAuthority() <= 0) {
-                                        std::cout << "The player " << p->getName() << " has died.\n";
+                                        std::cout << "\nThe player " << p->getName() << " has died.\n";
                                         toRemove.push_back(p);
                                         if(mode == 3){
                                             int deadId = getPlayerIndex(p);
@@ -429,7 +441,7 @@ void Game::startGame(int mode){
 
                                 // Condition de victoire pour le mode First Blood
                                 if(mode == 2 && toRemove.size() > 0){
-                                    std::cout << "The game is over ! The winner is ";
+                                    std::cout << "\nThe game is over ! The winner is ";
                                     int deadId = getPlayerIndex(toRemove[0]);
                                     int winnerId;
                                     if(deadId == (int)playerList_.size() - 1){
@@ -451,7 +463,7 @@ void Game::startGame(int mode){
 
                                 // On vérifie si la partie est finie (dernier joueur debout)
                                 if((int)playerList_.size() == 1){
-                                    std::cout << "The game is over ! The winner is " << playerList_[0]->getName() << " ! Congratulations !\n";
+                                    std::cout << "\nThe game is over ! The winner is " << playerList_[0]->getName() << " ! Congratulations !\n";
                                     turnOver = true;
                                     gameOver = true;
                                     attackOver = true;
@@ -466,7 +478,7 @@ void Game::startGame(int mode){
                         */
                         bool abilityOver = false;
                         while(!abilityOver){
-                            std::cout << "Which card's ability do you want to use ?\n";
+                            std::cout << "\nWhich card's ability do you want to use ?\n";
                             std::cout << "Champion cards :\n";
                             for (int i=0;i<(int)player->getChampions().size();i++){
                                 std::cout << " - " << i+1 << "\n";
@@ -489,14 +501,75 @@ void Game::startGame(int mode){
                                 abilityOver = true;
                             } else {
                                 player->useAbility(cardChoice);
+                                // On temporise un peu l'affichage pour que le joueur ait le temps de lire ce qui s'est passé
+                                std::this_thread::sleep_for(std::chrono::seconds(2));
                             }
                         }
                         break; 
                     }
                     case 6:{
-                        player->cleanup(); // phase de défausse
-                        player->draw(5); // phase de pioche
-                        turnOver = true;
+                        /* 
+                            END TURN CASE
+                        */
+                        std::cout << "\nAre you sure you want to end your turn ? (y/n)\n";
+                        // On rappelle au joueur ce qu'il lui reste avant de terminer son tour
+                        std::cout << "You have " << player->getGold() << " gold and " << player->getCombat() << " combat power left.\n";
+
+                        // Verification du combat restant
+                        if(player->getCombat() > 0){
+                            std::cout << "Remember that any unused combat power will be lost at the end of your turn.\n";
+                        }
+
+                        // Verification des cartes achetables dans le marché
+                        bool buyableInMarket = false;
+                        for(Card* card : market_.getMarketRow()){
+                            if(card->cost() <= player->getGold()){
+                                buyableInMarket = true;
+                                break;
+                            }
+                        }
+                        if(buyableInMarket || (fireGems_.size() > 0 && player->getGold() >= 2)){
+                            std::cout << "There are still cards you can afford in the shop !\n";
+                        }
+
+                        // Verification des cartes jouables en main
+                        if(player->getHand().size() > 0){
+                            std::cout << "You still have unplayed cards in your hand !\n";
+                        }
+
+                        // Verification des capacités non utilisées
+                        bool unusedAbilities = false;
+                        for(Champion* champion : player->getChampions()){
+                            for(auto& ab : champion->abilities()){
+                                if(!ab.used){
+                                    unusedAbilities = true;
+                                    break;
+                                }
+                            }
+                            if(unusedAbilities) break;
+                        }
+                        for(Card* card : player->getInPlay()){
+                            for(auto& ab : card->abilities()){
+                                if(!ab.used){
+                                    unusedAbilities = true;
+                                    break;
+                                }
+                            }
+                            if(unusedAbilities) break;
+                        }
+
+                        if(unusedAbilities){
+                            std::cout << "You have unused card abilities that you can still use this turn !\n";
+                        }
+
+                        std::string endResponse;
+                        std::cin >> endResponse;
+                        if(endResponse == "y" || endResponse == "Y"){
+                            std::cout << "Ending " << player->getName() << "'s turn.\n";
+                            player->cleanup(); // phase de défausse
+                            player->draw(5); // phase de pioche
+                            turnOver = true;
+                        }
                         break;
                     } 
                 }
@@ -511,7 +584,7 @@ void Game::startGame(int mode){
 // Sert à regarder le plateau d'un joueur en particulier
 void Game::lookAt(Player* player){
     std::cout << player->getName() << ":\nHealth : " << player->getAuthority() << "\nGold : " << player->getGold() << "\nCombat : " << player->getCombat() << ".\n";
-    std::cout << "Which part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck - 6. Return\n";
+    std::cout << "\nWhich part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck - 6. Return\n";
     int choice;
     while(!(std::cin >> choice) || choice < 1 || choice > 6){
         std::cout << "Invalid input. Please enter a valid choice: ";
@@ -557,6 +630,7 @@ void Game::lookAt(Player* player){
 
 // Sert juste à mettre des cartes dans la pile de sacrifices
 void Game::sacrifice(Card* card){
+    // On traite les gemmes de feu à part, puisqu'elles vont dans une pile dédiée
     if(card->name() == "Fire Gem"){
         fireGems_.push_back(card);
         for (auto& ab : card->abilities()){
@@ -573,7 +647,7 @@ void Game::sacrifice(Card* card){
 bool Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
     // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
     if(ab.ability == AbilityName::OpponentDiscard || ab.ability == AbilityName::StunTargetChampion){
-        std::cout << "Which player do you want to use '" << Card::abilityNameToString(ab.ability) << "' on ?\n";
+        std::cout << "\nWhich player do you want to use '" << Card::abilityNameToString(ab.ability) << "' on ?\n";
         for (int i=0;i<(int)opponentList_.size();i++){
             std::cout << " - " << i+1 << ". " << opponentList_[i]->getName();
         }
