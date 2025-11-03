@@ -315,15 +315,15 @@ void CardCreator::handleAbilities(const std::string& fullText,
             }
             if (t.find("for each other guard you have in play") != std::string::npos) {
                 if (contains("{1 combat}") || contains("+{1 combat}"))
-                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerGuard, 1), suppressFlatCombat = true;
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerOtherGuard, 1), suppressFlatCombat = true;
                 if (contains("{2 combat}") || contains("+{2 combat}"))
-                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerGuard, 2), suppressFlatCombat = true;
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerOtherGuard, 2), suppressFlatCombat = true;
             }
             if (t.find("for each other champion you have in play") != std::string::npos) {
                 if (contains("{1 combat}") || contains("+{1 combat}"))
-                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 1), suppressFlatCombat = true;
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerOtherChamp, 1), suppressFlatCombat = true;
                 if (contains("{2 combat}") || contains("+{2 combat}"))
-                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerChamp, 2), suppressFlatCombat = true;
+                    pushAbility(trig, reqAlly, allyFac, AbilityName::AddCombatPerOtherChamp, 2), suppressFlatCombat = true;
             }
 
             // per ally  
@@ -364,23 +364,23 @@ void CardCreator::handleAbilities(const std::string& fullText,
 
             // acquire/move effects 
             if (t.find("put the next card you acquire this turn into your hand") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardInHand, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardInHand, 0);
             if (t.find("put the next action you acquire this turn on top of your deck") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredActionCardOnDeck, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredActionCardOnDeck, 0);
             if (t.find("put the next card you acquire this turn on top of your deck") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardOnDeck, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutNextAcquiredCardOnDeck, 0);
             if (t.find("you may put a card from your discard pile on top of your deck") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PutCardFromDiscardOnDeck, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutCardFromDiscardOnDeck, 0);
             if (t.find("take a champion from your discard pile and put it on top of your deck") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PutChampFromDiscardOnDeck, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PutChampFromDiscardOnDeck, 0);
 
             // opponent / stun / prepare 
             if (t.find("target opponent discards a card") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::OpponentDiscard, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::OpponentDiscard, 0);
             if (t.find("stun target champion") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::StunTargetChampion, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::StunTargetChampion, 0);
             if (t.find("prepare a champion") != std::string::npos)
-                pushAbility(trig, reqAlly, allyFac, AbilityName::PrepareFriendlyChampion, 1);
+                pushAbility(trig, reqAlly, allyFac, AbilityName::PrepareFriendlyChampion, 0);
 
             // gains plats (gold/combat/health/draw) avec suppressions locales 
             // gold

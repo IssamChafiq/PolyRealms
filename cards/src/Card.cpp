@@ -46,10 +46,16 @@ bool Card::isChampion() const { return false; }
 
 std::string Card::factionToString(Faction f) {
     switch (f) {
-        case Faction::Imperial: return "Imperial";
-        case Faction::Guild:    return "Guild";
-        case Faction::Necros:   return "Necros";
-        case Faction::Wild:     return "Wild";
+        case Faction::Imperial: 
+            return "\033[1;33mImperial\033[0m"; 
+
+        case Faction::Guild:    
+            return "\033[1;34mGuild\033[0m";    
+
+        case Faction::Necros:   
+            return "\033[1;31mNecros\033[0m";   
+
+        case Faction::Wild:     return "\033[0;32mWild\033[0m";    
         case Faction::Neutral:  return "Neutral";
         case Faction::Unknown:  return "Unknown";
     }
@@ -58,8 +64,9 @@ std::string Card::factionToString(Faction f) {
 
 std::string Card::typeToString(CardType t) {
     switch (t) {
-        case CardType::Action:   return "Action";
-        case CardType::Champion: return "Champion";
+        case CardType::Action:   return "\033[1;35mAction\033[0m";  
+        case CardType::Champion:  return "\033[1;36mChampion\033[0m";  
+
     }
     return "Unknown";
 }
@@ -79,26 +86,67 @@ std::string Card::triggerToString(Trigger tr) {
 
 std::string Card::abilityNameToString(AbilityName a) {
     switch (a) {
-        case AbilityName::GainGold:                      return "GainGold";
-        case AbilityName::GainCombat:                    return "GainCombat";
-        case AbilityName::GainAuthority:                 return "GainAuthority";
-        case AbilityName::DrawCards:                     return "DrawCards";
-        case AbilityName::StunTargetChampion:            return "StunTargetChampion";
-        case AbilityName::PrepareFriendlyChampion:       return "PrepareFriendlyChampion";
-        case AbilityName::SacrificeCards:                return "SacrificeCards";
-        case AbilityName::OpponentDiscard:               return "OpponentDiscard";
-        case AbilityName::AddCombatPerChamp:             return "AddCombatPerChamp";
-        case AbilityName::AddCombatPerGuard:             return "AddCombatPerGuard";
-        case AbilityName::AddHealthPerChamp:             return "AddHealthPerChamp";
-        case AbilityName::PutNextAcquiredCardInHand:     return "PutNextAcquiredCardInHand";
-        case AbilityName::PutNextAcquiredActionCardOnDeck:return "PutNextAcquiredActionCardOnDeck";
-        case AbilityName::PutCardFromDiscardOnDeck:      return "PutCardFromDiscardOnDeck";
-        case AbilityName::PutNextAcquiredCardOnDeck:     return "PutNextAcquiredCardOnDeck";
-        case AbilityName::SacrificeForCombat:            return "SacrificeForCombat";
-        case AbilityName::MayDrawAndDiscard:             return "MayDrawAndDiscard";
-        case AbilityName::DrawAndDiscard:                return "DrawAndDiscard";
-        case AbilityName::PutChampFromDiscardOnDeck:     return "PutChampFromDiscardOnDeck";
-        case AbilityName::AddCombatPerAlly:              return "AddCombatPerAlly";
+        case AbilityName::GainGold:                      return "\033[1;32mGain x gold.\033[0m";
+        case AbilityName::GainCombat:                    
+            return "\033[1;32mGain x combat.\033[0m";
+
+        case AbilityName::GainAuthority:                 
+            return "\033[1;32mGain x health.\033[0m";
+
+        case AbilityName::DrawCards:                     
+            return "\033[1;32mDraw x card(s).\033[0m";
+
+        case AbilityName::StunTargetChampion:            
+            return "\033[1;32mStun target champion.\033[0m";
+
+        case AbilityName::PrepareFriendlyChampion:       
+            return "\033[1;32mPrepare a champion.\033[0m";
+
+        case AbilityName::SacrificeCards:                
+            return "\033[1;32mYou may sacrifice x card(s) in your hand or discard pile.\033[0m";
+
+        case AbilityName::OpponentDiscard:               
+            return "\033[1;32mTarget opponent discards a card.\033[0m";
+
+        case AbilityName::AddCombatPerChamp:             
+            return "\033[1;32mGain x combat for each champion you have in play.\033[0m";
+
+        case AbilityName::AddCombatPerOtherGuard:        
+            return "\033[1;32mGain x combat for each other guard you have in play.\033[0m";
+
+        case AbilityName::AddCombatPerOtherChamp:        
+            return "\033[1;32mGain x combat for each other champion you have in play.\033[0m";
+
+        case AbilityName::AddHealthPerChamp:             
+            return "\033[1;32mGain x health for each champion you have in play.\033[0m";
+
+        case AbilityName::PutNextAcquiredCardInHand:     
+            return "\033[1;32mPut the next card you acquire this turn into your hand.\033[0m";
+
+        case AbilityName::PutNextAcquiredActionCardOnDeck:
+            return "\033[1;32mPut the next action you acquire this turn on top of your deck.\033[0m";
+
+        case AbilityName::PutCardFromDiscardOnDeck:      
+            return "\033[1;32mYou may put a card from your discard pile on top of your deck.\033[0m";
+
+        case AbilityName::PutNextAcquiredCardOnDeck:     
+            return "\033[1;32mPut the next card you acquire this turn on top of your deck.\033[0m";
+
+        case AbilityName::SacrificeForCombat:            
+            return "\033[1;32mYou may sacrifice a card in your hand or discard pile. If you do, gain an additional x combat.\033[0m";
+
+        case AbilityName::MayDrawAndDiscard:             
+            return "\033[1;32mYou may draw up to x card(s). If you do, discard x card(s).\033[0m";
+
+        case AbilityName::DrawAndDiscard:                
+            return "\033[1;32mDraw a card, then discard a card.\033[0m";
+
+        case AbilityName::PutChampFromDiscardOnDeck:     
+            return "\033[1;32mTake a champion from your discard pile and put it on top of your deck.\033[0m";
+
+        case AbilityName::AddCombatPerAlly:              
+            return "\033[1;32mGain 2 combat + x combat for each other Wild card you have in play.\033[0m";
+
     
     }
     return "UnknownAbility";
@@ -109,12 +157,9 @@ void Card::printCardInfo() const {
     std::cout << "----------------------------------------\n";
     std::cout << "Card Name: " << name_ << "\n";
     std::cout << "Card ID:   " << id_ << "\n";
-    std::cout << "Cost:      " << cost_ << "\n";
+    std::cout << "Cost:      \033[1;93m" << cost_ << "\033[0m\n";
     std::cout << "Faction:   " << factionToString(faction_) << "\n";
     std::cout << "Type:      " << typeToString(type_) << "\n";
-
-    std::cout << "Expendable: " << (expendable_ ? "Yes" : "No") << "\n";
-    std::cout << "Sacrificeable: " << (sacrificeable_ ? "Yes" : "No") << "\n";
 
     if (!abilities().empty()) {
         std::cout << "Abilities:\n";

@@ -64,7 +64,7 @@ public:
     bool isFactionInPlayExclude(Faction faction, Card* card);
     bool isGuarded();
     bool stunChampion();
-    void attack(Player* player);
+    void attack(Player* player, bool toRight);
     void useAbility(int cardChoice);
 
     void cleanup();

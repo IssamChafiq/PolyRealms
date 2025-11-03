@@ -18,13 +18,13 @@ int main() {
 
     std::cout << "=== DEBUG CARD CREATION START ===\n";
 
-    // this will now spam diagnostics for every row
     std::vector<Card*> cards = CardCreator::loadFromCsv(csvFile);
 
     std::cout << "\n=== FINAL CARD LIST (" << cards.size() << " physical cards) ===\n\n";
 
     std::cout << "=== DEBUG CARD CREATION END ===\n";
 
+    // Deck de base
     std::vector<Card*> starterDeck = {
         CardCreator::findCard("gold-1",cards),
         CardCreator::findCard("gold-2",cards),
@@ -38,6 +38,7 @@ int main() {
         CardCreator::findCard("shortsword-1",cards)
     };
 
+    // Deck des gemmes de feu
     std::vector<Card*> fireGems = {
         CardCreator::findCard("fire-gem-1",cards),
         CardCreator::findCard("fire-gem-2",cards),
