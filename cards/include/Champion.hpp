@@ -35,9 +35,6 @@ public:
     // Combat
     bool takeDamage(int attackValue);
 
-    // Healing (cannot exceed initial shield)
-    void heal();
-
     // Targeting rule helper
     bool mustBeAttackedFirst() const { return isGuard_; }
 

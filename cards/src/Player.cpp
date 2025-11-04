@@ -159,6 +159,11 @@ bool Player::discard(int amount){
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
 
+            // On réinitialise les capacités de la carte
+            for (auto& ab : hand_[discardChoice-1]->abilities()){
+                ab.used = false;
+            }
+
             // Je rajoute la carte dans la pile de discard avant juste pour être sur de pas avoir de problème en supprimant la carte 
             discardPile_.push_back(hand_[discardChoice-1]);
             std::cout << name_ << " has discarded the following card :\n";
@@ -351,6 +356,11 @@ bool Player::getChampionFromDiscardToDeck(){
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
 
+        // On réinitialise les capacités du champion
+        for (auto& ab : championsDiscard[choice-1]->abilities()){
+            ab.used = false;
+        }
+
         deck_.addToTop(championsDiscard[choice-1]);
         // Supprime la carte de la défausse
         for (std::vector<Card*>::iterator it = discardPile_.begin(); it != discardPile_.end();)
@@ -392,6 +402,11 @@ void Player::getCardFromDiscardToDeck(){
                 std::cout << "Invalid input. Please enter a valid choice: ";
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            }
+
+            // On réinitialise les capacités de la carte
+            for (auto& ab : discardPile_[choice-1]->abilities()){
+                ab.used = false;
             }
 
             deck_.addToTop(discardPile_[choice-1]);
@@ -906,16 +921,12 @@ void Player::cleanup(){
         for (auto& ab : champion->abilities()){
             ab.used = false;
         }
-        champion->heal();
     }
     discardPile_.insert(discardPile_.end(), hand_.cbegin(), hand_.cend());
     discardPile_.insert(discardPile_.end(), inPlay_.cbegin(), inPlay_.cend());
     for (Card* card : discardPile_){
         for (auto& ab : card->abilities()){
             ab.used = false;
-        }
-        if(card->isChampion()){
-            static_cast<Champion*>(card)->heal();
         }
     }
     hand_.clear();

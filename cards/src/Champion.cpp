@@ -13,25 +13,10 @@ bool Champion::takeDamage(int attackValue) {
                 << maxShield_ << " defense).\n";
         return false;
     } else {
-        shield_ = 0;
         stunned_ = true;
         std::cout << name_ << " has been defeated and removed from play.\n";
         return true;
     }
-}
-
-
-void Champion::heal() {
-    if (stunned_) {
-        std::cout << name_ << " is stunned and cannot be healed.\n";
-        return;
-    }
-
-    int before = shield_;
-    shield_ = maxShield_;
-
-    std::cout << name_ << " heals " << (maxShield_ - before)
-              << " shield (now " << shield_ << "/" << maxShield_ << ").\n";
 }
 
 void Champion::printCardInfo() const {
@@ -47,7 +32,7 @@ void Champion::printCardInfo() const {
     std::cout << "|  Type:        " << typeToString(type_) << "\n";
     std::cout << "+--------------------------------------------------------------------+\n";
 
-    std::cout << "|  Shield:      \033[1;36m" << shield_ << "\033[0m\n";
+    std::cout << "|  Shield:      \033[1;36m" << maxShield_ << "\033[0m\n";
     std::cout << "|  Guard:       " << (isGuard_ ? "\033[1;32mYes\033[0m" : "\033[1;31mNo\033[0m") << "\n";
     std::cout << "|  Stunned:     " << (stunned_ ? "\033[1;31mYes\033[0m" : "\033[1;32mNo\033[0m") << "\n";
     std::cout << "+--------------------------------------------------------------------+\n";
