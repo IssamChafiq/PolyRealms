@@ -234,7 +234,7 @@ void Game::startGame(int mode){
                 std::cout << "|  Type 'godmode' to activate godmode or access its features.           |\n";
                 std::cout << "|  Type 'exit' or 'quit' to leave the realm.                            |\n";
                 std::cout << "+-----------------------------------------------------------------------+\n";
-                std::cout << "\033[1mYour choice:\033[0m ";
+                std::cout << "\033[1mEnter your choice:\033[0m ";
 
 
                 
@@ -245,6 +245,7 @@ void Game::startGame(int mode){
                 if(input == "godmode"){
                     if(godmode_ == false){
                         std::cout << "Activate godmode ? (y/n)\n";
+                        std::cout << "\033[1mEnter your choice:\033[0m ";
                         std::string response;
                         std::cin >> response;
                         if(response == "y"){
@@ -731,7 +732,7 @@ void Game::startGame(int mode){
                             std::cout << "+------------------------------------------------------------+\n";
 
                         }
-                        std::cout << "\033[1mYour input:\033[0m ";
+                        std::cout << "\033[1mYour input (y/n): \033[0m ";
                         std::string endResponse;
                         std::cin >> endResponse;
                         if(endResponse == "y" || endResponse == "Y"){
