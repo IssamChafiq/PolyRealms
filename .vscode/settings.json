@@ -77,7 +77,8 @@
         "xutility": "cpp",
         "fstream": "cpp",
         "regex": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "semaphore": "cpp"
     },
     "makefile.makePath": "make",
     "makefile.configurations": [

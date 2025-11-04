@@ -34,9 +34,28 @@ Game::~Game() {
 };
 
 void Game::initialize(){
+    system("clear||cls");
+    std::cout << R"(      __        __   _                            _____            
+      \ \      / /__| | ___ ___  _ __ ___   ___  |_   _|__         
+       \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \   | |/ _ \        
+        \ V  V /  __/ | (_| (_) | | | | | |  __/   | | (_) |       
+  _   _ _\_/\_/_\___|_|\___\___/|_|_|_| |_|\___|_  |_|\___/_ ____  
+ | | | | ____|  _ \ / _ \  |  _ \| ____|  / \  | |   |  \/  / ___| 
+ | |_| |  _| | |_) | | | | | |_) |  _|   / _ \ | |   | |\/| \___ \ 
+ |  _  | |___|  _ <| |_| | |  _ <| |___ / ___ \| |___| |  | |___) |
+ |_| |_|_____|_| \_\\___/  |_| \_\_____/_/   \_\_____|_|  |_|____/ )" << std::endl;
+
+
+
     int numPlayers;
 
-    std::cout << "Enter number of players (max 4 players): ";
+    std::cout << "\n+------------------------------------------------------------+\n";
+    std::cout << "|  \033[1mGame Setup\033[0m\n";
+    std::cout << "+------------------------------------------------------------+\n";
+    std::cout << "|  Enter number of players (max 4 players):\n";
+    std::cout << "+------------------------------------------------------------+\n";
+    std::cout << "\033[1mYour input:\033[0m ";
+
     while(!(std::cin >> numPlayers) || numPlayers < 1 || numPlayers > 4){
         std::cout << "Invalid input. Please enter a valid choice: ";
         std::cin.clear();
@@ -48,7 +67,13 @@ void Game::initialize(){
 
     for(int i = 0; i < numPlayers; i++){
         std::string playerName;
-        std::cout << "Enter name for player " << (i + 1) << ": ";
+        std::cout << "\n+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mPlayer Setup\033[0m\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  Enter name for player " << (i + 1) << ":\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "\033[1mYour input:\033[0m ";
+
         std::getline(std::cin, playerName);
         while(playerName.empty()){
             std::cout << "Name cannot be empty. Enter name for player " << (i + 1) << ": ";
@@ -60,7 +85,15 @@ void Game::initialize(){
         playerList_.push_back(newPlayer);
     }
 
-    std::cout << "Which gamemode would you like to play ?\n1. Free For All (2+ players)\n2. First blood (3+ players)\n3. Last standing (3+ players)\n";
+    std::cout << "\n+------------------------------------------------------------+\n";
+    std::cout << "|  \033[1mSelect Game Mode\033[0m\n";
+    std::cout << "+------------------------------------------------------------+\n";
+    std::cout << "|  [1] Free For All      (\033[1;33m2+\033[0m players)\n";
+    std::cout << "|  [2] First Blood       (\033[1;33m3+\033[0m players)\n";
+    std::cout << "|  [3] Last Standing     (\033[1;33m3+\033[0m players)\n";
+    std::cout << "+------------------------------------------------------------+\n";
+    std::cout << "\033[1mEnter your choice:\033[0m ";
+
     int modeChoice;
     while(!(std::cin >> modeChoice) || modeChoice < 1 || modeChoice > 3){
         std::cout << "Invalid input. Please enter a valid choice: ";
@@ -94,6 +127,7 @@ void Game::initialize(){
 }
 
 void Game::startGame(int mode){
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     bool gameOver = false;
 
     if(playerList_.size() == 2){
@@ -154,11 +188,35 @@ void Game::startGame(int mode){
                 // On temporise pour voir l'affichage du changement de joueur avant de clear.
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 system("clear||cls");
-                std::cout << "\n" << player->getName() << ": Health: " << player->getAuthority() << ", Gold: " << player->getGold() << ", Combat: " << player->getCombat() << ".\n";
-                std::cout << "\nChoose an action:\n\033[1;93m1\033[0m. Look at something on the board - \033[1;93m2\033[0m. Buy Card - \033[1;93m3\033[0m. Play Card - \033[1;93m4\033[0m. Attack - \033[1;93m5\033[0m. Use a spell - \033[1;93m6\033[0m. End Turn.\n";
-                std::cout << "Type 'godmode' to activate godmode or access its features.\n";
-                std::cout << "Type 'exit' or 'quit' to exit the game.\n";
-                std::cout << "Your choice: ";
+                // Pretty, medieval-ish turn menu (ANSI colors + Unicode box lines).
+                // Drop-in replacement for your current std::cout block.
+
+
+                std::cout << "\033[0m"; // reset any lingering colors
+
+                std::cout << "\n+-----------------------------------------------------------------------+\n";
+                std::cout << "|                               \033[1;35mHERO REALMS\033[0m                             |\n";
+                std::cout << "+-----------------------------------------------------------------------+\n";
+
+                std::cout << "| " << "\033[1;36m" << player->getName() << "\033[0m — Status of the Adventurer\n";
+                std::cout << "|  Health: \033[1;32m" << player->getAuthority()
+                          << "\033[0m   Gold: \033[1;33m" << player->getGold()
+                          << "\033[0m   Combat: \033[1;31m" << player->getCombat() << "\033[0m\n";
+
+                std::cout << "+------------------------------- Actions -------------------------------+\n";
+                std::cout << "|  [1] Look at something on the board                                   |\n";
+                std::cout << "|  [2] Buy Card                                                         |\n";
+                std::cout << "|  [3] Play Card                                                        |\n";
+                std::cout << "|  [4] Attack                                                           |\n";
+                std::cout << "|  [5] Use a spell                                                      |\n";
+                std::cout << "|  [6] End Turn                                                         |\n";
+                std::cout << "+-----------------------------------------------------------------------+\n";
+                std::cout << "|  Type 'godmode' to activate godmode or access its features.           |\n";
+                std::cout << "|  Type 'exit' or 'quit' to leave the realm.                            |\n";
+                std::cout << "+-----------------------------------------------------------------------+\n";
+                std::cout << "\033[1mYour choice:\033[0m ";
+
+
                 
                 std::string input;
                 std::cin >> input;
@@ -170,7 +228,15 @@ void Game::startGame(int mode){
                         std::string response;
                         std::cin >> response;
                         if(response == "y"){
-                            std::cout << "Godmode activated! It allows you to reduce any player's health to 1 and to buy cards from anywhere in the market, putting them directly in your hand ! Type godmode to access the options.\n";
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;32mGodmode activated!\033[0m\n";
+                            std::cout << "|  You can now:\n";
+                            std::cout << "|   • Reduce any player's health to 1\n";
+                            std::cout << "|   • Buy cards from anywhere in the market\n";
+                            std::cout << "|     (they go directly into your hand)\n";
+                            std::cout << "|  Type '\033[1mgodmode\033[0m' to access these options.\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+                            
                             godmode_ = true;
                         } else if(response == "n") {
                             continue;
@@ -178,7 +244,15 @@ void Game::startGame(int mode){
                             std::cout << "Invalid input. Please try again.";
                         } 
                     } else {
-                        std::cout << "\nWhat would you like to do ?\n1. Set a player's health to 1 - 2. Deactivate godmode - 3. Return\n";
+                        std::cout << "\n+------------------------------------------------------------+\n";
+                        std::cout << "|  \033[1mGodmode Menu\033[0m\n";
+                        std::cout << "+------------------------------------------------------------+\n";
+                        std::cout << "|  [1] Set a player's health to 1\n";
+                        std::cout << "|  [2] Deactivate Godmode\n";
+                        std::cout << "|  [3] Return\n";
+                        std::cout << "+------------------------------------------------------------+\n";
+                        std::cout << "\033[1mEnter your choice:\033[0m ";
+
                         int godmodeChoice;
                         while(!(std::cin >> godmodeChoice) || godmodeChoice < 1 || godmodeChoice > 3){
                             std::cout << "Invalid input. Please enter a valid choice: ";
@@ -229,11 +303,21 @@ void Game::startGame(int mode){
                         */
                         bool lookOver = false;
                         while (!lookOver){
-                            std::cout << "\nWhat do you want to look at ? :\n1. Market row - 2. Sacrifice pile";
-                            for (int i=0;i<(int)playerList_.size();i++){
-                                std::cout << " - " << i+3 << ". " << playerList_[i]->getName() << "'s board";
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|          \033[1;35mWhat do you want to look at?\033[0m          |\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+
+                            std::cout << "|  [1] Market Row\n";
+                            std::cout << "|  [2] Sacrifice Pile\n";
+
+                            for (int i = 0; i < (int)playerList_.size(); ++i) {
+                                std::cout << "|  [" << i + 3 << "] " << playerList_[i]->getName() << "'s Board\n";
                             }
-                            std::cout << " - " << (int)playerList_.size()+3 << ". Return.\n";
+
+                            std::cout << "|  [" << (int)playerList_.size() + 3 << "] Return\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+                            std::cout << "\033[1mEnter your choice:\033[0m ";
+
                             int lookChoice;
                             while(!(std::cin >> lookChoice) || lookChoice < 1 || lookChoice > (int)playerList_.size()+3){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
@@ -282,7 +366,11 @@ void Game::startGame(int mode){
                                     market_.getMarketDeck().getDeckContents()[i]->printCardInfo();
                                 }
                                 std::cout << " - " << market_.getMarketRow().size()+market_.getMarketDeck().getDeckContents().size()+2 << ". Return.\n";
-                                std::cout << "You have " << player->getGold() << " gold.\n";
+                                std::cout << "\n+------------------------------------------+\n";
+                                std::cout << "|  \033[1;33mGold:\033[0m " << player->getGold() << "\n";
+                                std::cout << "+------------------------------------------+\n";
+                                std::cout << "\033[1mEnter your choice:\033[0m ";
+
                                 int godmodeBuyChoice;
                                 while(!(std::cin >> godmodeBuyChoice) || godmodeBuyChoice < 1 || godmodeBuyChoice > (int)market_.getMarketRow().size()+(int)market_.getMarketDeck().getDeckContents().size()+2){
                                     std::cout << "Invalid input. Please enter a valid choice: ";
@@ -294,7 +382,7 @@ void Game::startGame(int mode){
                                         if(player->godmodeBuy(fireGems_.front(),market_)){
                                             fireGems_.erase(fireGems_.begin());
                                             // On temporise l'affichage du marché à nouveau
-                                            std::this_thread::sleep_for(std::chrono::seconds(2));
+                                            std::this_thread::sleep_for(std::chrono::seconds(3));
                                         }
                                     } else {
                                         std::cout << "Not any fire gems left.\n";
@@ -304,11 +392,11 @@ void Game::startGame(int mode){
                                 } else if(godmodeBuyChoice <= (int)market_.getMarketRow().size()+1){
                                     player->godmodeBuy(market_.getMarketRow()[godmodeBuyChoice-2],market_);
                                     // On temporise l'affichage du marché à nouveau
-                                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                                    std::this_thread::sleep_for(std::chrono::seconds(3));
                                 } else {
                                     player->godmodeBuy(market_.getMarketDeck().getDeckContents()[godmodeBuyChoice-(int)market_.getMarketRow().size()-2],market_);
                                     // On temporise l'affichage du marché à nouveau
-                                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                                    std::this_thread::sleep_for(std::chrono::seconds(3));
                                 }
                             } else {
                                 std::cout << "\nWhich card do you want to buy ? :\n";
@@ -321,7 +409,10 @@ void Game::startGame(int mode){
                                     market_.getMarketRow()[i]->printCardInfo();
                                 }
                                 std::cout << " - " << market_.getMarketRow().size()+2 << ". Return.\n";
-                                std::cout << "You have " << player->getGold() << " gold.\n";
+                                std::cout << "\n+------------------------------------------+\n";
+                                std::cout << "|  \033[1;33mGold:\033[0m " << player->getGold() << "\n";
+                                std::cout << "+------------------------------------------+\n";
+                                std::cout << "\033[1mEnter your choice:\033[0m ";
                                 int buyChoice;
                                 while(!(std::cin >> buyChoice) || buyChoice < 1 || buyChoice > (int)market_.getMarketRow().size()+2){
                                     std::cout << "Invalid input. Please enter a valid choice: ";
@@ -341,7 +432,7 @@ void Game::startGame(int mode){
                                 } else {
                                     player->buy(market_.getMarketRow()[buyChoice-2],market_);
                                     // On temporise l'affichage du marché à nouveau
-                                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                                    std::this_thread::sleep_for(std::chrono::seconds(3));
                                 }
                             }
                         }
@@ -390,14 +481,30 @@ void Game::startGame(int mode){
                         */
                         bool attackOver = false;
                         while(!attackOver){
-                            if(mode == 2 || mode == 3){
-                                std::cout << "In this mode, you can only attack the players to your left and right. The first player is to your left and the second is to your right.\n";
+                            std::cout << "\n+============================================================+\n";
+                            std::cout << "|                        \033[1mATTACK MENU\033[0m                        |\n";
+                            std::cout << "+============================================================+\n";
+
+                            if (mode == 2 || mode == 3) {
+                                std::cout << "|  Note: You can only attack the players to your left and right.\n";
                             }
-                            std::cout << "\nWho do you want to attack ? (Combat power : " << player->getCombat() << ") :";
-                            for (int i=0;i<(int)opponentList_.size();i++){
-                                std::cout << " - " << i+1 << ". " << opponentList_[i]->getName() << "'s board";
+
+                            std::cout << "|  Combat Power: \033[1;33m" << player->getCombat() << "\033[0m\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+
+                            if (opponentList_.empty()) {
+                                std::cout << "|  No available opponents to attack.\n";
+                                std::cout << "+============================================================+\n";
+                                std::cout << "\033[1mPress Enter to continue...\033[0m";
+                            } else {
+                                for (int i = 0; i < (int)opponentList_.size(); ++i) {
+                                    std::cout << "|  [" << i + 1 << "] " << opponentList_[i]->getName() << "'s Board\n";
+                                }
+                                std::cout << "|  [" << (int)opponentList_.size() + 1 << "] Return\n";
+                                std::cout << "+============================================================+\n";
+                                std::cout << "\033[1mEnter target:\033[0m ";
                             }
-                            std::cout << " - " << (int)opponentList_.size()+1 << ". Return.\n";
+
 
                             int attackChoice;
                             while(!(std::cin >> attackChoice) || attackChoice < 1 || attackChoice > (int)opponentList_.size()+1){
@@ -441,7 +548,6 @@ void Game::startGame(int mode){
 
                                 // Condition de victoire pour le mode First Blood
                                 if(mode == 2 && toRemove.size() > 0){
-                                    std::cout << "\nThe game is over ! The winner is ";
                                     int deadId = getPlayerIndex(toRemove[0]);
                                     int winnerId;
                                     if(deadId == (int)playerList_.size() - 1){
@@ -449,7 +555,14 @@ void Game::startGame(int mode){
                                     } else {
                                         winnerId = deadId + 1;
                                     }
-                                    std::cout << playerList_[winnerId]->getName() << " ! Congratulations !\n";
+                                    std::cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+                                    std::cout << "           [ T H E   G A M E   I S   O V E R ]              \n";
+                                    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+                                    std::cout << "   Hark! The realm rejoices, for a new champion rises...     \n";
+                                    std::cout << "                 Victorious Knight: " << playerList_[winnerId]->getName() << "\n";
+                                    std::cout << "                     * * * * * * * * * * * *                 \n";
+                                    std::cout << "             Glory and honor to thee, brave soul!             \n";
+                                    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
                                     gameOver = true;
                                     turnOver = true;
                                     attackOver = true;
@@ -463,7 +576,14 @@ void Game::startGame(int mode){
 
                                 // On vérifie si la partie est finie (dernier joueur debout)
                                 if((int)playerList_.size() == 1){
-                                    std::cout << "\nThe game is over ! The winner is " << playerList_[0]->getName() << " ! Congratulations !\n";
+                                    std::cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+                                    std::cout << "           [ T H E   G A M E   I S   O V E R ]              \n";
+                                    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+                                    std::cout << "   Hark! The realm rejoices, for a new champion rises...     \n";
+                                    std::cout << "                 Victorious Knight: " << playerList_[0]->getName() << "\n";
+                                    std::cout << "                     * * * * * * * * * * * *                 \n";
+                                    std::cout << "             Glory and honor to thee, brave soul!             \n";
+                                    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
                                     turnOver = true;
                                     gameOver = true;
                                     attackOver = true;
@@ -478,18 +598,24 @@ void Game::startGame(int mode){
                         */
                         bool abilityOver = false;
                         while(!abilityOver){
-                            std::cout << "\nWhich card's ability do you want to use ?\n";
-                            std::cout << "Champion cards :\n";
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1mWhich card's ability do you want to use?\033[0m\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;36mChampion Cards:\033[0m\n";
+                            std::cout << "+------------------------------------------------------------+\n";
                             for (int i=0;i<(int)player->getChampions().size();i++){
                                 std::cout << " - " << i+1 << "\n";
                                 player->getChampions()[i]->printCardInfo();
                             }
-                            std::cout << "In play cards :\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;33mIn-Play Cards:\033[0m\n";
+                            std::cout << "+------------------------------------------------------------+\n";
                             for (int i=0;i<(int)player->getInPlay().size();i++){
                                 std::cout << " - " << i+(int)player->getChampions().size()+1 << "\n";
                                 player->getInPlay()[i]->printCardInfo();
                             }
                             std::cout << " - " << (int)player->getChampions().size()+(int)player->getInPlay().size()+1 << ". Return.\n";
+                            std::cout << "\033[1mEnter your choice:\033[0m ";
                             int cardChoice;
                             while(!(std::cin >> cardChoice) || cardChoice < 1 || cardChoice > (int)player->getChampions().size()+(int)player->getInPlay().size()+1){
                                 std::cout << "Invalid input. Please enter a valid choice: ";
@@ -511,13 +637,21 @@ void Game::startGame(int mode){
                         /* 
                             END TURN CASE
                         */
-                        std::cout << "\nAre you sure you want to end your turn ? (y/n)\n";
-                        // On rappelle au joueur ce qu'il lui reste avant de terminer son tour
-                        std::cout << "You have " << player->getGold() << " gold and " << player->getCombat() << " combat power left.\n";
+                        std::cout << "\n+------------------------------------------------------------+\n";
+                        std::cout << "|  \033[1mAre you sure you want to end your turn?\033[0m (y/n)\n";
+                        std::cout << "+------------------------------------------------------------+\n";
+                        std::cout << "|  Remaining Resources:\n";
+                        std::cout << "|   • Gold:   \033[1;33m" << player->getGold() << "\033[0m\n";
+                        std::cout << "|   • Combat: \033[1;31m" << player->getCombat() << "\033[0m\n";
+                        std::cout << "+------------------------------------------------------------+\n";
 
                         // Verification du combat restant
                         if(player->getCombat() > 0){
-                            std::cout << "Remember that any unused combat power will be lost at the end of your turn.\n";
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;31mReminder:\033[0m Any unused combat power will be lost\n";
+                            std::cout << "|  at the end of your turn.\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+
                         }
 
                         // Verification des cartes achetables dans le marché
@@ -529,12 +663,18 @@ void Game::startGame(int mode){
                             }
                         }
                         if(buyableInMarket || (fireGems_.size() > 0 && player->getGold() >= 2)){
-                            std::cout << "There are still cards you can afford in the shop !\n";
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;33mThere are still cards you can afford in the shop!\033[0m\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+
                         }
 
                         // Verification des cartes jouables en main
                         if(player->getHand().size() > 0){
-                            std::cout << "You still have unplayed cards in your hand !\n";
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;33mNotice:\033[0m You still have unplayed cards in your hand!\n";
+                            std::cout << "+------------------------------------------------------------+\n";
+
                         }
 
                         // Verification des capacités non utilisées
@@ -559,9 +699,13 @@ void Game::startGame(int mode){
                         }
 
                         if(unusedAbilities){
-                            std::cout << "You have unused card abilities that you can still use this turn !\n";
-                        }
+                            std::cout << "\n+------------------------------------------------------------+\n";
+                            std::cout << "|  \033[1;33mNotice:\033[0m You have unused card abilities you can\n";
+                            std::cout << "|  still activate this turn!\n";
+                            std::cout << "+------------------------------------------------------------+\n";
 
+                        }
+                        std::cout << "\033[1mYour input:\033[0m ";
                         std::string endResponse;
                         std::cin >> endResponse;
                         if(endResponse == "y" || endResponse == "Y"){
@@ -583,8 +727,28 @@ void Game::startGame(int mode){
 
 // Sert à regarder le plateau d'un joueur en particulier
 void Game::lookAt(Player* player){
-    std::cout << player->getName() << ":\nHealth : " << player->getAuthority() << "\nGold : " << player->getGold() << "\nCombat : " << player->getCombat() << ".\n";
-    std::cout << "\nWhich part of " << player->getName() << "'s board do you want to look at ?\n 1. Hand - 2. Played cards - 3. Active champions - 4. Discard pile - 5. Deck - 6. Return\n";
+    std::cout << "\033[0m"; // reset any color first
+    std::cout << "\n+============================================================+\n";
+    std::cout << "|                 \033[1;35mSTATUS OF THE PLAYER\033[0m                   |\n";
+    std::cout << "+============================================================+\n";
+
+    std::cout << "|  \033[1;36m" << player->getName() << "\033[0m of the Realm\n";
+    std::cout << "|  Health : \033[1;32m" << player->getAuthority() << "\033[0m\n";
+    std::cout << "|  Gold   : \033[1;33m" << player->getGold() << "\033[0m\n";
+    std::cout << "|  Combat : \033[1;31m" << player->getCombat() << "\033[0m\n";
+    std::cout << "+------------------------------------------------------------+\n";
+
+    std::cout << "|  \033[1;37mWhich part of " << player->getName()
+              << "'s board do you want to look at?\033[0m\n";
+    std::cout << "|   [1] Hand\n";
+    std::cout << "|   [2] Played Cards\n";
+    std::cout << "|   [3] Active Champions\n";
+    std::cout << "|   [4] Discard Pile\n";
+    std::cout << "|   [5] Deck\n";
+    std::cout << "|   [6] Return\n";
+    std::cout << "+============================================================+\n";
+    std::cout << "\033[1mEnter your choice:\033[0m ";
+
     int choice;
     while(!(std::cin >> choice) || choice < 1 || choice > 6){
         std::cout << "Invalid input. Please enter a valid choice: ";
@@ -647,11 +811,18 @@ void Game::sacrifice(Card* card){
 bool Game::smartAbilityExecute(Player* player, Card::CardAbility& ab){
     // Je regarde ici si la capacité est parmi celles qui ont besoin d'un opponent (il n'y en a que deux, donc je me retiens de faire quelque chose de plus compliqué que ça...)
     if(ab.ability == AbilityName::OpponentDiscard || ab.ability == AbilityName::StunTargetChampion){
-        std::cout << "\nWhich player do you want to use '" << Card::abilityNameToString(ab.ability) << "' on ?\n";
+        std::cout << "\n+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mSelect Target Player\033[0m\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  Which player do you want to use '\033[1;36m"
+                  << Card::abilityNameToString(ab.ability)
+                  << "\033[0m' on?\n";
+        std::cout << "+------------------------------------------------------------+\n";
         for (int i=0;i<(int)opponentList_.size();i++){
             std::cout << " - " << i+1 << ". " << opponentList_[i]->getName();
         }
         std::cout << "\n";
+        std::cout << "\033[1mEnter your choice:\033[0m ";
         int spellChoice;
         while(!(std::cin >> spellChoice) || spellChoice < 1 || spellChoice > (int)opponentList_.size()){
             std::cout << "Invalid input. Please enter a valid choice: ";

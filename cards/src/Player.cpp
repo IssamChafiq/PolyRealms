@@ -3,6 +3,8 @@
 #include "Abilities.hpp"
 #include <iostream>
 #include <limits>
+#include <thread>
+#include <chrono>
 
 Player::Player(std::string name,
         int authority,
@@ -140,7 +142,9 @@ bool Player::godmodeBuy(Card* card, Market& market){
 
 bool Player::discard(int amount){
     std::cout << "\n" << name_ << ", you have to discard " << amount << " cards :\n";
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     for (int i=0;i<amount;i++){
+        std::cout << "Chose a card to discard :\n";
         if ((int)hand_.size() > 0){
 
             for (int i=0;i<(int)hand_.size();i++){
@@ -525,8 +529,12 @@ void Player::attack(Player* player, bool toRight){
     // Si le joueur ciblé est gardé, on ne peut attaquer que ses gardes
     if(player->isGuarded()){
         std::vector<Champion*> guards = player->getGuards();
-        std::cout << player->getName() << " is guarded, you can only attack his guards !\n";
-        std::cout << "\nWhich guard do you want to attack ? : ";
+        std::cout << "\n+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1m" << player->getName() << " is guarded.\033[0m You can only attack their guards!\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "\033[1mWhich guard do you want to attack?\033[0m\n";
+        std::cout << "--------------------------------------------------------------\n";
+
         for (int i=0;i<(int)guards.size();i++){
             std::cout << " - " << i+1 << ":\n";
             guards[i]->printCardInfo();
@@ -547,7 +555,15 @@ void Player::attack(Player* player, bool toRight){
         }
     // Sinon, on peut choisir d'attaquer le joueur ou ses champions
     } else {
-        std::cout << "\nWhat do you want to attack ? :\n1. " << player->getName() << " (" << player->getAuthority() << " health points) - 2. Their champions - 3. Return\n";
+        std::cout << "\n+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mWhat do you want to attack?\033[0m\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  [1] " << player->getName() << " (" << player->getAuthority() << " health points)\n";
+        std::cout << "|  [2] Their Champions\n";
+        std::cout << "|  [3] Return\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "\033[1mEnter your choice:\033[0m ";
+
         int choice;
         while(!(std::cin >> choice) || choice < 1 || choice > 3){
             std::cout << "Invalid input. Please enter a valid choice: ";
@@ -603,13 +619,23 @@ void Player::useAbility(int cardChoice){
         Champion* chosenCard = champions_[cardChoice-1];
         
         // On affiche les capacités de la carte choisie
-        std::cout << "\nThe card you picked has the following abilities :\n";
-        for(auto& ab : chosenCard->abilities()){
+        std::cout << "\n+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mThe card you picked has the following abilities:\033[0m\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        for (auto& ab : chosenCard->abilities()) {
             ab.printAbility();
         }
-        // On demande quel type de capacité le joueur veut utiliser
-        std::cout << "\nWhich type of ability do you want to use ? (all the abilities with the same trigger will be activated at once.):\n";
-        std::cout << "1. Ally - 2. Expend - 3. ExpendChoice - 4. Sacrifice - 5. Return.\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mSelect the type of ability to activate\033[0m\n";
+        std::cout << "|  (All abilities with the same trigger activate together)\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  [1] Ally\n";
+        std::cout << "|  [2] Expend\n";
+        std::cout << "|  [3] ExpendChoice\n";
+        std::cout << "|  [4] Sacrifice\n";
+        std::cout << "|  [5] Return\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "\033[1mEnter your choice:\033[0m ";
 
         int typeChoice;
         while(!(std::cin >> typeChoice) || typeChoice < 1 || typeChoice > 5){
@@ -735,12 +761,24 @@ void Player::useAbility(int cardChoice){
         // Même principe que pour les champions, mais pour les cartes en jeu. On prend un index réduit pour accéder à la bonne carte étant donné que les champions sont listés en premier.
         Card* chosenCard = inPlay_[cardChoice-champions_.size()-1];
                             
-        std::cout << "\nThe card you picked has the following abilities :\n";
-        for(auto& ab : chosenCard->abilities()){
+        std::cout << "\n+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mThe card you picked has the following abilities:\033[0m\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        for (auto& ab : chosenCard->abilities()) {
             ab.printAbility();
         }
-        std::cout << "\nWhich type of ability do you want to use ? (all the abilities with the same trigger will be activated at once.):\n";
-        std::cout << "1. Ally - 2. Expend - 3. ExpendChoice - 4. Sacrifice - 5. Return.\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  \033[1mSelect the type of ability to activate\033[0m\n";
+        std::cout << "|  (All abilities with the same trigger activate together)\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "|  [1] Ally\n";
+        std::cout << "|  [2] Expend\n";
+        std::cout << "|  [3] ExpendChoice\n";
+        std::cout << "|  [4] Sacrifice\n";
+        std::cout << "|  [5] Return\n";
+        std::cout << "+------------------------------------------------------------+\n";
+        std::cout << "\033[1mEnter your choice:\033[0m ";
+
 
         int typeChoice;
         while(!(std::cin >> typeChoice) || typeChoice < 1 || typeChoice > 5){

@@ -154,36 +154,43 @@ std::string Card::abilityNameToString(AbilityName a) {
 
 // print with abilities
 void Card::printCardInfo() const {
-    std::cout << "----------------------------------------\n";
-    std::cout << "Card Name: " << name_ << "\n";
-    std::cout << "Card ID:   " << id_ << "\n";
-    std::cout << "Cost:      \033[1;93m" << cost_ << "\033[0m\n";
-    std::cout << "Faction:   " << factionToString(faction_) << "\n";
-    std::cout << "Type:      " << typeToString(type_) << "\n";
+    std::cout << "\033[0m"; // reset colors
+    std::cout << "\n+====================================================================+\n";
+    std::cout << "|                         \033[1;35mCARD DETAILS\033[0m                              |\n";
+    std::cout << "+====================================================================+\n";
+
+    std::cout << "|  Name:     \033[1;36m" << name_ << "\033[0m\n";
+    std::cout << "|  ID:       " << id_ << "\n";
+    std::cout << "|  Cost:     \033[1;93m" << cost_ << "\033[0m\n";
+    std::cout << "|  Faction:  " << factionToString(faction_) << "\n";
+    std::cout << "|  Type:     " << typeToString(type_) << "\n";
+
+    std::cout << "+--------------------------------------------------------------------+\n";
 
     if (!abilities().empty()) {
-        std::cout << "Abilities:\n";
+        std::cout << "|  \033[1mAbilities:\033[0m\n";
         for (const auto& ab : abilities()) {
             ab.printAbility();
         }
     } else {
-        std::cout << "Abilities: (none parsed)\n";
+        std::cout << "|  Abilities: (none parsed)\n";
     }
 
-    std::cout << "----------------------------------------\n\n";
+    std::cout << "+====================================================================+\n\n";
 }
 
+
 void Card::CardAbility::printAbility() const {
-    std::cout << "---\n";
-    std::cout << "  -Trigger: " << Card::triggerToString(trigger) << "\n";
-    std::cout << "  -Ability: " << Card::abilityNameToString(ability);
+    std::cout << "|   ────────────────────────────────────────────────────────────────\n";
+    std::cout << "|    • Trigger: \033[1;36m" << Card::triggerToString(trigger) << "\033[0m\n";
+    std::cout << "|    • Effect:  \033[1;33m" << Card::abilityNameToString(ability) << "\033[0m";
     if (amount > 0) {
-        std::cout << " (amount: " << amount << ")";
+        std::cout << " (\033[1;32m+" << amount << "\033[0m)";
     }
     std::cout << "\n";
     if (requiresAlly) {
-        std::cout << "  -Requires ally: " << Card::factionToString(requiredAllyFaction) << "\n";
+        std::cout << "|    • Requires Ally: " << Card::factionToString(requiredAllyFaction) << "\n";
     }
-    std::cout << "  -Used: " << (used ? "Yes" : "No") << "\n";
-    std::cout << "---\n";
+    std::cout << "|    • Used: " << (used ? "\033[1;31mYes\033[0m" : "\033[1;32mNo\033[0m") << "\n";
 }
+
