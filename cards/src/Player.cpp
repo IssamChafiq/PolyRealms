@@ -549,6 +549,7 @@ void Player::attack(Player* player, bool toRight){
 
         if(guards[guardChoice-1]->takeDamage(combat_)){
             combat_ = combat_ - guards[guardChoice-1]->getMaxShield();
+            player->discardPile_.push_back(guards[guardChoice-1]);
             player->removeChampion(guards[guardChoice-1]);
         } else {
             std::cout << "Not enough combat to kill this guard.\n";
@@ -603,6 +604,7 @@ void Player::attack(Player* player, bool toRight){
             // On ne peut pas tuer un champion si on a pas assez de combat pour le faire en un coup
             if(player->getChampions()[championChoice-1]->takeDamage(combat_)){
                 combat_ = combat_ - player->getChampions()[championChoice-1]->getMaxShield();
+                player->discardPile_.push_back(player->getChampions()[championChoice-1]);
                 player->removeChampion(player->getChampions()[championChoice-1]);
             } else {
                 std::cout << "Not enough combat to kill this champion\n";
@@ -911,6 +913,9 @@ void Player::cleanup(){
     for (Card* card : discardPile_){
         for (auto& ab : card->abilities()){
             ab.used = false;
+        }
+        if(card->isChampion()){
+            static_cast<Champion*>(card)->heal();
         }
     }
     hand_.clear();
