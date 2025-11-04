@@ -1,0 +1,65 @@
+Tutoriel de gameplay pour jouer à PolyRealms, notre version de Hero realms:
+
+REQUIS : 
+g++, make.
+
+Pour lancer le jeu, veuillez vous placer dans le répertoire cards (PolyRealms/cards), puis faites make dans votre terminal, et ensuite utilisez l'éxécutable avec ./cards
+S'il y a un problème, vous pouvez faire make clean et réessayer.
+
+Lancement de la partie :
+
+Lors du lancement de la partie, il vous sera demandé de rentrer le nombre de joueurs (max 4), ainsi que leurs noms.
+Vous serez ensuite invités à choisir le mode de jeu. Il y en a pour l'instant 3 :
+
+- Free for all (2 à 4 joueurs):
+Mode de jeu standard, où il est possible d'attaquer tous les joueurs. Le dernier joueur en vie remporte la partie.
+
+- First blood (3 à 4 joueurs):
+Dans ce mode de jeu, il est uniquement possible d'attaquer le joueur à gauche, et les champions des joueurs à droite et à gauche de soi-même.
+Le joueur à la droite du premier joueur à mourir gagne la partie, même si quelqu'un d'autre l'a éliminé !
+
+- Last standing (3 à 4 joueurs):
+Ce mode de jeu est comme First blood, mais la partie continue après la mort d'un joueur, et le dernier joueur en vie remporte la partie.
+Quand un joueur meurt, le joueur situé à sa droite gagne 10 points de vie et pioche une carte !
+
+Déroulement de la partie :
+
+Lors d'un tour de jeu, il vous est proposé un total de 5 actions principales, jouables dans n'importe quel ordre et autant de fois que l'on veut.
+A chaque choix d'action, les statistiques de votre joueurs sont affichées (Health, gold et combat).
+Les actions choisissables sont les suivantes :
+
+1 - Regarder quelque chose dans la partie :
+    Vous pouvez regarder le plateau de n'importe quel joueur, ainsi que la ligne de cartes disponibles du marché, le deck du marché et la pile de carte à sacrifier. Sur le plateau d'un joueur, vous pouvez voir sa main, ses cartes en jeu, ses champions, sa défausse et son deck.
+
+2 - Acheter une carte :
+    Dans le menu pour acheter une carte, vous aurez toujours en premier slot l'option d'acheter une gemme de feu. Ensuite, les 5 cartes disponible à l'achat du marché seront listées. Quand une carte est achetée, à l'exception des gemmes de feu, elle va directement dans votre défausse et une nouvelle carte apparaît dans le marché.
+
+3 - Jouer une carte :
+    Cette action affiche les cartes de votre main. Vous pouvez ensuite les jouer dans l'ordre que vous voulez, et voir les effets qui sont activés lorsque vous les jouez. (Toutes les capacités onPlay sont utilisées quand la carte est jouée).
+
+4 - Attaquer :
+    Vous pouvez attaquer le plateau des joueurs disponibles selon votre mode de jeu. En sélectionnant un plateau, vous aurez l'option d'attaquer soit ses champions, soit le joueur lui-même. Si le joueur a des gardes en jeu, la seule option possible sera d'attaquer les gardes. Il est impossible d'attaquer un champion où un garde si vous n'avez pas assez de dégats pour le tuer. 
+    Quand un champion ou un garde meurt, il est envoyé dans la défausse de son propriétaire. 
+    Quand le joueur meurt, il est retiré de la liste des joueurs actifs et la partie se termine potentiellement.
+
+5 - Utiliser des capacités :
+    Dans ce menu, vous pouvez utiliser les capacités de vos cartes (celles qui n'ont pas déjà été utilisées lorsque la carte est jouée).
+    Tous les effets de capacités de même type sont utilisés en même temps lorsque vous choisissez un type (sauf ExpendChoice).
+    Il existe plusieurs types de capacités :
+    - Ally, qui nécessite la présence dans la zone de jeu d'une autre carte de la faction de la carte qui possède cette compétence, sinon la capacité ne peut pas être utilisée.
+    - Expend, qui active simplement un effet quand la capacité est utilisée, et qu'il est possible de réutiliser au prochain tour ou, dans le cas où un champion possède la capacité, lorsque ce champion est mobilisé.
+    - ExpendChoice, qui est une capacité comme Expend, mais qui donne au joueur le choix entre plusieurs effets différents. Il n'est possible d'utiliser que l'un d'entre eux.
+    - Sacrifice, qui permet d'utiliser un effet une fois, mais sacrifie ensuite la carte dans la pile de sacrifices du jeu, ce qui signifie qu'il sera impossible de récupérer à l'avenir la carte sacrifiée.
+    - Et OnPlay, qui est activée par défaut quand la carte est jouée.
+    Les capacités ne sont utilisables qu'une fois par tour (sauf effets spéciaux comme la mobilisation d'un champion), et ne sont réutilisables qu'à partir du tour suivant.
+
+6 - Fin de tour :
+    En choisissant cette option, vous finissez votre tour. Il vous sera demandé de confirmer votre choix, et s'il vous reste des cartes à jouer, ou du combat non utilisé, ou assez d'or pour acheter une carte du marché, où des capacités non utilisées, vous serez prévenus avant de faire votre choix.
+    Après la fin du tour, toutes les cartes de la main et en jeux, à part les champions joués, sont défaussées, et votre or et combat sont remis à 0.
+    Vous piochez ensuite 5 cartes.
+
+Options spéciales (disponibles uniquement dans le menu de choix d'options.): 
+    - Godmode : tapez godmode pour activer le godmode, puis retapez godmode afin d'accéder à ses paramètres, pour mettre la vie d'un joueur à 1 pv ou désactiver le godmode.
+    Quand le godmode est actif, utiliser l'option 2 pour acheter une carte vous donne 100 d'or et vous permet d'acheter n'importe quelle carte du marché, même depuis le deck.
+    - exit/quit : permet de terminer la partie prématurément.
+

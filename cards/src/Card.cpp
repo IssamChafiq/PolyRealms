@@ -181,16 +181,16 @@ void Card::printCardInfo() const {
 
 
 void Card::CardAbility::printAbility() const {
-    std::cout << "|   ────────────────────────────────────────────────────────────────\n";
-    std::cout << "|    • Trigger: \033[1;36m" << Card::triggerToString(trigger) << "\033[0m\n";
-    std::cout << "|    • Effect:  \033[1;33m" << Card::abilityNameToString(ability) << "\033[0m";
+    std::cout << "|   ------------------------------------------------------------------\n";
+    std::cout << "|    - Trigger: \033[1;36m" << Card::triggerToString(trigger) << "\033[0m\n";
+    std::cout << "|    - Effect:  \033[1;33m" << Card::abilityNameToString(ability) << "\033[0m";
     if (amount > 0) {
         std::cout << " (\033[1;32m+" << amount << "\033[0m)";
     }
     std::cout << "\n";
     if (requiresAlly) {
-        std::cout << "|    • Requires Ally: " << Card::factionToString(requiredAllyFaction) << "\n";
+        std::cout << "|    - Requires Ally: " << Card::factionToString(requiredAllyFaction) << "\n";
     }
-    std::cout << "|    • Used: " << (used ? "\033[1;31mYes\033[0m" : "\033[1;32mNo\033[0m") << "\n";
+    std::cout << "|    - Used: " << (used ? "\033[1;31mYes\033[0m" : "\033[1;32mNo\033[0m") << "\n";
 }
 

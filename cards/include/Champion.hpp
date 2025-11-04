@@ -32,6 +32,7 @@ public:
     int  getMaxShield() const { return maxShield_; }
 
     void stun() { stunned_ = true;}
+    void unStun() { stunned_ = false;}
     // Combat
     bool takeDamage(int attackValue);
 

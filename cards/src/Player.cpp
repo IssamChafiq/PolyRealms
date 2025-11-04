@@ -360,6 +360,8 @@ bool Player::getChampionFromDiscardToDeck(){
         for (auto& ab : championsDiscard[choice-1]->abilities()){
             ab.used = false;
         }
+        
+        championsDiscard[choice-1]->unStun();
 
         deck_.addToTop(championsDiscard[choice-1]);
         // Supprime la carte de la défausse
@@ -407,6 +409,9 @@ void Player::getCardFromDiscardToDeck(){
             // On réinitialise les capacités de la carte
             for (auto& ab : discardPile_[choice-1]->abilities()){
                 ab.used = false;
+            }
+            if(discardPile_[choice-1]->isChampion()){
+                static_cast<Champion*>(discardPile_[choice-1])->unStun();
             }
 
             deck_.addToTop(discardPile_[choice-1]);
@@ -554,7 +559,8 @@ void Player::attack(Player* player, bool toRight){
             std::cout << " - " << i+1 << ":\n";
             guards[i]->printCardInfo();
         }
-        std::cout << ":\n";
+        
+        std::cout << "Enter your choice: ";
         int guardChoice;
         while(!(std::cin >> guardChoice) || guardChoice < 1 || guardChoice > (int)guards.size()){
             std::cout << "Invalid input. Please enter a valid choice: ";
@@ -921,6 +927,7 @@ void Player::cleanup(){
         for (auto& ab : champion->abilities()){
             ab.used = false;
         }
+        champion->unStun();
     }
     discardPile_.insert(discardPile_.end(), hand_.cbegin(), hand_.cend());
     discardPile_.insert(discardPile_.end(), inPlay_.cbegin(), inPlay_.cend());
