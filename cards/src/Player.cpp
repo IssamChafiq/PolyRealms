@@ -935,6 +935,9 @@ void Player::cleanup(){
         for (auto& ab : card->abilities()){
             ab.used = false;
         }
+        if(card->isChampion()){
+            static_cast<Champion*>(card)->unStun();
+        }
     }
     hand_.clear();
     inPlay_.clear();
